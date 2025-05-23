@@ -28,10 +28,19 @@ npm run inspector:debug    # MCP Inspector（デバッグモード）
 
 ### テスト
 ```bash
-npm run test:alerts        # 警報取得のテスト
-npm run test:forecast      # 予報取得のテスト
-npm run test:error         # エラーハンドリングのテスト
-npm run health-check       # ヘルスチェックの実行
+# 単体テスト
+npm test                   # 全テストをカバレッジ付きで実行
+npm run test:unit          # カバレッジなしで高速実行
+npm run test:watch         # ファイル変更を監視して自動実行
+
+# 手動テスト（MCPプロトコル経由）
+npm run test:manual:alerts    # 警報取得のテスト
+npm run test:manual:forecast  # 予報取得のテスト
+npm run test:manual:error     # エラーハンドリングのテスト
+npm run test:manual:health    # ヘルスチェックのテスト
+
+# ヘルスチェック
+npm run health-check       # スタンドアロンのヘルスチェック実行
 ```
 
 ## アーキテクチャ哲学 - Feature-Sliced Design (FSD)
@@ -98,10 +107,24 @@ src/
 
 ## テストアプローチ
 
-現在、テストフレームワークは設定されていません。テストを実装する際は：
-- 各FSD層を独立してテストする
-- 層間の依存関係をモックする
-- パブリックAPIのテストに焦点を当てる
+Node.jsのネイティブテストランナーを使用しています：
+
+### テスト構造
+- 各featureの`tests/`ディレクトリにテストを配置
+- ハンドラーのビジネスロジックに焦点を当てたテスト
+- 依存性注入パターンでモックを実装
+
+### テストカバレッジ
+- 目標カバレッジ: 90%以上
+- 重要なビジネスロジックは100%カバー
+- エラーケースとエッジケースを網羅
+
+### テストの実行
+```bash
+npm test              # カバレッジレポート付きで実行
+npm run test:unit     # 高速実行（カバレッジなし）
+npm run test:watch    # 開発中の自動テスト
+```
 
 ## コードスタイル
 

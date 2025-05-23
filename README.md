@@ -98,6 +98,16 @@ npm run build
 
 TypeScriptをJavaScriptにコンパイルし、適切な実行権限を設定します。
 
+### テスト
+
+```bash
+npm test              # 単体テストをカバレッジ付きで実行
+npm run test:unit     # カバレッジなしで高速実行
+npm run test:watch    # ファイル変更を監視して自動実行
+```
+
+テストカバレッジは97%以上を維持しています。
+
 ### 実行
 
 サーバーはstdio経由で通信し、MCPクライアントから起動されるように設計されています。
