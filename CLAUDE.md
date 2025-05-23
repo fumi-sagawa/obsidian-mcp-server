@@ -1,87 +1,91 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリでコードを扱う際のClaude Code (claude.ai/code) への指針を提供します。
 
-## Project Overview
+## 言語設定
 
-This is a **Weather MCP Server** that provides weather information through the Model Context Protocol (MCP). It connects to the US National Weather Service API to fetch weather alerts and forecasts.
+このプロジェクトでは**日本語**を基本言語として使用します。コメント、ドキュメント、コミットメッセージなどは日本語で記述してください。
 
-## Commands
+## プロジェクト概要
 
-### Build
+これは Model Context Protocol (MCP) を通じて気象情報を提供する **Weather MCP Server** です。米国国立気象局 (NWS) API に接続して、気象警報と予報を取得します。
+
+## コマンド
+
+### ビルド
 ```bash
 npm run build
 ```
-Compiles TypeScript files to JavaScript and sets executable permissions on the output.
+TypeScriptファイルをJavaScriptにコンパイルし、出力に実行権限を設定します。
 
-### Development
+### 開発
 ```bash
-npm install    # Install dependencies
-npm run build  # Build the project
+npm install    # 依存関係のインストール
+npm run build  # プロジェクトのビルド
 ```
 
-## Architecture Philosophy - Feature-Sliced Design (FSD)
+## アーキテクチャ哲学 - Feature-Sliced Design (FSD)
 
-This project follows Feature-Sliced Design principles for maintainable architecture:
+このプロジェクトは、保守可能なアーキテクチャのためにFeature-Sliced Designの原則に従っています：
 
-### Current Structure
-```
-src/
-├── index.ts          # Entry point (app layer)
-```
-
-### Target FSD Structure
-When expanding this project, organize code following these layers:
-
+### 現在の構造
 ```
 src/
-├── app/              # Application initialization, MCP server setup
-├── features/         # Weather-related features (alerts, forecasts)
-├── entities/         # Weather domain models (Alert, Forecast)
-├── shared/           # Common utilities, API clients, types
+├── app/              # アプリケーション初期化、MCPサーバーセットアップ
+├── features/         # 気象関連機能（警報、予報）
+├── entities/         # 気象ドメインモデル（Alert、Forecast）
+├── shared/           # 共通ユーティリティ、APIクライアント、型定義
+└── index.ts          # エントリーポイント
 ```
 
-### FSD Principles to Follow
+### 従うべきFSDの原則
 
-1. **Isolation**: Each module should be independent
-   - Weather features should not directly import from each other
-   - Use explicit public APIs for module communication
+1. **分離**: 各モジュールは独立している必要があります
+   - 気象機能は互いに直接インポートしてはいけません
+   - モジュール間の通信には明示的なパブリックAPIを使用します
 
-2. **Explicit Dependencies**: Import only from lower layers
+2. **明示的な依存関係**: 下位層からのみインポートします
    - `app` → `features` → `entities` → `shared`
-   - Never import from the same or higher layers
+   - 同じ層や上位層からは決してインポートしません
 
-3. **Public API**: Each module exposes a clear public interface
-   - Create `index.ts` files as public API entry points
-   - Keep internal implementation details private
+3. **パブリックAPI**: 各モジュールは明確なパブリックインターフェースを公開します
+   - パブリックAPIのエントリーポイントとして `index.ts` ファイルを作成します
+   - 内部実装の詳細は非公開に保ちます
 
-### Refactoring Guidelines
+### リファクタリングのガイドライン
 
-When refactoring the current monolithic `index.ts`:
+コードを変更する際は以下の構造を維持してください：
 
-1. **Extract to `shared/`**:
-   - NWS API client functions
-   - Common types and interfaces
-   - Error handling utilities
+1. **`shared/` に配置するもの**:
+   - NWS APIクライアント関数
+   - 共通の型とインターフェース
+   - エラーハンドリングユーティリティ
 
-2. **Create `entities/`**:
-   - Weather alert models
-   - Forecast data structures
-   - Domain validation logic
+2. **`entities/` に配置するもの**:
+   - 気象警報モデル
+   - 予報データ構造
+   - ドメイン検証ロジック
 
-3. **Build `features/`**:
-   - `features/get-alerts/` - Alert fetching logic
-   - `features/get-forecast/` - Forecast retrieval logic
-   - Each feature should have its own schema validation
+3. **`features/` に配置するもの**:
+   - `features/get-alerts/` - 警報取得ロジック
+   - `features/get-forecast/` - 予報取得ロジック
+   - 各機能は独自のスキーマ検証を持ちます
 
-4. **Keep in `app/`**:
-   - MCP server initialization
-   - Tool registration
-   - Top-level error handling
+4. **`app/` に配置するもの**:
+   - MCPサーバーの初期化
+   - ツールの登録
+   - トップレベルのエラーハンドリング
 
-## Testing Approach
+## テストアプローチ
 
-No test framework is currently configured. When implementing tests:
-- Test each FSD layer independently
-- Mock dependencies between layers
-- Focus on public API testing
+現在、テストフレームワークは設定されていません。テストを実装する際は：
+- 各FSD層を独立してテストする
+- 層間の依存関係をモックする
+- パブリックAPIのテストに焦点を当てる
+
+## コードスタイル
+
+- TypeScriptの厳密な型付けを使用する
+- ES modulesを使用（相対インポートには`.js`拡張子を追加）
+- Zodによるスキーマ検証を活用する
+- エラーハンドリングは各層で適切に行う
