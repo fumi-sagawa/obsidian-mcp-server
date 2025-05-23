@@ -2,6 +2,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { getAlertsHandler, alertsSchema } from '../features/get-alerts/index.js';
 import { getForecastHandler, forecastSchema } from '../features/get-forecast/index.js';
+import { handleHealthCheck, HealthCheckSchema } from '../features/health-check/index.js';
+import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
+
+const config = getConfig();
 
 const server = new McpServer({
   name: "weather",
@@ -12,22 +16,103 @@ const server = new McpServer({
   },
 });
 
+const appLogger = logger.child({ component: 'app' });
+const metricsMiddleware = new MetricsMiddleware(config.slowOperationThreshold || 1000);
+
+appLogger.info("Initializing Weather MCP Server", { 
+  name: "weather", 
+  version: "1.0.0",
+  config: {
+    logLevel: config.logLevel,
+    debugMode: config.debugMode,
+    apiTimeout: config.apiTimeout,
+    apiRetryAttempts: config.apiRetryAttempts,
+  }
+});
+
+// Wrap handlers with error boundary and metrics
+const wrapHandler = <T extends (...args: any[]) => any>(
+  handler: T,
+  toolName: string
+): T => {
+  return (async (...args: Parameters<T>) => {
+    return metricsMiddleware.trackRequest(toolName, async () => {
+      try {
+        return await handler(...args);
+      } catch (error) {
+        const weatherError = handleError(error, `tool-${toolName}`);
+        
+        // Log the error details
+        appLogger.error(`Tool execution failed: ${toolName}`, weatherError);
+        
+        // Return error response to MCP client
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Error: ${weatherError.message}`,
+            },
+          ],
+        };
+      }
+    });
+  }) as T;
+};
+
 server.tool(
   "get-alerts",
   "Get weather alerts for a state",
   alertsSchema,
-  getAlertsHandler
+  wrapHandler(getAlertsHandler, 'get-alerts')
 );
+appLogger.debug("Registered tool: get-alerts");
 
 server.tool(
   "get-forecast",
   "Get weather forecast for a location",
   forecastSchema,
-  getForecastHandler
+  wrapHandler(getForecastHandler, 'get-forecast')
 );
+appLogger.debug("Registered tool: get-forecast");
+
+server.tool(
+  "health-check",
+  "Check the health status of the weather service",
+  HealthCheckSchema,
+  wrapHandler(handleHealthCheck, 'health-check')
+);
+appLogger.debug("Registered tool: health-check");
+
+// Add graceful shutdown
+process.on('SIGINT', async () => {
+  appLogger.info('Received SIGINT, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  appLogger.info('Received SIGTERM, shutting down gracefully');
+  process.exit(0);
+});
 
 export async function startServer() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Weather MCP Server running on stdio");
+  try {
+    const transport = new StdioServerTransport();
+    
+    // Log transport events in debug mode
+    if (config.debugMode) {
+      // StdioServerTransport doesn't expose onmessage directly
+      // We'll add message logging through other means if needed
+      appLogger.debug('Debug mode enabled - additional logging active');
+    }
+    
+    await server.connect(transport);
+    appLogger.info("Weather MCP Server running on stdio", {
+      pid: process.pid,
+      nodeVersion: process.version,
+    });
+  } catch (error) {
+    const weatherError = handleError(error, 'server-startup');
+    appLogger.error("Failed to start server", weatherError);
+    throw weatherError;
+  }
 }

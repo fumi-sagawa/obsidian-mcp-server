@@ -1,0 +1,29 @@
+export enum ErrorCode {
+  // API Errors (1xxx)
+  API_REQUEST_FAILED = 'API_REQUEST_FAILED',
+  API_RESPONSE_INVALID = 'API_RESPONSE_INVALID',
+  API_TIMEOUT = 'API_TIMEOUT',
+  API_RATE_LIMIT = 'API_RATE_LIMIT',
+  
+  // Validation Errors (2xxx)
+  VALIDATION_FAILED = 'VALIDATION_FAILED',
+  INVALID_COORDINATES = 'INVALID_COORDINATES',
+  INVALID_STATE_CODE = 'INVALID_STATE_CODE',
+  
+  // System Errors (3xxx)
+  SYSTEM_ERROR = 'SYSTEM_ERROR',
+  CONFIGURATION_ERROR = 'CONFIGURATION_ERROR',
+  
+  // Business Logic Errors (4xxx)
+  NO_ALERTS_FOUND = 'NO_ALERTS_FOUND',
+  NO_FORECAST_AVAILABLE = 'NO_FORECAST_AVAILABLE',
+  LOCATION_NOT_SUPPORTED = 'LOCATION_NOT_SUPPORTED',
+}
+
+export interface ErrorDetails {
+  code: ErrorCode;
+  message: string;
+  statusCode?: number;
+  originalError?: Error;
+  metadata?: Record<string, unknown>;
+}

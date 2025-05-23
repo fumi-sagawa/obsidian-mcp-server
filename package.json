@@ -1,12 +1,42 @@
 {
+  "name": "weather-mcp-server",
+  "version": "1.0.0",
+  "description": "Weather MCP Server for US National Weather Service data",
   "type": "module",
   "bin": {
     "weather": "./build/index.js"
   },
   "scripts": {
-    "build": "tsc && chmod 755 build/index.js"
+    "build": "tsc && chmod 755 build/index.js && chmod 755 build/scripts/*.js",
+    "dev": "npm run build && LOG_LEVEL=debug PRETTY_LOGS=true node build/index.js",
+    "dev:trace": "npm run build && LOG_LEVEL=trace PRETTY_LOGS=true DEBUG_MODE=true node build/index.js",
+    "inspector": "npm run build && npx @modelcontextprotocol/inspector node build/index.js",
+    "inspector:debug": "npm run build && LOG_LEVEL=debug PRETTY_LOGS=true npx @modelcontextprotocol/inspector node build/index.js",
+    "test:alerts": "npm run build && echo '{\"method\":\"tools/call\",\"params\":{\"name\":\"get-alerts\",\"arguments\":{\"state\":\"CA\"}}}' | node build/index.js",
+    "test:forecast": "npm run build && echo '{\"method\":\"tools/call\",\"params\":{\"name\":\"get-forecast\",\"arguments\":{\"latitude\":37.7749,\"longitude\":-122.4194}}}' | node build/index.js",
+    "test:error": "npm run build && echo '{\"method\":\"tools/call\",\"params\":{\"name\":\"get-alerts\",\"arguments\":{\"state\":\"XX\"}}}' | node build/index.js",
+    "health-check": "npm run build && node build/scripts/health-check.js",
+    "test:health": "npm run build && echo '{\"method\":\"tools/call\",\"params\":{\"name\":\"health-check\",\"arguments\":{}}}' | node build/index.js",
+    "metrics": "npm run build && node build/scripts/metrics-dashboard.js",
+    "metrics:watch": "npm run build && node build/scripts/metrics-dashboard.js --watch"
   },
   "files": [
     "build"
-  ]
+  ],
+  "keywords": [
+    "mcp",
+    "weather",
+    "nws",
+    "modelcontextprotocol"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
 }
