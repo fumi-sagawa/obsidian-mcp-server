@@ -1,4 +1,4 @@
-import type { AlertFeature } from '../../../shared/api/index.js';
+import type { AlertFeature } from '../../shared/api/index.js';
 
 export function formatAlert(feature: AlertFeature): string {
   const props = feature.properties;

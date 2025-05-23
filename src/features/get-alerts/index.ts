@@ -1,2 +1,2 @@
-export { getAlertsHandler } from './lib/get-alerts-handler.js';
-export { alertsSchema } from './model/schema.js';
+export { getAlertsHandler } from './get-alerts-handler.js';
+export { alertsSchema } from './schema.js';

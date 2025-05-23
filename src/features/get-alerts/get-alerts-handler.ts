@@ -1,5 +1,5 @@
-import { nwsApi } from '../../../shared/api/index.js';
-import { formatAlert } from '../../../entities/weather/index.js';
+import { nwsApi } from '../../shared/api/index.js';
+import { formatAlert } from './format-alert.js';
 
 export async function getAlertsHandler({ state }: { state: string }) {
   const stateCode = state.toUpperCase();

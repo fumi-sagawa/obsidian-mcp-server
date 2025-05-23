@@ -1,5 +1,5 @@
-import { nwsApi } from '../../../shared/api/index.js';
-import { formatForecast } from '../../../entities/weather/index.js';
+import { nwsApi } from '../../shared/api/index.js';
+import { formatForecast } from './format-forecast.js';
 
 export async function getForecastHandler({ latitude, longitude }: { latitude: number; longitude: number }) {
   const pointsData = await nwsApi.getPoints(latitude, longitude);

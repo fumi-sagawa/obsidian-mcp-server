@@ -66,23 +66,27 @@ npm run build
 
 このプロジェクトは、スケーラブルなアーキテクチャのために [Feature-Sliced Design (FSD)](https://feature-sliced.design/) の原則に従っています。
 
-### 現在の構成
+### プロジェクト構造
 
 ```
 src/
-├── app/              # アプリケーションの初期化、MCPサーバーのセットアップ
-├── features/         # 気象関連の機能（警報、予報）
-├── entities/         # 気象ドメインモデル（Alert、Forecast）
-├── shared/           # 共通ユーティリティ、APIクライアント、型定義
+├── app/              # アプリケーション初期化
+├── features/         # 機能モジュール
+│   ├── get-alerts/   # 気象警報機能
+│   └── get-forecast/ # 天気予報機能
+├── entities/         # ドメインモデル
+│   └── weather/      # 気象関連の型定義
+├── shared/           # 共有リソース
+│   └── api/          # 外部API統合
 └── index.ts          # エントリーポイント
 ```
 
-### FSD レイヤー構造
+### FSD レイヤーの責務
 
-- **app/** - アプリケーションのブートストラップと設定
-- **features/** - ビジネス機能（気象警報、予報）
-- **entities/** - ドメインモデル（Alert、Forecast）
-- **shared/** - 共通ユーティリティとAPIクライアント
+- **app/** - アプリケーションのブートストラップ、MCPサーバー設定
+- **features/** - ビジネス機能の実装（ハンドラー、フォーマット、検証）
+- **entities/** - ドメインモデルと型定義
+- **shared/** - 共通ユーティリティ、外部APIクライアント
 
 ## 開発
 

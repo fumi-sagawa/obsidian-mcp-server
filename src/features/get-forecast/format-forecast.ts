@@ -1,4 +1,4 @@
-import type { ForecastPeriod } from '../../../shared/api/index.js';
+import type { ForecastPeriod } from '../../shared/api/index.js';
 
 export function formatForecast(period: ForecastPeriod): string {
   return [
