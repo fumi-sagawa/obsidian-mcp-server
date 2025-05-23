@@ -21,8 +21,7 @@
     "test:tool": "npm run build && ./test/test-single.sh",
     "health-check": "npm run build && node build/scripts/health-check.js",
     "metrics": "npm run build && node build/scripts/metrics-dashboard.js",
-    "metrics:watch": "npm run build && node build/scripts/metrics-dashboard.js --watch",
-    "playwright:install": "npx playwright install chromium"
+    "metrics:watch": "npm run build && node build/scripts/metrics-dashboard.js --watch"
   },
   "files": [
     "build"
@@ -40,9 +39,7 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
     "@types/node": "^20.0.0",
-    "playwright": "^1.52.0",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0"
   }

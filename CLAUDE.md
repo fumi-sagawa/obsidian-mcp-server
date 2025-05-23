@@ -8,7 +8,7 @@
 
 ## プロジェクト概要
 
-これは Model Context Protocol (MCP) を通じて気象情報を提供する **Weather MCP Server** です。米国国立気象局 (NWS) API に接続して、気象警報と予報を取得します。
+これは Model Context Protocol (MCP) サーバーのテンプレートプロジェクトです。Feature-Sliced Design (FSD) アーキテクチャに基づいた、拡張可能で保守しやすい構造を提供します。
 
 ## コマンド
 
@@ -34,10 +34,9 @@ npm run test:unit          # カバレッジなしで高速実行
 npm run test:watch         # ファイル変更を監視して自動実行
 
 # 手動テスト（MCPプロトコル経由）
-npm run test:manual:alerts    # 警報取得のテスト
-npm run test:manual:forecast  # 予報取得のテスト
-npm run test:manual:error     # エラーハンドリングのテスト
-npm run test:manual:health    # ヘルスチェックのテスト
+npm run test:tools         # 全ツールの統合テスト
+npm run test:tools:mock    # モックサーバーでのテスト
+npm run test:tool          # 単一ツールのテスト（対話式）
 
 # ヘルスチェック
 npm run health-check       # スタンドアロンのヘルスチェック実行
@@ -65,7 +64,7 @@ src/
 ### 従うべきFSDの原則
 
 1. **分離**: 各モジュールは独立している必要があります
-   - 気象機能は互いに直接インポートしてはいけません
+   - 機能は互いに直接インポートしてはいけません
    - モジュール間の通信には明示的なパブリックAPIを使用します
 
 2. **明示的な依存関係**: 下位層からのみインポートします
@@ -81,7 +80,7 @@ src/
 コードを変更する際は以下の構造を維持してください：
 
 1. **`shared/` に配置するもの**:
-   - NWS APIクライアント関数
+   - 外部APIクライアント関数
    - 共通の型とインターフェース
    - エラーハンドリングユーティリティ
    - ロギングシステム
@@ -91,7 +90,7 @@ src/
    - ミドルウェア
 
 2. **`entities/` に配置するもの**:
-   - 気象データの型定義（Alert、Forecast、Period等）
+   - ドメインモデルの型定義
    - ドメイン固有の定数や列挙型
 
 3. **`features/` に配置するもの**:
@@ -117,21 +116,21 @@ src/
 
 ### TDD実践例
 ```typescript
-// 1. 要件: 新しい天気情報ツールを追加
-// - 特定の都市の現在の天気を取得
-// - 都市名が空の場合はエラー
+// 1. 要件: 新しいツールを追加
+// - 特定のパラメータを受け取って処理を実行
+// - 必須パラメータが空の場合はエラー
 
 // 2. テストを先に作成
-describe('getCurrentWeatherハンドラー', () => {
-  it('有効な都市名で現在の天気を取得できる', async () => {
-    const result = await handler({ city: '東京' });
-    assert(result.content[0].text.includes('東京の現在の天気'));
+describe('新機能ハンドラー', () => {
+  it('有効なパラメータで正常に処理できる', async () => {
+    const result = await handler({ param: '値' });
+    assert(result.content[0].text.includes('処理結果'));
   });
   
-  it('都市名が空の場合はエラーを返す', async () => {
+  it('必須パラメータが空の場合はエラーを返す', async () => {
     await assert.rejects(
-      () => handler({ city: '' }),
-      { message: '都市名は必須です' }
+      () => handler({ param: '' }),
+      { message: 'パラメータは必須です' }
     );
   });
 });
@@ -141,7 +140,7 @@ describe('getCurrentWeatherハンドラー', () => {
 ```
 
 ### テスト作成のガイドライン
-- テストの説明は日本語で記述（`it('正常な州コードで警報を取得できる')`）
+- テストの説明は日本語で記述（`it('正常なパラメータで処理が成功する')`）
 - アサーションメッセージも日本語で記述
 - 要件ごとにテストケースを作成
 - エッジケースとエラーケースを必ず含める
@@ -185,7 +184,7 @@ npm run test:watch    # 開発中の自動テスト
 
 ### 監視
 - メトリクス収集（リクエスト数、エラー率、レスポンス時間）
-- ヘルスチェック機能（メモリ使用量、API接続性）
+- ヘルスチェック機能（メモリ使用量、外部API接続性）
 - スロークエリの検出（`SLOW_OPERATION_THRESHOLD`で設定）
 
 ## 環境変数
