@@ -21,7 +21,12 @@
     "health-check": "npm run build && node build/scripts/health-check.js",
     "test:manual:health": "npm run build && echo '{\"method\":\"tools/call\",\"params\":{\"name\":\"health-check\",\"arguments\":{}}}' | node build/index.js",
     "metrics": "npm run build && node build/scripts/metrics-dashboard.js",
-    "metrics:watch": "npm run build && node build/scripts/metrics-dashboard.js --watch"
+    "metrics:watch": "npm run build && node build/scripts/metrics-dashboard.js --watch",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:headed": "playwright test --headed",
+    "playwright:install": "npx playwright install chromium"
   },
   "files": [
     "build"
@@ -39,7 +44,9 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@types/node": "^20.0.0",
+    "playwright": "^1.52.0",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0"
   }
