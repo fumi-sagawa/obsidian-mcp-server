@@ -1,7 +1,7 @@
 import { describe, it, mock, beforeEach } from 'node:test';
 import assert from 'node:assert';
 
-// Create a test version of the handler with injected dependencies
+// 依存性を注入したテスト用ハンドラーを作成
 function createTestHandler(dependencies: {
   healthCheck: any;
   metrics: any;
@@ -9,13 +9,13 @@ function createTestHandler(dependencies: {
 }) {
   const { healthCheck, metrics, logger } = dependencies;
   
-  // Helper function to format bytes
+  // バイトをフォーマットするヘルパー関数
   function formatBytes(bytes: number): string {
     const gb = bytes / (1024 * 1024 * 1024);
     return `${gb.toFixed(2)} GB`;
   }
   
-  // Helper function to format duration
+  // 期間をフォーマットするヘルパー関数
   function formatDuration(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -26,7 +26,7 @@ function createTestHandler(dependencies: {
     return `${minutes} minutes`;
   }
   
-  // This is the handler function extracted from health-check-handler.ts
+  // health-check-handler.tsから抽出されたハンドラー関数
   return async function handleHealthCheck() {
     try {
       logger.info('Performing health check');
@@ -35,14 +35,14 @@ function createTestHandler(dependencies: {
       const metricsSnapshot = metrics.getSnapshot();
       const systemInfo = metrics.getSystemInfo();
       
-      // Build the health report
+      // ヘルスレポートを作成
       let report = '# Health Check Report\n\n';
       
-      // Overall status
+      // 全体ステータス
       const statusEmoji = health.status === 'healthy' ? '✅' : '❌';
       report += `## Overall Status: ${health.status.toUpperCase()} ${statusEmoji}\n\n`;
       
-      // Individual health checks
+      // 個別のヘルスチェック
       if (Object.keys(health.checks || {}).length > 0) {
         report += '## Health Checks\n\n';
         for (const [name, check] of Object.entries(health.checks || {})) {
@@ -57,7 +57,7 @@ function createTestHandler(dependencies: {
         report += '\n';
       }
       
-      // System metrics from health check
+      // ヘルスチェックからのシステムメトリクス
       if (health.metrics) {
         report += '### System Metrics:\n\n';
         report += `- **Uptime**: ${formatDuration(health.metrics.uptime)}\n`;
@@ -65,10 +65,10 @@ function createTestHandler(dependencies: {
         report += `- **CPU**: ${health.metrics.cpu}%\n\n`;
       }
       
-      // Metrics
+      // メトリクス
       report += '## Metrics\n\n';
       
-      // Counters
+      // カウンター
       if (Object.keys(metricsSnapshot.counters).length > 0) {
         report += '### Counters:\n\n';
         for (const [name, values] of Object.entries(metricsSnapshot.counters)) {
@@ -86,7 +86,7 @@ function createTestHandler(dependencies: {
         report += '\n';
       }
       
-      // Histograms
+      // ヒストグラム
       if (Object.keys(metricsSnapshot.histograms).length > 0) {
         report += '### Histograms:\n\n';
         for (const [name, histogram] of Object.entries(metricsSnapshot.histograms)) {
@@ -101,7 +101,7 @@ function createTestHandler(dependencies: {
         report += '\n';
       }
       
-      // Gauges
+      // ゲージ
       if (Object.keys(metricsSnapshot.gauges).length > 0) {
         report += '### Gauges:\n\n';
         for (const [name, values] of Object.entries(metricsSnapshot.gauges)) {
@@ -119,7 +119,7 @@ function createTestHandler(dependencies: {
         report += '\n';
       }
       
-      // System info
+      // システム情報
       report += '## System Information\n\n';
       report += `- **Platform**: ${systemInfo.platform} (${systemInfo.arch})\n`;
       report += `- **Node Version**: ${systemInfo.nodeVersion}\n`;
@@ -143,7 +143,7 @@ function createTestHandler(dependencies: {
   };
 }
 
-// Mock dependencies
+// モック依存関係
 const mockHealthCheck = mock.fn();
 
 const mockMetrics = {
@@ -156,11 +156,11 @@ const mockLogger = {
   error: mock.fn()
 };
 
-describe('handleHealthCheck', () => {
+describe('ヘルスチェックハンドラー', () => {
   let handleHealthCheck: ReturnType<typeof createTestHandler>;
   
   beforeEach(() => {
-    // Create handler with mocked dependencies
+    // モック化された依存関係でハンドラーを作成
     handleHealthCheck = createTestHandler({
       healthCheck: mockHealthCheck,
       metrics: mockMetrics,
@@ -168,7 +168,7 @@ describe('handleHealthCheck', () => {
     });
   });
   beforeEach(() => {
-    // Reset all mocks before each test
+    // 各テストの前にすべてのモックをリセット
     mockHealthCheck.mock.resetCalls();
     mockMetrics.getSnapshot.mock.resetCalls();
     mockMetrics.getSystemInfo.mock.resetCalls();
@@ -176,7 +176,7 @@ describe('handleHealthCheck', () => {
     mockLogger.error.mock.resetCalls();
   });
 
-  it('should return formatted health check report with healthy status', async () => {
+  it('健全なステータスでフォーマットされたヘルスチェックレポートを返すべき', async () => {
     const mockHealthData = {
       status: 'healthy',
       timestamp: Date.now(),
@@ -251,42 +251,42 @@ describe('handleHealthCheck', () => {
     assert.strictEqual(result.content[0].type, 'text');
     const text = result.content[0].text;
     
-    // Check main sections
+    // メインセクションを確認
     assert(text.includes('# Health Check Report'));
     assert(text.includes('## Overall Status: HEALTHY'));
     assert(text.includes('## System Information'));
     assert(text.includes('## Metrics'));
     
-    // Check health checks
+    // ヘルスチェックを確認
     assert(text.includes('nws-api**: healthy'));
     assert(text.includes('memory**: healthy'));
     assert(text.includes('API is responsive'));
     assert(text.includes('Memory usage is within limits'));
     
-    // Check system metrics - more flexible checks
-    assert(text.includes('Uptime**:'), 'Uptime not found');
-    assert(text.includes('Memory**:'), 'Memory not found');
-    assert(text.includes('CPU**:'), 'CPU not found');
+    // システムメトリクスを確認 - より柔軟なチェック
+    assert(text.includes('Uptime**:'), 'アップタイムが見つかりません');
+    assert(text.includes('Memory**:'), 'メモリが見つかりません');
+    assert(text.includes('CPU**:'), 'CPUが見つかりません');
     
-    // Check counters
+    // カウンターを確認
     assert(text.includes('weather_api_calls**: 150'));
     assert(text.includes('{operation=get-alerts}: 100'));
     assert(text.includes('{operation=get-forecast}: 50'));
     
-    // Check histograms
+    // ヒストグラムを確認
     assert(text.includes('weather_api_duration'));
     assert(text.includes('Count: 150'));
     assert(text.includes('Mean: 200.00ms'));
     assert(text.includes('P50: 180.00ms'));
     
-    // Check system info
+    // システム情報を確認
     assert(text.includes('Platform**: darwin (arm64)'));
     assert(text.includes('Node Version**: v20.0.0'));
     assert(text.includes('CPU Count**: 8'));
     assert(text.includes('Load Average**: 1.50, 1.20, 1.00'));
   });
 
-  it('should return formatted health check report with unhealthy status', async () => {
+  it('不健全なステータスでフォーマットされたヘルスチェックレポートを返すべき', async () => {
     const mockHealthData = {
       status: 'unhealthy',
       timestamp: Date.now(),
@@ -345,14 +345,14 @@ describe('handleHealthCheck', () => {
     assert(text.includes('CPU**: 85%'));
   });
 
-  it('should handle health check errors', async () => {
-    const error = new Error('Health check failed');
+  it('ヘルスチェックエラーを処理すべき', async () => {
+    const error = new Error('ヘルスチェックが失敗しました');
     mockHealthCheck.mock.mockImplementation(() => Promise.reject(error));
 
     await assert.rejects(
       async () => await handleHealthCheck(),
       (err: Error) => {
-        assert.strictEqual(err.message, 'Health check failed');
+        assert.strictEqual(err.message, 'ヘルスチェックが失敗しました');
         return true;
       }
     );
@@ -362,7 +362,7 @@ describe('handleHealthCheck', () => {
     assert.strictEqual(mockLogger.error.mock.calls[0].arguments[1], error);
   });
 
-  it('should handle empty metrics data', async () => {
+  it('空のメトリクスデータを処理すべき', async () => {
     const mockHealthData = {
       status: 'healthy',
       timestamp: Date.now(),
@@ -395,17 +395,17 @@ describe('handleHealthCheck', () => {
     assert.strictEqual(result.content[0].type, 'text');
     const text = result.content[0].text;
     
-    // Should not include system metrics section when metrics is undefined
+    // metricsがundefinedの場合、システムメトリクスセクションを含めるべきではない
     assert(!text.includes('### System Metrics:'));
     assert(!text.includes('Uptime**'));
     
-    // Should still include other sections
+    // 他のセクションは含めるべき
     assert(text.includes('## Overall Status: HEALTHY'));
     assert(text.includes('## System Information'));
     assert(text.includes('Platform**: win32'));
   });
 
-  it('should format bytes correctly', async () => {
+  it('バイトを正しくフォーマットすべき', async () => {
     const mockHealthData = {
       status: 'healthy',
       timestamp: Date.now(),
@@ -445,7 +445,7 @@ describe('handleHealthCheck', () => {
 
     const text = result.content[0].text;
     
-    // Check memory formatting
+    // メモリのフォーマットを確認
     assert(text.includes('Memory**: 19% (1.50 GB / 8.00 GB)'));
     assert(text.includes('Total Memory**: 32.00 GB'));
     assert(text.includes('Free Memory**: 16.00 GB (50%)'));

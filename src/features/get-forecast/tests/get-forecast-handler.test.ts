@@ -1,7 +1,7 @@
 import { describe, it, mock, beforeEach } from 'node:test';
 import assert from 'node:assert';
 
-// Create a test version of the handler with injected dependencies
+// 依存性を注入したテスト用ハンドラーを作成
 function createTestHandler(dependencies: {
   nwsApi: any;
   logger: any;
@@ -15,19 +15,19 @@ function createTestHandler(dependencies: {
   
   const metricsMiddleware = new MetricsMiddleware();
   
-  // Helper function to validate US coordinates
+  // 米国の座標を検証するヘルパー関数
   function isValidUSCoordinates(lat: number, lon: number): boolean {
-    // Continental US bounds
+    // 米国本土の境界
     const continental = lat >= 24.5 && lat <= 49.5 && lon >= -125 && lon <= -66.5;
-    // Alaska bounds
+    // アラスカの境界
     const alaska = lat >= 51 && lat <= 72 && lon >= -180 && lon <= -130;
-    // Hawaii bounds
+    // ハワイの境界
     const hawaii = lat >= 18 && lat <= 23 && lon >= -162 && lon <= -154;
     
     return continental || alaska || hawaii;
   }
   
-  // This is the handler function extracted from get-forecast-handler.ts
+  // get-forecast-handler.tsから抽出されたハンドラー関数
   return async function getForecastHandler({ latitude, longitude }: { latitude: number; longitude: number }) {
     const requestId = `forecast-${Date.now()}`;
     const handlerLogger = logger.child({ 
@@ -40,17 +40,17 @@ function createTestHandler(dependencies: {
     handlerLogger.info("Processing get-forecast request");
 
     try {
-      // Validate coordinates
+      // 座標を検証
       if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
         throw ValidationError.invalidCoordinates(latitude, longitude);
       }
 
-      // Check if coordinates are within US bounds
+      // 座標が米国の境界内にあるか確認
       if (!isValidUSCoordinates(latitude, longitude)) {
         throw BusinessError.locationNotSupported(`${latitude}, ${longitude}`);
       }
 
-      // Get location metadata
+      // ロケーションメタデータを取得
       const pointsData = await metricsMiddleware.trackWeatherAPICall(
         'get-points',
         () => nwsApi.getPoints(latitude, longitude)
@@ -61,7 +61,7 @@ function createTestHandler(dependencies: {
         throw BusinessError.noForecastAvailable(latitude, longitude);
       }
 
-      // Get forecast data
+      // 予報データを取得
       const forecastData = await metricsMiddleware.trackWeatherAPICall(
         'get-forecast',
         () => nwsApi.getForecast(forecastUrl)
@@ -76,7 +76,7 @@ function createTestHandler(dependencies: {
         periodCount: periods.length 
       });
 
-      // Format forecast periods (simple formatting for tests)
+      // 予報期間をフォーマット（テスト用のシンプルなフォーマット）
       const formattedPeriods = periods.map((period: any) => {
         return `### ${period.name}\n${period.temperature}°${period.temperatureUnit} - ${period.shortForecast}\nWind: ${period.windSpeed} ${period.windDirection}\n${period.detailedForecast}`;
       });
@@ -92,7 +92,7 @@ function createTestHandler(dependencies: {
         ],
       };
     } catch (error: any) {
-      // Special handling for 404 errors
+      // 404エラーの特別処理
       if (error.name === 'ApiError' && error.statusCode === 404) {
         return {
           content: [
@@ -106,7 +106,7 @@ function createTestHandler(dependencies: {
 
       const weatherError = handleError(error, 'get-forecast-handler');
       
-      // Return user-friendly error messages
+      // ユーザーフレンドリーなエラーメッセージを返す
       return {
         content: [
           {
@@ -119,7 +119,7 @@ function createTestHandler(dependencies: {
   };
 }
 
-// Mock dependencies
+// モック依存関係
 const mockNwsApi = {
   getPoints: mock.fn(),
   getForecast: mock.fn()
@@ -140,7 +140,7 @@ const mockMetricsMiddleware = {
   trackWeatherAPICall: mock.fn(async (operation, fn) => fn())
 };
 
-// Mock error classes
+// モックエラークラス
 class MockBusinessError extends Error {
   constructor(message: string) {
     super(message);
@@ -174,11 +174,11 @@ class MockMetricsMiddleware {
   trackWeatherAPICall = mockMetricsMiddleware.trackWeatherAPICall;
 }
 
-describe('getForecastHandler', () => {
+describe('getForecastハンドラー', () => {
   let getForecastHandler: ReturnType<typeof createTestHandler>;
   
   beforeEach(() => {
-    // Create handler with mocked dependencies
+    // モック化された依存関係でハンドラーを作成
     getForecastHandler = createTestHandler({
       nwsApi: mockNwsApi,
       logger: mockLogger,
@@ -190,14 +190,14 @@ describe('getForecastHandler', () => {
     });
   });
   beforeEach(() => {
-    // Reset all mocks before each test
+    // 各テストの前にすべてのモックをリセット
     mockNwsApi.getPoints.mock.resetCalls();
     mockNwsApi.getForecast.mock.resetCalls();
     mockHandleError.mock.resetCalls();
     mockMetricsMiddleware.trackWeatherAPICall.mock.resetCalls();
   });
 
-  it('should return forecast for valid US coordinates', async () => {
+  it('有効な米国の座標に対して予報を返すべき', async () => {
     const mockPointsData = {
       properties: {
         forecast: 'https://api.weather.gov/gridpoints/SEW/124,67/forecast'
@@ -248,7 +248,7 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('Tuesday'));
   });
 
-  it('should reject invalid latitude', async () => {
+  it('無効な緯度を拒否すべき', async () => {
     const result = await getForecastHandler({ latitude: 91, longitude: -122 });
 
     assert.strictEqual(mockNwsApi.getPoints.mock.calls.length, 0);
@@ -257,7 +257,7 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('Invalid coordinates'));
   });
 
-  it('should reject invalid longitude', async () => {
+  it('無効な経度を拒否すべき', async () => {
     const result = await getForecastHandler({ latitude: 47, longitude: 181 });
 
     assert.strictEqual(mockNwsApi.getPoints.mock.calls.length, 0);
@@ -266,8 +266,8 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('Invalid coordinates'));
   });
 
-  it('should reject coordinates outside US bounds', async () => {
-    const result = await getForecastHandler({ latitude: 51.5074, longitude: -0.1278 }); // London
+  it('米国の境界外の座標を拒否すべき', async () => {
+    const result = await getForecastHandler({ latitude: 51.5074, longitude: -0.1278 }); // ロンドン
 
     assert.strictEqual(mockNwsApi.getPoints.mock.calls.length, 0);
     assert.strictEqual(result.content[0].type, 'text');
@@ -275,7 +275,7 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('outside the United States'));
   });
 
-  it('should handle missing forecast URL in points data', async () => {
+  it('ポイントデータに予報URLがない場合を処理すべき', async () => {
     mockNwsApi.getPoints.mock.mockImplementation(() => Promise.resolve({ properties: {} }));
     mockHandleError.mock.mockImplementation(() => MockBusinessError.noForecastAvailable(40, -74));
 
@@ -286,7 +286,7 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('No forecast available'));
   });
 
-  it('should handle empty forecast periods', async () => {
+  it('空の予報期間を処理すべき', async () => {
     const mockPointsData = {
       properties: {
         forecast: 'https://api.weather.gov/gridpoints/SEW/124,67/forecast'
@@ -304,7 +304,7 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('No forecast available'));
   });
 
-  it('should handle API 404 errors with custom message', async () => {
+  it('API 404エラーをカスタムメッセージで処理すべき', async () => {
     const apiError = new MockApiError('Not Found', 404);
     mockNwsApi.getPoints.mock.mockImplementation(() => Promise.reject(apiError));
     mockHandleError.mock.mockImplementation(() => apiError);
@@ -315,7 +315,7 @@ describe('getForecastHandler', () => {
     assert(result.content[0].text.includes('Location (40, -74) is not supported by the National Weather Service'));
   });
 
-  it('should handle generic API errors', async () => {
+  it('一般的なAPIエラーを処理すべき', async () => {
     const apiError = new Error('Network error');
     mockNwsApi.getPoints.mock.mockImplementation(() => Promise.reject(apiError));
     mockHandleError.mock.mockImplementation(() => ({ message: 'API request failed' }));
@@ -326,7 +326,7 @@ describe('getForecastHandler', () => {
     assert.strictEqual(result.content[0].text, 'Error: API request failed');
   });
 
-  it('should track metrics for successful calls', async () => {
+  it('成功したコールのメトリクスを追跡すべき', async () => {
     const mockPointsData = {
       properties: {
         forecast: 'https://api.weather.gov/gridpoints/SEW/124,67/forecast'
@@ -359,7 +359,7 @@ describe('getForecastHandler', () => {
     assert.strictEqual(mockMetricsMiddleware.trackWeatherAPICall.mock.calls[1].arguments[0], 'get-forecast');
   });
 
-  it('should accept valid Alaska coordinates', async () => {
+  it('有効なアラスカの座標を受け入れるべき', async () => {
     const mockPointsData = {
       properties: {
         forecast: 'https://api.weather.gov/gridpoints/AFG/124,67/forecast'
@@ -385,14 +385,14 @@ describe('getForecastHandler', () => {
     mockNwsApi.getPoints.mock.mockImplementation(() => Promise.resolve(mockPointsData));
     mockNwsApi.getForecast.mock.mockImplementation(() => Promise.resolve(mockForecastData));
 
-    const result = await getForecastHandler({ latitude: 64.8378, longitude: -147.7164 }); // Fairbanks
+    const result = await getForecastHandler({ latitude: 64.8378, longitude: -147.7164 }); // フェアバンクス
 
     assert.strictEqual(mockNwsApi.getPoints.mock.calls.length, 1);
     assert.strictEqual(result.content[0].type, 'text');
     assert(result.content[0].text.includes('Forecast for 64.8378, -147.7164'));
   });
 
-  it('should accept valid Hawaii coordinates', async () => {
+  it('有効なハワイの座標を受け入れるべき', async () => {
     const mockPointsData = {
       properties: {
         forecast: 'https://api.weather.gov/gridpoints/HFO/124,67/forecast'
@@ -418,7 +418,7 @@ describe('getForecastHandler', () => {
     mockNwsApi.getPoints.mock.mockImplementation(() => Promise.resolve(mockPointsData));
     mockNwsApi.getForecast.mock.mockImplementation(() => Promise.resolve(mockForecastData));
 
-    const result = await getForecastHandler({ latitude: 21.3099, longitude: -157.8581 }); // Honolulu
+    const result = await getForecastHandler({ latitude: 21.3099, longitude: -157.8581 }); // ホノルル
 
     assert.strictEqual(mockNwsApi.getPoints.mock.calls.length, 1);
     assert.strictEqual(result.content[0].type, 'text');

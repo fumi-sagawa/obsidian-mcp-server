@@ -1,7 +1,7 @@
 import { describe, it, mock, beforeEach } from 'node:test';
 import assert from 'node:assert';
 
-// Create a test version of the handler with injected dependencies
+// 依存性を注入したテスト用ハンドラーを作成
 function createTestHandler(dependencies: {
   nwsApi: any;
   logger: any;
@@ -22,7 +22,7 @@ function createTestHandler(dependencies: {
   
   const metricsMiddleware = new MetricsMiddleware();
   
-  // This is the handler function extracted from get-alerts-handler.ts
+  // get-alerts-handler.tsから抽出されたハンドラー関数
   return async function getAlertsHandler({ state }: { state: string }) {
     const stateCode = state.toUpperCase();
     const requestId = `alerts-${Date.now()}`;
@@ -62,7 +62,7 @@ function createTestHandler(dependencies: {
         alertCount: features.length 
       });
 
-      // Simple formatting for tests (replacing formatAlert)
+      // テスト用のシンプルなフォーマット（formatAlertの代替）
       const formattedAlerts = features.map((feature: any) => {
         const props = feature.properties;
         return `**${props.event}** - ${props.severity}\n${props.headline}\n${props.description}\nArea: ${props.areaDesc}\nEffective: ${props.effective}\nExpires: ${props.expires}`;
@@ -80,7 +80,7 @@ function createTestHandler(dependencies: {
     } catch (error) {
       const weatherError = handleError(error, 'get-alerts-handler');
       
-      // Return user-friendly error messages
+      // ユーザーフレンドリーなエラーメッセージを返す
       return {
         content: [
           {
@@ -93,7 +93,7 @@ function createTestHandler(dependencies: {
   };
 }
 
-// Mock dependencies
+// モック依存関係
 const mockNwsApi = {
   getAlerts: mock.fn()
 };
@@ -121,11 +121,11 @@ class MockMetricsMiddleware {
   trackWeatherAPICall = mockMetricsMiddleware.trackWeatherAPICall;
 }
 
-describe('getAlertsHandler', () => {
+describe('getAlertsハンドラー', () => {
   let getAlertsHandler: ReturnType<typeof createTestHandler>;
   
   beforeEach(() => {
-    // Create handler with mocked dependencies
+    // モック化された依存関係でハンドラーを作成
     getAlertsHandler = createTestHandler({
       nwsApi: mockNwsApi,
       logger: mockLogger,
@@ -135,13 +135,13 @@ describe('getAlertsHandler', () => {
     });
   });
   beforeEach(() => {
-    // Reset all mocks before each test
+    // 各テストの前にすべてのモックをリセット
     mockNwsApi.getAlerts.mock.resetCalls();
     mockHandleError.mock.resetCalls();
     mockMetricsMiddleware.trackWeatherAPICall.mock.resetCalls();
   });
 
-  it('should return alerts for valid state code', async () => {
+  it('有効な州コードに対してアラートを返すべき', async () => {
     const mockAlertData = {
       features: [
         {
@@ -171,7 +171,7 @@ describe('getAlertsHandler', () => {
     assert(result.content[0].text.includes('Winter Storm Warning'));
   });
 
-  it('should return no alerts message when no alerts exist', async () => {
+  it('アラートが存在しない場合はアラートなしメッセージを返すべき', async () => {
     mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({ features: [] }));
 
     const result = await getAlertsHandler({ state: 'HI' });
@@ -180,7 +180,7 @@ describe('getAlertsHandler', () => {
     assert.strictEqual(result.content[0].text, 'No active alerts for HI');
   });
 
-  it('should handle invalid state code', async () => {
+  it('無効な州コードを処理すべき', async () => {
     const result = await getAlertsHandler({ state: 'XX' });
 
     assert.strictEqual(mockNwsApi.getAlerts.mock.calls.length, 0);
@@ -189,7 +189,7 @@ describe('getAlertsHandler', () => {
     assert(result.content[0].text.includes('Invalid state code: XX'));
   });
 
-  it('should convert state code to uppercase', async () => {
+  it('州コードを大文字に変換すべき', async () => {
     mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({ features: [] }));
 
     await getAlertsHandler({ state: 'ca' });
@@ -197,7 +197,7 @@ describe('getAlertsHandler', () => {
     assert.strictEqual(mockNwsApi.getAlerts.mock.calls[0].arguments[0], 'CA');
   });
 
-  it('should handle API errors gracefully', async () => {
+  it('APIエラーを適切に処理すべき', async () => {
     const apiError = new Error('Network error');
     mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.reject(apiError));
     mockHandleError.mock.mockImplementation((error) => ({ message: 'API request failed' }));
@@ -209,7 +209,7 @@ describe('getAlertsHandler', () => {
     assert.strictEqual(mockHandleError.mock.calls.length, 1);
   });
 
-  it('should handle missing features property', async () => {
+  it('featuresプロパティが欠落している場合を処理すべき', async () => {
     mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({}));
 
     const result = await getAlertsHandler({ state: 'CA' });
@@ -218,7 +218,7 @@ describe('getAlertsHandler', () => {
     assert.strictEqual(result.content[0].text, 'No active alerts for CA');
   });
 
-  it('should track metrics for successful calls', async () => {
+  it('成功したコールのメトリクスを追跡すべき', async () => {
     mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({ features: [] }));
 
     await getAlertsHandler({ state: 'CA' });
