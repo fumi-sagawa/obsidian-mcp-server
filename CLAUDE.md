@@ -14,14 +14,24 @@
 
 ### ビルド
 ```bash
-npm run build
+npm run build              # TypeScriptをコンパイル
 ```
-TypeScriptファイルをJavaScriptにコンパイルし、出力に実行権限を設定します。
 
 ### 開発
 ```bash
-npm install    # 依存関係のインストール
-npm run build  # プロジェクトのビルド
+npm install                # 依存関係のインストール
+npm run dev                # 開発モード（ログレベル: debug）
+npm run dev:trace          # トレースモード（全ログ出力）
+npm run inspector          # MCP Inspector での実行
+npm run inspector:debug    # MCP Inspector（デバッグモード）
+```
+
+### テスト
+```bash
+npm run test:alerts        # 警報取得のテスト
+npm run test:forecast      # 予報取得のテスト
+npm run test:error         # エラーハンドリングのテスト
+npm run health-check       # ヘルスチェックの実行
 ```
 
 ## アーキテクチャ哲学 - Feature-Sliced Design (FSD)
@@ -65,6 +75,11 @@ src/
    - NWS APIクライアント関数
    - 共通の型とインターフェース
    - エラーハンドリングユーティリティ
+   - ロギングシステム
+   - メトリクス収集
+   - ヘルスチェック機能
+   - 設定管理（config）
+   - ミドルウェア
 
 2. **`entities/` に配置するもの**:
    - 気象データの型定義（Alert、Forecast、Period等）
@@ -94,3 +109,33 @@ src/
 - ES modulesを使用（相対インポートには`.js`拡張子を追加）
 - Zodによるスキーマ検証を活用する
 - エラーハンドリングは各層で適切に行う
+
+## ロギングとデバッグ
+
+### ロギング
+- すべてのログは構造化ログ（JSON形式）で出力
+- ログレベル: trace, debug, info, warn, error
+- 環境変数 `LOG_LEVEL` で制御
+- リクエストIDによるトレース追跡
+
+### デバッグ
+- `DEBUG_MODE=true` で詳細なデバッグ情報を出力
+- `PRETTY_LOGS=true` で読みやすいログフォーマット
+- MCP Inspector統合でインタラクティブなデバッグ
+
+### 監視
+- メトリクス収集（リクエスト数、エラー率、レスポンス時間）
+- ヘルスチェック機能（メモリ使用量、API接続性）
+- スロークエリの検出（`SLOW_OPERATION_THRESHOLD`で設定）
+
+## 環境変数
+
+| 変数名 | デフォルト値 | 説明 |
+|--------|------------|------|
+| LOG_LEVEL | info | ログレベル（trace/debug/info/warn/error） |
+| DEBUG_MODE | false | デバッグモードの有効化 |
+| PRETTY_LOGS | false | 読みやすいログフォーマット |
+| LOG_TIMESTAMPS | true | ログにタイムスタンプを含める |
+| SLOW_OPERATION_THRESHOLD | 1000 | スロークエリの閾値（ミリ秒） |
+| API_TIMEOUT | 30000 | APIタイムアウト（ミリ秒） |
+| API_RETRY_ATTEMPTS | 3 | APIリトライ回数 |
