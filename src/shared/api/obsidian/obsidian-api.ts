@@ -309,6 +309,132 @@ export class ObsidianAPIClient {
   }
 
   /**
+   * アクティブファイルにコンテンツを追記
+   */
+  async appendToActiveFile(content: string): Promise<{ message: string }> {
+    const url = `${this.baseUrl}/active/`;
+    this.apiLogger.debug('Appending to active file', { 
+      url,
+      contentLength: content.length,
+      hasApiKey: !!this.apiKey
+    });
+
+    const controller = new AbortController();
+    const config = getConfig();
+    const timeoutId = setTimeout(() => controller.abort(), config.apiTimeout);
+
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'text/markdown',
+      };
+
+      if (this.apiKey) {
+        headers['Authorization'] = `Bearer ${this.apiKey}`;
+      } else {
+        this.apiLogger.warn('No API key configured for Obsidian API');
+      }
+
+      const fetchOptions: RequestInit = {
+        method: 'POST',
+        headers,
+        body: content,
+        signal: controller.signal,
+      };
+
+      // HTTPSの場合は証明書検証を無効化（自己署名証明書対応）
+      if (typeof process !== 'undefined' && process.versions && process.versions.node && this.baseUrl.startsWith('https:')) {
+        (fetchOptions as any).agent = new (await import('https')).Agent({
+          rejectUnauthorized: false
+        });
+      }
+
+      const response = await fetch(url, fetchOptions);
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.apiLogger.error('Unauthorized: API key is invalid or missing');
+          throw new ApiError(
+            'Unauthorized: Invalid or missing API key',
+            ErrorCode.API_REQUEST_FAILED,
+            401,
+            undefined,
+            { url }
+          );
+        }
+        if (response.status === 404) {
+          throw new ApiError(
+            'No active file',
+            ErrorCode.API_NOT_FOUND,
+            404,
+            undefined,
+            { url }
+          );
+        }
+        const errorBody = await response.text().catch(() => null);
+        this.apiLogger.error('API request failed', { 
+          status: response.status, 
+          statusText: response.statusText,
+          errorBody 
+        } as any);
+        throw ApiError.fromResponse(response, errorBody);
+      }
+
+      // 204 No Contentの場合はボディがないため、空のレスポンスを返す
+      if (response.status === 204) {
+        this.apiLogger.trace('Content appended successfully (204 No Content)', {
+          status: response.status
+        });
+        return { message: 'Content appended successfully' };
+      }
+
+      // それ以外の成功レスポンスの場合はJSONをパース
+      const data = await response.json() as { message: string };
+      this.apiLogger.trace('Content appended successfully', {
+        status: response.status,
+        data
+      });
+
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new ApiError(
+            'Request timeout',
+            ErrorCode.API_TIMEOUT,
+            408,
+            undefined,
+            { url, timeout: config.apiTimeout }
+          );
+        }
+
+        if (error.message.includes('ECONNREFUSED') || error.message.includes('Network')) {
+          throw new ApiError(
+            'Connection refused',
+            ErrorCode.API_CONNECTION_ERROR,
+            503,
+            undefined,
+            { url, originalError: error.message }
+          );
+        }
+      }
+
+      throw new SystemError(
+        'Unexpected error during API request',
+        error instanceof Error ? error : undefined,
+        { url }
+      );
+    }
+  }
+
+  /**
    * アクティブファイルの内容を更新
    */
   async updateActiveFile(content: string): Promise<void> {
