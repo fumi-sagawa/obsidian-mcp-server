@@ -31,6 +31,18 @@ export class MockApiServer {
           // アクティブファイルの削除をモック
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'GET' && req.url === '/commands/') {
+          // コマンド一覧をモック
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            commands: [
+              { id: 'global-search:open', name: 'Search: Search in all files' },
+              { id: 'graph:open', name: 'Graph view: Open graph view' },
+              { id: 'daily-notes:goto-today', name: 'Daily notes: Open today\'s note' },
+              { id: 'command-palette:open', name: 'Command palette: Open command palette' },
+              { id: 'quick-switcher:open', name: 'Quick switcher: Open quick switcher' }
+            ]
+          }));
         } else if (req.url === '/') {
           // Obsidian API root endpoint
           res.statusCode = 200;

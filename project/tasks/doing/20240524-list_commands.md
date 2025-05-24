@@ -36,6 +36,23 @@ Obsidianで実行可能なコマンドの一覧を取得し、execute_commandツ
 - ResponseBody型: `Array<{ id: string, name: string }>`
 
 ## 作業ログ
-### 作業開始時に記録
-- コマンド管理機能の基盤実装
-- 型定義からのTDD実践
+### 2025-05-24 16:30
+- 作業開始：ブランチ作成とタスクファイル移動
+- OpenAPI仕様書で /commands/ エンドポイントの仕様を確認
+- 型定義作成：CommandInfo、ListCommandsResponse、ListCommandsToolResponse
+- テスト作成：単体テスト（8件）を実装し、全て通過
+- フォーマッター実装：コマンド一覧を見やすく表示する処理
+- ハンドラー実装：ObsidianAPIClientを使用した実装
+- app/index.tsへのツール登録
+- 統合テスト作成：integration.js、mock.js
+- モックサーバーに/commands/エンドポイントを追加
+- モックテスト実行：成功を確認
+
+### 実装完了時の状態
+- ✅ 型定義作成完了
+- ✅ 単体テスト作成・全て通過
+- ✅ ハンドラー実装完了
+- ✅ フォーマッター実装完了
+- ✅ ツール登録完了
+- ✅ 統合テスト作成完了
+- ✅ モックテスト通過

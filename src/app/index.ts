@@ -9,6 +9,7 @@ import { updateActiveFileHandler, updateActiveFileTool } from '../features/updat
 import { appendToActiveFileHandler, appendToActiveFileSchema } from '../features/append-to-active-file/index.js';
 import { insertIntoActiveFileHandler, insertIntoActiveFileSchema } from '../features/insert-into-active-file/index.js';
 import { deleteActiveFileHandler, deleteActiveFileSchema } from '../features/delete-active-file/index.js';
+import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-commands/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -136,6 +137,14 @@ server.tool(
   wrapHandler(deleteActiveFileHandler, 'delete-active-file')
 );
 appLogger.debug("Registered tool: delete-active-file");
+
+server.tool(
+  "list-commands",
+  "Get a list of all available commands in Obsidian",
+  ListCommandsInputSchema,
+  wrapHandler(listCommandsHandler, 'list-commands')
+);
+appLogger.debug("Registered tool: list-commands");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
