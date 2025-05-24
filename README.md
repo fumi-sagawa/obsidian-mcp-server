@@ -120,9 +120,45 @@ npm run dev:trace     # トレースモード（全ログ出力）
 npm run inspector     # MCP Inspector での実行
 ```
 
+### Obsidian API 設定
+
+Obsidian Local REST API を使用するには、APIキーの設定が必要です：
+
+```bash
+# 環境変数でAPIキーを設定
+OBSIDIAN_API_KEY=your-api-key npm run inspector
+
+# カスタムURLを使用する場合
+OBSIDIAN_API_KEY=your-api-key OBSIDIAN_API_URL=https://your-obsidian-url:port npm run inspector
+```
+
+APIキーは Obsidian の Local REST API プラグイン設定から取得できます。
+
 ## API統合
 
 このサーバーは [Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) を使用しています。
+
+## セットアップ
+
+### 1. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 2. 環境変数の設定
+
+`.env.example` を `.env` にコピーして、APIキーを設定します：
+
+```bash
+cp .env.example .env
+```
+
+`.env` ファイルを編集して、ObsidianのLocal REST APIプラグインから取得したAPIキーを設定：
+
+```
+OBSIDIAN_API_KEY=your-actual-api-key
+```
 
 ## 必要要件
 

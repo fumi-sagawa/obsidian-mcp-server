@@ -102,15 +102,15 @@ function createTestHandler(dependencies: {
           ],
         };
       }
-
-      const weatherError = handleError(error, 'get-forecast-handler');
       
-      // ユーザーフレンドリーなエラーメッセージを返す
+      const processedError = handleError(error, handlerLogger);
+      handlerLogger.error("Error in getForecastHandler", processedError);
+      
       return {
         content: [
           {
             type: "text" as const,
-            text: `Error: ${weatherError.message}`,
+            text: `Error: ${processedError.message}`,
           },
         ],
       };
@@ -217,13 +217,13 @@ describe('getForecastハンドラー', () => {
           {
             number: 2,
             name: 'Tuesday',
-            temperature: 60,
+            temperature: 62,
             temperatureUnit: 'F',
-            windSpeed: '10 mph',
+            windSpeed: '7 mph',
             windDirection: 'W',
             icon: 'https://api.weather.gov/icons/land/day/sct',
-            shortForecast: 'Partly Cloudy',
-            detailedForecast: 'Partly cloudy, with a high near 60.'
+            shortForecast: 'Partly Sunny',
+            detailedForecast: 'Partly sunny, with a high near 62.'
           }
         ]
       }
@@ -234,52 +234,50 @@ describe('getForecastハンドラー', () => {
 
     const result = await getForecastHandler({ latitude: 47.6062, longitude: -122.3321 });
 
-    expect(mockNwsApi.getPoints.mock.calls.length, 1);
-    expect(mockNwsApi.getPoints.mock.calls[0].arguments[0], 47.6062);
-    expect(mockNwsApi.getPoints.mock.calls[0].arguments[1], -122.3321);
-    expect(mockNwsApi.getForecast.mock.calls.length, 1);
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Forecast for 47.6062, -122.3321'));
-    expect(result.content[0].text.includes('Tonight'));
-    expect(result.content[0].text.includes('Tuesday'));
+    expect(mockNwsApi.getPoints).toHaveBeenCalledWith(47.6062, -122.3321);
+    expect(mockNwsApi.getForecast).toHaveBeenCalledTimes(1);
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Forecast for 47.6062, -122.3321');
+    expect(result.content[0].text).toContain('Tonight');
+    expect(result.content[0].text).toContain('Tuesday');
   });
 
   it('無効な緯度を拒否すべき', async () => {
     const result = await getForecastHandler({ latitude: 91, longitude: -122 });
 
-    expect(mockNwsApi.getPoints.mock.calls.length, 0);
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Error:'));
-    expect(result.content[0].text.includes('Invalid coordinates'));
+    expect(mockNwsApi.getPoints).not.toHaveBeenCalled();
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error:');
+    expect(result.content[0].text).toContain('Invalid coordinates');
   });
 
   it('無効な経度を拒否すべき', async () => {
     const result = await getForecastHandler({ latitude: 47, longitude: 181 });
 
-    expect(mockNwsApi.getPoints.mock.calls.length, 0);
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Error:'));
-    expect(result.content[0].text.includes('Invalid coordinates'));
+    expect(mockNwsApi.getPoints).not.toHaveBeenCalled();
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error:');
+    expect(result.content[0].text).toContain('Invalid coordinates');
   });
 
   it('米国の境界外の座標を拒否すべき', async () => {
     const result = await getForecastHandler({ latitude: 51.5074, longitude: -0.1278 }); // ロンドン
 
-    expect(mockNwsApi.getPoints.mock.calls.length, 0);
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Error:'));
-    expect(result.content[0].text.includes('outside the United States'));
+    expect(mockNwsApi.getPoints).not.toHaveBeenCalled();
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error:');
+    expect(result.content[0].text).toContain('outside the United States');
   });
 
   it('ポイントデータに予報URLがない場合を処理すべき', async () => {
-    mockNwsApi.getPoints.mock.mockImplementation(() => Promise.resolve({ properties: {} }));
-    mockHandleError.mock.mockImplementation(() => MockBusinessError.noForecastAvailable(40, -74));
+    mockNwsApi.getPoints.mockResolvedValue({ properties: {} });
+    mockHandleError.mockImplementation(() => MockBusinessError.noForecastAvailable(40, -74));
 
     const result = await getForecastHandler({ latitude: 40, longitude: -74 });
 
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Error:'));
-    expect(result.content[0].text.includes('No forecast available'));
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error:');
+    expect(result.content[0].text).toContain('No forecast available');
   });
 
   it('空の予報期間を処理すべき', async () => {
@@ -289,37 +287,37 @@ describe('getForecastハンドラー', () => {
       }
     };
 
-    mockNwsApi.getPoints.mock.mockImplementation(() => Promise.resolve(mockPointsData));
-    mockNwsApi.getForecast.mock.mockImplementation(() => Promise.resolve({ properties: { periods: [] } }));
-    mockHandleError.mock.mockImplementation(() => MockBusinessError.noForecastAvailable(47.6062, -122.3321));
+    mockNwsApi.getPoints.mockResolvedValue(mockPointsData);
+    mockNwsApi.getForecast.mockResolvedValue({ properties: { periods: [] } });
+    mockHandleError.mockImplementation(() => MockBusinessError.noForecastAvailable(47.6062, -122.3321));
 
     const result = await getForecastHandler({ latitude: 47.6062, longitude: -122.3321 });
 
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Error:'));
-    expect(result.content[0].text.includes('No forecast available'));
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error:');
+    expect(result.content[0].text).toContain('No forecast available');
   });
 
   it('API 404エラーをカスタムメッセージで処理すべき', async () => {
     const apiError = new MockApiError('Not Found', 404);
-    mockNwsApi.getPoints.mock.mockImplementation(() => Promise.reject(apiError));
-    mockHandleError.mock.mockImplementation(() => apiError);
+    mockNwsApi.getPoints.mockRejectedValue(apiError);
+    mockHandleError.mockImplementation(() => apiError);
 
     const result = await getForecastHandler({ latitude: 40, longitude: -74 });
 
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Location (40, -74) is not supported by the National Weather Service'));
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Location (40, -74) is not supported by the National Weather Service');
   });
 
   it('一般的なAPIエラーを処理すべき', async () => {
     const apiError = new Error('Network error');
-    mockNwsApi.getPoints.mock.mockImplementation(() => Promise.reject(apiError));
-    mockHandleError.mock.mockImplementation(() => ({ message: 'API request failed' }));
+    mockNwsApi.getPoints.mockRejectedValue(apiError);
+    mockHandleError.mockImplementation(() => ({ message: 'API request failed' }));
 
     const result = await getForecastHandler({ latitude: 40, longitude: -74 });
 
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text, 'Error: API request failed');
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error: API request failed');
   });
 
   it('成功したコールのメトリクスを追跡すべき', async () => {
@@ -331,17 +329,19 @@ describe('getForecastハンドラー', () => {
 
     const mockForecastData = {
       properties: {
-        periods: [{
-          number: 1,
-          name: 'Tonight',
-          temperature: 45,
-          temperatureUnit: 'F',
-          windSpeed: '5 mph',
-          windDirection: 'NW',
-          icon: 'https://api.weather.gov/icons/land/night/few',
-          shortForecast: 'Mostly Clear',
-          detailedForecast: 'Mostly clear, with a low around 45.'
-        }]
+        periods: [
+          {
+            number: 1,
+            name: 'Tonight',
+            temperature: 45,
+            temperatureUnit: 'F',
+            windSpeed: '5 mph',
+            windDirection: 'NW',
+            icon: 'https://api.weather.gov/icons/land/night/few',
+            shortForecast: 'Mostly Clear',
+            detailedForecast: 'Mostly clear, with a low around 45.'
+          }
+        ]
       }
     };
 
@@ -350,15 +350,15 @@ describe('getForecastハンドラー', () => {
 
     await getForecastHandler({ latitude: 47.6062, longitude: -122.3321 });
 
-    expect(mockMetricsMiddleware.trackWeatherAPICall.mock.calls.length, 2);
-    expect(mockMetricsMiddleware.trackWeatherAPICall.mock.calls[0].arguments[0], 'get-points');
-    expect(mockMetricsMiddleware.trackWeatherAPICall.mock.calls[1].arguments[0], 'get-forecast');
+    expect(mockMetricsMiddleware.trackWeatherAPICall).toHaveBeenCalledTimes(2);
+    expect(mockMetricsMiddleware.trackWeatherAPICall).toHaveBeenNthCalledWith(1, 'get-points', expect.any(Function));
+    expect(mockMetricsMiddleware.trackWeatherAPICall).toHaveBeenNthCalledWith(2, 'get-forecast', expect.any(Function));
   });
 
   it('有効なアラスカの座標を受け入れるべき', async () => {
     const mockPointsData = {
       properties: {
-        forecast: 'https://api.weather.gov/gridpoints/AFG/124,67/forecast'
+        forecast: 'https://api.weather.gov/gridpoints/AFC/123,456/forecast'
       }
     };
 
@@ -366,14 +366,13 @@ describe('getForecastハンドラー', () => {
       properties: {
         periods: [{
           number: 1,
-          name: 'Tonight',
+          name: 'Today',
           temperature: -10,
           temperatureUnit: 'F',
           windSpeed: '15 mph',
           windDirection: 'N',
-          icon: 'https://api.weather.gov/icons/land/night/sn',
           shortForecast: 'Snow',
-          detailedForecast: 'Snow, with a low around -10.'
+          detailedForecast: 'Snow throughout the day.'
         }]
       }
     };
@@ -383,15 +382,16 @@ describe('getForecastハンドラー', () => {
 
     const result = await getForecastHandler({ latitude: 64.8378, longitude: -147.7164 }); // フェアバンクス
 
-    expect(mockNwsApi.getPoints.mock.calls.length, 1);
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Forecast for 64.8378, -147.7164'));
+    expect(mockNwsApi.getPoints).toHaveBeenCalledWith(64.8378, -147.7164);
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Forecast for 64.8378, -147.7164');
+    expect(result.content[0].text).not.toContain('Error:');
   });
 
   it('有効なハワイの座標を受け入れるべき', async () => {
     const mockPointsData = {
       properties: {
-        forecast: 'https://api.weather.gov/gridpoints/HFO/124,67/forecast'
+        forecast: 'https://api.weather.gov/gridpoints/HFO/123,456/forecast'
       }
     };
 
@@ -399,14 +399,13 @@ describe('getForecastハンドラー', () => {
       properties: {
         periods: [{
           number: 1,
-          name: 'Tonight',
-          temperature: 75,
+          name: 'Today',
+          temperature: 78,
           temperatureUnit: 'F',
           windSpeed: '10 mph',
           windDirection: 'E',
-          icon: 'https://api.weather.gov/icons/land/night/few',
-          shortForecast: 'Clear',
-          detailedForecast: 'Clear, with a low around 75.'
+          shortForecast: 'Partly Cloudy',
+          detailedForecast: 'Partly cloudy with occasional showers.'
         }]
       }
     };
@@ -416,8 +415,9 @@ describe('getForecastハンドラー', () => {
 
     const result = await getForecastHandler({ latitude: 21.3099, longitude: -157.8581 }); // ホノルル
 
-    expect(mockNwsApi.getPoints.mock.calls.length, 1);
-    expect(result.content[0].type, 'text');
-    expect(result.content[0].text.includes('Forecast for 21.3099, -157.8581'));
+    expect(mockNwsApi.getPoints).toHaveBeenCalledWith(21.3099, -157.8581);
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Forecast for 21.3099, -157.8581');
+    expect(result.content[0].text).not.toContain('Error:');
   });
 });

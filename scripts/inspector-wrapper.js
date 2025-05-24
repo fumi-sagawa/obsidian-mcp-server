@@ -6,6 +6,7 @@
  * Inspectorの起動前にポートの確認と既存プロセスのクリーンアップを行います
  */
 
+import 'dotenv/config';
 import { spawn, execSync } from 'child_process';
 import { createServer } from 'net';
 import { fileURLToPath } from 'url';
@@ -91,6 +92,13 @@ async function main() {
     process.exit(1);
   }
   
+  // Obsidian APIキーの確認
+  if (!process.env.OBSIDIAN_API_KEY) {
+    console.log('⚠️  警告: OBSIDIAN_API_KEY が設定されていません');
+    console.log('  Obsidian Local REST API を使用するには、APIキーの設定が必要です。');
+    console.log('  例: OBSIDIAN_API_KEY=your-api-key npm run inspector\n');
+  }
+
   // MCP Inspectorを起動
   console.log('🚀 MCP Inspector を起動しています...\n');
   
@@ -105,7 +113,10 @@ async function main() {
   const env = {
     ...process.env,
     LOG_LEVEL: process.env.LOG_LEVEL || 'info',
-    NODE_ENV: 'production'
+    NODE_ENV: 'production',
+    // Obsidian API設定（環境変数から引き継ぐ）
+    OBSIDIAN_API_KEY: process.env.OBSIDIAN_API_KEY,
+    OBSIDIAN_API_URL: process.env.OBSIDIAN_API_URL
   };
   
   const inspector = spawn('npx', args, {
