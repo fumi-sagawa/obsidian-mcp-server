@@ -31,10 +31,23 @@ Obsidian Local REST APIの `/active/` エンドポイント（DELETE）に対応
 - APIエンドポイント: DELETE /active/
 - 参考資料: /project/参考文献/openapi.yaml
 - 関連ツール: get_active_file（削除前の確認用）
-- ResponseBody型: `{ message: string }`
+- ResponseBody: 204 No Content（ボディなし）
 - 警告: 復元不可能な操作
+- 注意: API仕様に基づき、削除成功時はレスポンスボディがないため、MCPツールとしては成功メッセージを内部で生成する
 
 ## 作業ログ
-### 作業開始時に記録
-- 破壊的操作の安全な実装
-- エラーハンドリングの充実
+### 2025-05-24 16:15
+- OpenAPI仕様書を確認し、DELETE /active/ は204 No Contentを返すことを確認
+- タスクファイルを修正（API仕様に合わせてResponseBody型を修正）
+- ブランチ作成とタスクファイル移動完了
+- 型定義ファイル作成（types.ts）- API仕様に基づく正確な型定義
+- テストファイル作成 - 正常系、404エラー、405エラー、ネットワークエラーをカバー
+- ハンドラー実装 - obsidianApi.deleteActiveFile()メソッドを追加
+- Zodスキーマ定義 - パラメータなしのスキーマ
+- index.tsでのエクスポート設定完了
+- app/index.tsへのツール登録完了（警告メッセージ付き）
+- 単体テスト修正とすべて合格確認
+- 統合テストファイル作成（integration.js, mock.js）
+- テストランナーへの追加完了
+- モックサーバーにDELETE /active/エンドポイント追加
+- 全ての実装が完了し、テストが通過することを確認

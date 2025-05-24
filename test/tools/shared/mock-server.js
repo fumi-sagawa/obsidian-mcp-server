@@ -27,6 +27,10 @@ export class MockApiServer {
           // アクティブファイルへのPATCH操作をモック
           res.statusCode = 200; // OK
           res.end();
+        } else if (req.method === 'DELETE' && req.url === '/active/') {
+          // アクティブファイルの削除をモック
+          res.statusCode = 204; // No Content
+          res.end();
         } else if (req.url === '/') {
           // Obsidian API root endpoint
           res.statusCode = 200;

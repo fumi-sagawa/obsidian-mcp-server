@@ -21,6 +21,7 @@ import { testCases as getServerStatusTests } from './tools/get-server-status/moc
 import { testCases as updateActiveFileTests } from './tools/obsidian/update-active-file/mock.js';
 import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to-active-file/mock.js';
 import { tests as insertIntoActiveFileTests } from './tools/obsidian/insert-into-active-file/mock.js';
+import { deleteActiveFileMockTests as deleteActiveFileTests } from './tools/obsidian/delete-active-file/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -30,7 +31,8 @@ const testSuites = {
   'get-server-status': getServerStatusTests,
   'update_active_file': updateActiveFileTests,
   'append-to-active-file': appendToActiveFileTests,
-  'insert-into-active-file': insertIntoActiveFileTests
+  'insert-into-active-file': insertIntoActiveFileTests,
+  'delete-active-file': deleteActiveFileTests
 };
 
 // メイン実行
