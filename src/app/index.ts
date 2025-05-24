@@ -13,6 +13,7 @@ import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-c
 import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
 import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
 import { getPeriodicNoteHandler, getPeriodicNoteSchema } from '../features/get-periodic-note/index.js';
+import { searchNotesHandler, searchNotesTool } from '../features/search-notes/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -172,6 +173,14 @@ server.tool(
   wrapHandler(getPeriodicNoteHandler, 'get-periodic-note')
 );
 appLogger.debug("Registered tool: get-periodic-note");
+
+server.tool(
+  searchNotesTool.name,
+  searchNotesTool.description,
+  searchNotesTool.inputSchema.shape,
+  wrapHandler(searchNotesHandler, 'search-notes')
+);
+appLogger.debug("Registered tool: search-notes");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

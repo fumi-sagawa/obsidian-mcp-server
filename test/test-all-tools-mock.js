@@ -26,6 +26,7 @@ import { testCases as listCommandsTests } from './tools/list-commands/mock.js';
 import { testCases as executeCommandTests } from './tools/execute-command/mock.js';
 import { testCases as openFileTests } from './tools/open-file/mock.js';
 import { testCases as getPeriodicNoteMockTests } from './tools/get-periodic-note/mock.js';
+import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -40,7 +41,8 @@ const testSuites = {
   'list-commands': listCommandsTests,
   'execute-command': executeCommandTests,
   'open-file': openFileTests,
-  'get-periodic-note': getPeriodicNoteMockTests
+  'get-periodic-note': getPeriodicNoteMockTests,
+  'search_notes': searchNotesTests
 };
 
 // メイン実行
@@ -70,7 +72,7 @@ async function main() {
       }
       
       const result = await runTestSuite(toolName, testCases, { 
-        mockBaseUrl: mockServer.getBaseUrl() 
+        mockBaseUrl: mockServer.getBaseUrl()
       });
       totalTests += result.total;
       passedTests += result.passed;
