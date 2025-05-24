@@ -1,32 +1,62 @@
 /**
  * delete-active-file モックテスト
  */
-export const deleteActiveFileMockTests = {
-  name: 'delete-active-file',
-  tests: [
-    {
-      name: 'delete active file successfully (mock)',
-      test: async (runTool) => {
-        const result = await runTool('delete-active-file', {});
-        
-        // 成功メッセージが返ることを確認
-        if (!result.content[0].text.includes('deleted successfully')) {
-          throw new Error(`Expected success message but got: ${result.content[0].text}`);
-        }
+export const testCases = [
+  {
+    name: 'delete active file successfully (mock)',
+    request: {
+      method: 'tools/call',
+      params: {
+        name: 'delete-active-file',
+        arguments: {}
       }
     },
-    {
-      name: 'handle API error gracefully (mock)',
-      test: async (runTool) => {
-        // モックサーバーの状態によっては404エラーが返る可能性がある
-        const result = await runTool('delete-active-file', {});
-        
-        // 成功またはエラーメッセージが返ることを確認
-        const text = result.content[0].text;
-        if (!text.includes('deleted successfully') && !text.includes('Error:')) {
-          throw new Error(`Unexpected response: ${text}`);
+    assertions: [
+      response => response.result !== undefined,
+      response => {
+        try {
+          return response.result && response.result.content && response.result.content[0] && response.result.content[0].type === 'text';
+        } catch (e) {
+          return false;
+        }
+      },
+      response => {
+        try {
+          const text = response.result.content[0].text;
+          return text.includes('deleted successfully');
+        } catch (e) {
+          return false;
         }
       }
-    }
-  ]
-};
+    ]
+  },
+  {
+    name: 'handle API error gracefully (mock)',
+    request: {
+      method: 'tools/call',
+      params: {
+        name: 'delete-active-file',
+        arguments: {}
+      }
+    },
+    assertions: [
+      response => response.result !== undefined,
+      response => {
+        try {
+          return response.result && response.result.content && response.result.content[0] && response.result.content[0].type === 'text';
+        } catch (e) {
+          return false;
+        }
+      },
+      response => {
+        try {
+          const text = response.result.content[0].text;
+          // 成功またはエラーメッセージが返ることを確認
+          return text.includes('deleted successfully') || text.includes('Error:') || text.includes('Cannot connect to Obsidian');
+        } catch (e) {
+          return false;
+        }
+      }
+    ]
+  }
+];

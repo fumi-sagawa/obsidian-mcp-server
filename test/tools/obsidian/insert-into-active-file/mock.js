@@ -1,5 +1,5 @@
 // insert-into-active-fileモックテスト
-export const tests = [
+export const testCases = [
   {
     name: '見出しの下にコンテンツを追加',
     request: {

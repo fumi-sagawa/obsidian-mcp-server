@@ -15,8 +15,20 @@ export const testCases = [
       }
     },
     assertions: [
-      (response) => response.result && response.result.content,
-      (response) => response.result.content[0].text.includes('opened successfully')
+      (response) => {
+        try {
+          return response.result && response.result.content && response.result.content[0];
+        } catch (e) {
+          return false;
+        }
+      },
+      (response) => {
+        try {
+          return response.result.content[0].text.includes('opened successfully');
+        } catch (e) {
+          return false;
+        }
+      }
     ]
   },
   {
@@ -32,8 +44,20 @@ export const testCases = [
       }
     },
     assertions: [
-      (response) => response.result && response.result.content,
-      (response) => response.result.content[0].text.includes('opened successfully')
+      (response) => {
+        try {
+          return response.result && response.result.content && response.result.content[0];
+        } catch (e) {
+          return false;
+        }
+      },
+      (response) => {
+        try {
+          return response.result.content[0].text.includes('opened successfully');
+        } catch (e) {
+          return false;
+        }
+      }
     ]
   },
   {
@@ -48,8 +72,20 @@ export const testCases = [
       }
     },
     assertions: [
-      (response) => response.result && response.result.content,
-      (response) => response.result.content[0].text.includes('opened successfully')
+      (response) => {
+        try {
+          return response.result && response.result.content && response.result.content[0];
+        } catch (e) {
+          return false;
+        }
+      },
+      (response) => {
+        try {
+          return response.result.content[0].text.includes('opened successfully');
+        } catch (e) {
+          return false;
+        }
+      }
     ]
   },
   {
@@ -64,8 +100,20 @@ export const testCases = [
       }
     },
     assertions: [
-      (response) => response.result && response.result.content,
-      (response) => response.result.content[0].text.includes('Error') && response.result.content[0].text.includes('Invalid file path')
+      (response) => {
+        try {
+          return response.result && response.result.content && response.result.content[0];
+        } catch (e) {
+          return false;
+        }
+      },
+      (response) => {
+        try {
+          return response.result.content[0].text.includes('Error') && response.result.content[0].text.includes('Invalid file path');
+        } catch (e) {
+          return false;
+        }
+      }
     ]
   },
   {
@@ -80,8 +128,10 @@ export const testCases = [
       }
     },
     assertions: [
-      (response) => response.result && response.result.content,
-      (response) => response.result.content[0].text.includes('Error')
+      // MCPレベルでバリデーションエラーが発生することを期待
+      response => response.error !== undefined,
+      response => response.error && response.error.code === -32602,
+      response => response.error && response.error.message.includes('Filename is required')
     ]
   }
 ];

@@ -21,7 +21,7 @@ import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to
 import { testCases as deleteActiveFileTests } from './tools/obsidian/delete-active-file/integration.js';
 import { testCases as listCommandsTests } from './tools/list-commands/integration.js';
 import { testCases as openFileTests } from './tools/open-file/integration.js';
-import getPeriodicNoteTests from './tools/get-periodic-note/integration.js';
+import { testCases as getPeriodicNoteTests } from './tools/get-periodic-note/integration.js';
 
 // テストケース定義
 const testSuites = {
