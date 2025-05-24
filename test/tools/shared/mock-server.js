@@ -150,6 +150,27 @@ export class MockApiServer {
               ]
             }
           }));
+        } else if (req.method === 'POST' && req.url.startsWith('/open/')) {
+          // open-file エンドポイント
+          const filename = decodeURIComponent(req.url.split('/open/')[1].split('?')[0]);
+          
+          // パストラバーサル攻撃のテスト
+          if (filename.includes('../')) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: 'Invalid file path' }));
+            return;
+          }
+          
+          // 空のファイル名のテスト
+          if (!filename || filename.trim() === '') {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: 'Filename is required' }));
+            return;
+          }
+          
+          // 成功レスポンス
+          res.statusCode = 200;
+          res.end(''); // open エンドポイントは空のレスポンスを返す
         } else {
           res.statusCode = 404;
           res.end(JSON.stringify({ error: 'Not found' }));

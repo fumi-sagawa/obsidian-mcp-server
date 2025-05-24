@@ -11,6 +11,7 @@ import { insertIntoActiveFileHandler, insertIntoActiveFileSchema } from '../feat
 import { deleteActiveFileHandler, deleteActiveFileSchema } from '../features/delete-active-file/index.js';
 import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-commands/index.js';
 import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
+import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -154,6 +155,14 @@ server.tool(
   wrapHandler(executeCommandHandler, 'execute-command')
 );
 appLogger.debug("Registered tool: execute-command");
+
+server.tool(
+  "open-file",
+  "Open a file in Obsidian (creates it if it doesn't exist)",
+  openFileSchema.shape,
+  wrapHandler(openFileHandler, 'open-file')
+);
+appLogger.debug("Registered tool: open-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
