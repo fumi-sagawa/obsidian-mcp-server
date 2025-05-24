@@ -7,6 +7,7 @@ import { getServerStatusHandler, getServerStatusArgsSchema } from '../features/g
 import { getActiveFileHandler, getActiveFileSchema } from '../features/get-active-file/index.js';
 import { updateActiveFileHandler, updateActiveFileTool } from '../features/update-active-file/index.js';
 import { appendToActiveFileHandler, appendToActiveFileSchema } from '../features/append-to-active-file/index.js';
+import { insertIntoActiveFileHandler, insertIntoActiveFileSchema } from '../features/insert-into-active-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -118,6 +119,14 @@ server.tool(
   wrapHandler(appendToActiveFileHandler, 'append-to-active-file')
 );
 appLogger.debug("Registered tool: append-to-active-file");
+
+server.tool(
+  "insert-into-active-file",
+  "Insert content into the active file relative to a heading, block reference, or frontmatter field",
+  insertIntoActiveFileSchema.shape,
+  wrapHandler(insertIntoActiveFileHandler, 'insert-into-active-file')
+);
+appLogger.debug("Registered tool: insert-into-active-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

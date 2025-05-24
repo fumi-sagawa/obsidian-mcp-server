@@ -20,6 +20,7 @@ import { testCases as healthCheckTests } from './tools/health-check/mock.js';
 import { testCases as getServerStatusTests } from './tools/get-server-status/mock.js';
 import { testCases as updateActiveFileTests } from './tools/obsidian/update-active-file/mock.js';
 import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to-active-file/mock.js';
+import { tests as insertIntoActiveFileTests } from './tools/obsidian/insert-into-active-file/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -28,7 +29,8 @@ const testSuites = {
   'health-check': healthCheckTests,
   'get-server-status': getServerStatusTests,
   'update_active_file': updateActiveFileTests,
-  'append-to-active-file': appendToActiveFileTests
+  'append-to-active-file': appendToActiveFileTests,
+  'insert-into-active-file': insertIntoActiveFileTests
 };
 
 // メイン実行

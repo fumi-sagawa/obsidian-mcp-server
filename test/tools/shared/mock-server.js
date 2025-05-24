@@ -23,6 +23,10 @@ export class MockApiServer {
           // アクティブファイルへの追記をモック
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'PATCH' && req.url === '/active/') {
+          // アクティブファイルへのPATCH操作をモック
+          res.statusCode = 200; // OK
+          res.end();
         } else if (req.url === '/') {
           // Obsidian API root endpoint
           res.statusCode = 200;
