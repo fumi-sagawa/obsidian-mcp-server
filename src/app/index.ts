@@ -5,6 +5,7 @@ import { getForecastHandler, forecastSchema } from '../features/get-forecast/ind
 import { handleHealthCheck, HealthCheckSchema } from '../features/health-check/index.js';
 import { getServerStatusHandler, getServerStatusArgsSchema } from '../features/get-server-status/index.js';
 import { getActiveFileHandler, getActiveFileSchema } from '../features/get-active-file/index.js';
+import { updateActiveFileHandler, updateActiveFileTool } from '../features/update-active-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -100,6 +101,14 @@ server.tool(
   wrapHandler(getActiveFileHandler, 'get-active-file')
 );
 appLogger.debug("Registered tool: get-active-file");
+
+server.tool(
+  updateActiveFileTool.name,
+  updateActiveFileTool.description,
+  updateActiveFileTool.inputSchema.shape,
+  wrapHandler(updateActiveFileHandler, 'update-active-file')
+);
+appLogger.debug("Registered tool: update-active-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

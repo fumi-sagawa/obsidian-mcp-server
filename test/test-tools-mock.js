@@ -31,7 +31,11 @@ class MockApiServer {
         res.setHeader('Content-Type', 'application/json');
         
         // URLパスに基づいてモックレスポンスを返す
-        if (req.url === '/') {
+        if (req.method === 'PUT' && req.url === '/active/') {
+          // アクティブファイルの更新をモック
+          res.statusCode = 204; // No Content
+          res.end();
+        } else if (req.url === '/') {
           // Obsidian API root endpoint
           res.statusCode = 200;
           res.end(JSON.stringify({
@@ -233,6 +237,41 @@ const testCases = {
         response => response.result.content[0].text.includes('Obsidian Version: 1.5.0')
       ]
     }
+  ],
+
+  'update_active_file': [
+    {
+      name: 'アクティブファイルの内容を更新',
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_active_file',
+          arguments: { content: '# Updated Content\n\nThis is the new content for the active file.' }
+        }
+      },
+      assertions: [
+        // 期待される結果: 成功レスポンス
+        response => response.result !== undefined,
+        // 期待される結果: 成功メッセージ
+        response => response.result.content[0].text.includes('Active file updated successfully')
+      ]
+    },
+    {
+      name: '空のコンテンツで更新',
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_active_file',
+          arguments: { content: '' }
+        }
+      },
+      assertions: [
+        // 期待される結果: 成功レスポンス
+        response => response.result !== undefined,
+        // 期待される結果: 成功メッセージ
+        response => response.result.content[0].text.includes('Active file updated successfully')
+      ]
+    }
   ]
 };
 
@@ -262,7 +301,7 @@ async function runTest(testCase, mockBaseUrl) {
       error += data.toString();
     });
     
-    child.on('close', (code) => {
+    child.on('close', () => {
       try {
         const lines = output.split('\n').filter(line => line.trim());
         const jsonLine = lines.find(line => line.startsWith('{') && line.includes('jsonrpc'));

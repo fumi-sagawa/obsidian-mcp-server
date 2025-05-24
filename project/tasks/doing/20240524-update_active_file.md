@@ -38,6 +38,45 @@ MCPクライアントから現在編集中のファイルの内容を更新で�
 - 注意事項: ファイル全体を置き換える破壊的操作
 
 ## 作業ログ
-### 作業開始時に記録
-- TDDサイクルの開始
-- 破壊的操作の安全性を重視した設計
+### 2025-01-24 12:27
+- 作業開始: ブランチ feature/20240524-update_active_file を作成
+- 型定義ファイル作成: `src/features/update-active-file/types.ts`
+  - UpdateActiveFileRequest, UpdateActiveFileResponse, UpdateError型を定義
+  - 破壊的操作の安全性を考慮したエラー型設計
+
+### 2025-01-24 12:29
+- テストファイル作成: `src/features/update-active-file/tests/update-active-file-handler.test.ts`
+  - 型定義に基づいたテストケースを作成
+  - 正常系: 通常更新、空コンテンツ、大容量、特殊文字
+  - エラー系: ファイル不在、更新失敗、ディレクトリ、ネットワークエラー、タイムアウト
+  - バリデーション: 型チェック、必須項目
+
+### 2025-01-24 12:30
+- ハンドラー実装: `src/features/update-active-file/update-active-file-handler.ts`
+  - MCPツールハンドラーの形式に準拠
+  - 内部処理用のCore関数とMCPハンドラーを分離
+  - 詳細なエラーハンドリング実装
+- ObsidianAPIClientクラスに updateActiveFile メソッドを追加
+  - PUT /active/ エンドポイントの実装
+  - 204 No Content レスポンスの処理
+
+### 2025-01-24 12:31
+- テスト実行: 全12件のテストが成功
+  - エラー処理の修正（ApiError.details -> metadata）
+  - ValidationErrorの引数修正
+  - モックエラー処理の追加
+- ビルド成功: TypeScriptコンパイルエラーをすべて解決
+- 統合テスト: モックサーバーでの動作確認
+  - test-tools-mock.jsにupdate_active_fileのテストケースを追加
+  - PUT /active/ エンドポイントのモック処理を追加
+  - 全7件のテストが成功（既存5件 + 新規2件）
+
+### 完了事項
+- [x] 型定義ファイル作成
+- [x] テストファイル作成（全テストケース網羅）
+- [x] ハンドラー実装
+- [x] Zodスキーマ定義
+- [x] index.tsでのエクスポート
+- [x] app/index.tsへのツール登録
+- [x] 全テストが通る
+- [x] 統合テストで動作確認
