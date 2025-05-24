@@ -1,10 +1,10 @@
 {
-  "name": "weather-mcp-server",
+  "name": "obsidian-mcp-server",
   "version": "1.0.0",
-  "description": "Weather MCP Server for US National Weather Service data",
+  "description": "MCP Server for Obsidian Local REST API integration",
   "type": "module",
   "bin": {
-    "weather": "./build/index.js"
+    "obsidian-mcp-server": "./build/index.js"
   },
   "scripts": {
     "build": "tsc && chmod 755 build/index.js && chmod 755 build/scripts/*.js",
@@ -28,8 +28,8 @@
   ],
   "keywords": [
     "mcp",
-    "weather",
-    "nws",
+    "obsidian",
+    "rest-api",
     "modelcontextprotocol"
   ],
   "author": "",

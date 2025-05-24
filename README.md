@@ -1,12 +1,21 @@
-# Weather MCP Server
+# Obsidian MCP Server
 
-Model Context Protocol (MCP) を使用して、米国国立気象局 (NWS) API からリアルタイムの気象情報を提供するサーバーです。
+Model Context Protocol (MCP) を使用して、Obsidian Local REST API と統合するサーバーです。AIアシスタントやその他のアプリケーションからObsidianのノート管理機能を利用できるようになります。
 
 ## 機能
 
-- **気象警報**: 米国の任意の州の現在の気象警報を取得
-- **天気予報**: 特定の座標の詳細な予報を取得
+- **ファイル操作**: Obsidian内のファイルの作成、読み取り、更新、削除
+- **アクティブファイル管理**: 現在開いているファイルの操作
+- **検索機能**: ノートの簡易検索と詳細検索
+- **コマンド実行**: Obsidianコマンドの一覧表示と実行
+- **定期ノート**: 日次・週次・月次・年次ノートの管理
 - **MCP統合**: MCP互換のAIアシスタントとシームレスに統合
+
+## 前提条件
+
+- Obsidianがインストールされていること
+- Local REST APIプラグインがインストール・有効化されていること
+- APIキーが設定されていること
 
 ## インストール
 
@@ -15,52 +24,40 @@ npm install
 npm run build
 ```
 
+## 設定
+
+環境変数で以下を設定してください：
+
+```bash
+# 必須
+export OBSIDIAN_API_KEY="your-api-key-here"
+
+# オプション
+export OBSIDIAN_API_URL="http://127.0.0.1:27123"  # デフォルト
+export OBSIDIAN_HTTPS_CERT="/path/to/cert.pem"    # HTTPS使用時
+```
+
 ## 使用方法
 
 このサーバーはMCPプロトコルを実装しており、MCP互換のクライアントで使用できます。
 
-### 利用可能なツール
+### 利用可能なツール（実装予定）
 
-#### `get-alerts`
-指定された米国の州の現在の気象警報を取得します。
+#### 基本的なファイル操作
+- `get_server_status` - サーバー状態の取得
+- `get_file` - ファイル内容の取得
+- `create_or_update_file` - ファイルの作成・更新
+- `delete_file` - ファイルの削除
+- `list_vault_files` - ファイル一覧の取得
 
-**パラメータ:**
-- `state` (string, 必須): 2文字の米国州コード (例: "CA", "NY")
+#### アクティブファイル操作
+- `get_active_file` - アクティブファイルの取得
+- `update_active_file` - アクティブファイルの更新
+- `append_to_active_file` - アクティブファイルへの追記
 
-**レスポンス例:**
-```json
-[
-  {
-    "title": "洪水警報",
-    "description": "...洪水警報発令中...",
-    "severity": "深刻",
-    "certainty": "観測済み",
-    "urgency": "即時",
-    "areas": "ロサンゼルス郡"
-  }
-]
-```
-
-#### `get-forecast`
-特定の座標の天気予報を取得します。
-
-**パラメータ:**
-- `latitude` (number, 必須): 緯度
-- `longitude` (number, 必須): 経度
-
-**レスポンス例:**
-```json
-[
-  {
-    "name": "今日",
-    "temperature": 72,
-    "temperatureUnit": "F",
-    "windSpeed": "10 mph",
-    "shortForecast": "晴れ時々曇り",
-    "detailedForecast": "晴れ時々曇り、最高気温は72度..."
-  }
-]
-```
+#### 検索機能
+- `simple_search` - テキストベースの簡易検索
+- `search_notes` - 詳細な検索機能
 
 ## アーキテクチャ
 
@@ -72,12 +69,12 @@ npm run build
 src/
 ├── app/              # アプリケーション初期化
 ├── features/         # 機能モジュール
-│   ├── get-alerts/   # 気象警報機能
-│   └── get-forecast/ # 天気予報機能
+│   ├── get-server-status/   # サーバー状態取得機能
+│   └── [その他の機能]/      # 各Obsidian機能の実装
 ├── entities/         # ドメインモデル
-│   └── weather/      # 気象関連の型定義
+│   └── obsidian/     # Obsidian関連の型定義
 ├── shared/           # 共有リソース
-│   └── api/          # 外部API統合
+│   └── api/          # Obsidian API統合
 └── index.ts          # エントリーポイント
 ```
 
@@ -115,20 +112,23 @@ npm run test:unit     # カバレッジなしで高速実行
 npm run test:watch    # ファイル変更を監視して自動実行
 ```
 
-テストカバレッジは97%以上を維持しています。すべてのテストは日本語で記述されています。
+### 開発モード
 
-### 実行
-
-サーバーはstdio経由で通信し、MCPクライアントから起動されるように設計されています。
+```bash
+npm run dev           # 開発モード（ログレベル: debug）
+npm run dev:trace     # トレースモード（全ログ出力）
+npm run inspector     # MCP Inspector での実行
+```
 
 ## API統合
 
-このサーバーは米国国立気象局の [weather.gov API](https://www.weather.gov/documentation/services-web-api) を使用しています。APIキーは不要です。
+このサーバーは [Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) を使用しています。
 
 ## 必要要件
 
 - Node.js 16+
 - TypeScript 5+
+- Obsidian with Local REST API plugin
 
 ## ライセンス
 

@@ -9,7 +9,7 @@ import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/ind
 const config = getConfig();
 
 const server = new McpServer({
-  name: "weather",
+  name: "obsidian-mcp-server",
   version: "1.0.0",
   capabilities: {
     resources: {},
@@ -20,8 +20,8 @@ const server = new McpServer({
 const appLogger = logger.child({ component: 'app' });
 const metricsMiddleware = new MetricsMiddleware(config.slowOperationThreshold || 1000);
 
-appLogger.info("Initializing Weather MCP Server", { 
-  name: "weather", 
+appLogger.info("Initializing Obsidian MCP Server", { 
+  name: "obsidian-mcp-server", 
   version: "1.0.0",
   config: {
     logLevel: config.logLevel,
@@ -41,17 +41,17 @@ const wrapHandler = <T extends (...args: any[]) => any>(
       try {
         return await handler(...args);
       } catch (error) {
-        const weatherError = handleError(error, `tool-${toolName}`);
+        const obsidianError = handleError(error, `tool-${toolName}`);
         
         // Log the error details
-        appLogger.error(`Tool execution failed: ${toolName}`, weatherError);
+        appLogger.error(`Tool execution failed: ${toolName}`, obsidianError);
         
         // Return error response to MCP client
         return {
           content: [
             {
               type: "text" as const,
-              text: `Error: ${weatherError.message}`,
+              text: `Error: ${obsidianError.message}`,
             },
           ],
         };
@@ -115,13 +115,13 @@ export async function startServer() {
     }
     
     await server.connect(transport);
-    appLogger.info("Weather MCP Server running on stdio", {
+    appLogger.info("Obsidian MCP Server running on stdio", {
       pid: process.pid,
       nodeVersion: process.version,
     });
   } catch (error) {
-    const weatherError = handleError(error, 'server-startup');
-    appLogger.error("Failed to start server", weatherError);
-    throw weatherError;
+    const obsidianError = handleError(error, 'server-startup');
+    appLogger.error("Failed to start server", obsidianError);
+    throw obsidianError;
   }
 }

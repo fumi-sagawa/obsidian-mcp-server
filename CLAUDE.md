@@ -8,7 +8,7 @@
 
 ## プロジェクト概要
 
-これは Model Context Protocol (MCP) サーバーのテンプレートプロジェクトです。Feature-Sliced Design (FSD) アーキテクチャに基づいた、拡張可能で保守しやすい構造を提供します。
+これは Obsidian Local REST API を MCP サーバーとしてラップするプロジェクトです。Feature-Sliced Design (FSD) アーキテクチャに基づいた、拡張可能で保守しやすい構造を提供します。ObsidianのLocal REST APIプラグインを通じて、AIアシスタントやその他のアプリケーションからObsidianのノート管理機能を利用できるようになります。
 
 ## コマンド
 
@@ -83,6 +83,7 @@ src/
 1. **`shared/` に配置するもの**:
    - Obsidian REST APIクライアント（外部API通信）
    - 共通の型とインターフェース
+   - Obsidian APIのエラーマッピング
    - エラーハンドリングユーティリティ
    - ロギングシステム
    - メトリクス収集
@@ -96,6 +97,7 @@ src/
 
 3. **`features/` に配置するもの**:
    - 各MCPツールの実装（ハンドラー）
+   - Obsidian APIエンドポイントごとの機能実装
    - ツール固有のデータ変換・フォーマット処理
    - 入力値の検証スキーマ（Zod）
    - ツール固有の型定義（types.ts）
@@ -112,7 +114,7 @@ src/
 このプロジェクトでは型定義駆動のテスト駆動開発（Type-Driven TDD）を採用しています：
 
 ### 型定義駆動TDDのフロー
-1. **型定義の作成** - OpenAPI仕様書から正確な型定義を作成
+1. **型定義の作成** - Obsidian Local REST APIのOpenAPI仕様書から正確な型定義を作成
 2. **型に基づくテスト設計** - 型定義に基づいてテストケースを作成
 3. **実装** - テストが通るように型安全な実装
 4. **リファクタリング** - 型とテストを維持しながらコードを改善
@@ -218,6 +220,9 @@ npm run test:watch    # 開発中の自動テスト
 | SLOW_OPERATION_THRESHOLD | 1000 | スロークエリの閾値（ミリ秒） |
 | API_TIMEOUT | 30000 | APIタイムアウト（ミリ秒） |
 | API_RETRY_ATTEMPTS | 3 | APIリトライ回数 |
+| OBSIDIAN_API_KEY | - | Obsidian Local REST APIのAPIキー（必須） |
+| OBSIDIAN_API_URL | http://127.0.0.1:27123 | Obsidian APIのエンドポイント |
+| OBSIDIAN_HTTPS_CERT | - | カスタム証明書パス |
 
 ## プロジェクト管理
 
