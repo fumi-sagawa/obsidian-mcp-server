@@ -1,0 +1,133 @@
+import { createServer } from 'http';
+
+/**
+ * テスト用のモックAPIサーバー
+ */
+export class MockApiServer {
+  constructor() {
+    this.server = null;
+    this.port = 0;
+  }
+
+  async start() {
+    return new Promise((resolve) => {
+      this.server = createServer((req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        
+        // URLパスに基づいてモックレスポンスを返す
+        if (req.method === 'PUT' && req.url === '/active/') {
+          // アクティブファイルの更新をモック
+          res.statusCode = 204; // No Content
+          res.end();
+        } else if (req.method === 'POST' && req.url === '/active/') {
+          // アクティブファイルへの追記をモック
+          res.statusCode = 204; // No Content
+          res.end();
+        } else if (req.url === '/') {
+          // Obsidian API root endpoint
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            authenticated: true,
+            status: 'OK',
+            service: 'Obsidian Local REST API',
+            versions: {
+              obsidian: '1.5.0',
+              self: '1.0.0'
+            },
+            manifest: {
+              id: 'obsidian-local-rest-api',
+              name: 'Local REST API',
+              version: '3.1.0',
+              minAppVersion: '0.12.0',
+              description: 'Get, change or otherwise interact with your notes in Obsidian via a REST API.',
+              author: 'Adam Coddington',
+              authorUrl: 'https://coddingtonbear.net/',
+              isDesktopOnly: true,
+              dir: '.obsidian/plugins/obsidian-local-rest-api'
+            },
+            certificateInfo: {
+              validityDays: 364.6621255324074,
+              regenerateRecommended: false
+            },
+            apiExtensions: []
+          }));
+        } else if (req.url.includes('/alerts?area=CA')) {
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            features: [
+              {
+                properties: {
+                  event: 'Test Alert',
+                  headline: 'Test Alert for CA',
+                  severity: 'Moderate',
+                  urgency: 'Expected',
+                  status: 'Actual',
+                  description: 'This is a test alert',
+                  areaDesc: 'Test Area, CA',
+                  effective: '2025-01-23T10:00:00Z',
+                  expires: '2025-01-24T10:00:00Z'
+                }
+              }
+            ]
+          }));
+        } else if (req.url.includes('/alerts?area=XX')) {
+          res.statusCode = 404;
+          res.end(JSON.stringify({ error: 'Not found' }));
+        } else if (req.url.includes('/alerts?area=HI')) {
+          res.statusCode = 200;
+          res.end(JSON.stringify({ features: [] }));
+        } else if (req.url.includes('/points/37.7749,-122.4194')) {
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            properties: {
+              forecast: `http://localhost:${this.port}/gridpoints/MTR/85,105/forecast`
+            }
+          }));
+        } else if (req.url.includes('/gridpoints/MTR/85,105/forecast')) {
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            properties: {
+              periods: [
+                {
+                  name: 'Today',
+                  temperature: 65,
+                  temperatureUnit: 'F',
+                  windSpeed: '10 mph',
+                  windDirection: 'W',
+                  shortForecast: 'Sunny'
+                },
+                {
+                  name: 'Tonight',
+                  temperature: 50,
+                  temperatureUnit: 'F',
+                  windSpeed: '5 mph',
+                  windDirection: 'W',
+                  shortForecast: 'Clear'
+                }
+              ]
+            }
+          }));
+        } else {
+          res.statusCode = 404;
+          res.end(JSON.stringify({ error: 'Not found' }));
+        }
+      });
+
+      this.server.listen(0, () => {
+        this.port = this.server.address().port;
+        console.log(`モックAPIサーバーが起動しました: http://localhost:${this.port}`);
+        resolve();
+      });
+    });
+  }
+
+  stop() {
+    if (this.server) {
+      this.server.close();
+    }
+  }
+
+  getBaseUrl() {
+    return `http://localhost:${this.port}`;
+  }
+}

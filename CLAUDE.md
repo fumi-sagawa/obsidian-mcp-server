@@ -168,21 +168,56 @@ describe('get_server_status', () => {
 - コンパイル時の型チェックを活用
 
 ### テスト構造
-- 各featureの`tests/`ディレクトリにテストを配置
-- ハンドラーのビジネスロジックに焦点を当てたテスト
-- 依存性注入パターンでモックを実装
+
+このプロジェクトは3層のテスト戦略を採用しています：
+
+```
+test/
+├── tools/                      # 統合テスト
+│   ├── get-alerts/
+│   │   ├── integration.js      # 実際のAPIを使った統合テスト
+│   │   └── mock.js             # モックAPIを使った統合テスト
+│   ├── get-forecast/
+│   ├── health-check/
+│   ├── get-server-status/
+│   ├── obsidian/               # Obsidian関連ツール
+│   │   ├── update-active-file/
+│   │   └── append-to-active-file/
+│   └── shared/                 # 共通テスト機能
+│       ├── test-runner.js      # テスト実行エンジン
+│       └── mock-server.js      # モックAPIサーバー
+├── test-all-tools.js           # 統合テスト実行
+└── test-all-tools-mock.js      # モックテスト実行
+```
+
+**テストレベル：**
+- **Unit Test**: 個別の関数やクラスの動作をテスト（`src/**/*.test.ts`）
+- **Integration Test**: MCPプロトコル → ハンドラー → API連携の統合テスト
+- **E2E Test**: ユーザーの実際の操作フローのテスト（将来実装）
+
+**新しいツールのテスト追加方法：**
+1. `test/tools/新機能名/` ディレクトリを作成
+2. `integration.js` と `mock.js` ファイルを作成
+3. メインのテストランナーファイル（`test-all-tools.js`, `test-all-tools-mock.js`）でインポートを追加
+
+### テスト実行コマンド
+```bash
+# 単体テスト（Unit Test）
+npm test              # カバレッジレポート付きで実行
+npm run test:unit     # 高速実行（カバレッジなし）
+npm run test:watch    # 開発中の自動テスト
+
+# 統合テスト（Integration Test）
+npm run test:tools              # 全ツールの統合テスト
+npm run test:tools:mock         # 全ツールのモックテスト
+npm run test:tools get-alerts   # 特定ツールの統合テスト
+npm run test:tool               # 単一ツールの対話式テスト
+```
 
 ### テストカバレッジ
 - 目標カバレッジ: 90%以上
 - 重要なビジネスロジックは100%カバー
 - エラーケースとエッジケースを網羅
-
-### テストの実行
-```bash
-npm test              # カバレッジレポート付きで実行
-npm run test:unit     # 高速実行（カバレッジなし）
-npm run test:watch    # 開発中の自動テスト
-```
 
 ## コードスタイル
 
@@ -320,6 +355,7 @@ project/
    ```bash
    # 全テストが通ることを確認
    npm test
+   npm run test:tools:mock  # 統合テストも実行
    
    # PRを作成（mainブランチへ）
    gh pr create
@@ -327,6 +363,30 @@ project/
    # マージ後、チケットをdoneフォルダに移動
    mv project/tasks/doing/20240524-get_server_status.md project/tasks/done/
    ```
+
+## 🚨 重要：機能実装完了時の報告ルール
+
+**機能追加やコード変更が完了し、コミットする前は必ずユーザーに報告してください。**
+
+### 報告すべき内容
+1. **実装した機能の概要**
+2. **変更されたファイル一覧**
+3. **テスト結果（全て通過していることを確認）**
+4. **動作確認の結果**
+5. **コミットメッセージの提案**
+
+### 報告のタイミング
+- 新機能の実装が完了した時
+- 既存機能の修正・改善が完了した時
+- ドキュメントの更新が完了した時
+- リファクタリングが完了した時
+
+### 報告後の流れ
+1. ユーザーの確認・承認を得る
+2. 承認後にコミット・プッシュを実行
+3. 必要に応じてプルリクエストを作成
+
+**注意**: ユーザーの明示的な承認なしに、勝手にコミット・プッシュは行わないでください。
 
 ## 実装の優先順位
 

@@ -107,10 +107,50 @@ TypeScriptをJavaScriptにコンパイルし、適切な実行権限を設定し
 ### テスト
 
 ```bash
+# 単体テスト（Unit Test）
 npm test              # 単体テストをカバレッジ付きで実行
 npm run test:unit     # カバレッジなしで高速実行
 npm run test:watch    # ファイル変更を監視して自動実行
+
+# 統合テスト（Integration Test）
+npm run test:tools              # 全ツールの統合テスト
+npm run test:tools:mock         # 全ツールのモックテスト
+npm run test:tools get-alerts   # 特定ツールの統合テスト
+npm run test:tool               # 単一ツールの対話式テスト
 ```
+
+#### テスト構造
+
+このプロジェクトは3層のテスト戦略を採用しています：
+
+```
+test/
+├── tools/                      # 統合テスト
+│   ├── get-alerts/
+│   │   ├── integration.js      # 実際のAPIを使った統合テスト
+│   │   └── mock.js             # モックAPIを使った統合テスト
+│   ├── get-forecast/
+│   ├── health-check/
+│   ├── get-server-status/
+│   ├── obsidian/               # Obsidian関連ツール
+│   │   ├── update-active-file/
+│   │   └── append-to-active-file/
+│   └── shared/                 # 共通テスト機能
+│       ├── test-runner.js      # テスト実行エンジン
+│       └── mock-server.js      # モックAPIサーバー
+├── test-all-tools.js           # 統合テスト実行
+└── test-all-tools-mock.js      # モックテスト実行
+```
+
+**テストレベル：**
+- **Unit Test**: 個別の関数やクラスの動作をテスト（`src/**/*.test.ts`）
+- **Integration Test**: MCPプロトコル → ハンドラー → API連携の統合テスト
+- **E2E Test**: ユーザーの実際の操作フローのテスト（将来実装）
+
+**新しいツールのテスト追加方法：**
+1. `test/tools/新機能名/` ディレクトリを作成
+2. `integration.js` と `mock.js` ファイルを作成
+3. メインのテストランナーファイルでインポートを追加
 
 ### 開発モード
 
