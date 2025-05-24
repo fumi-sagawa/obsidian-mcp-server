@@ -35,6 +35,10 @@ class MockApiServer {
           // アクティブファイルの更新をモック
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'POST' && req.url === '/active/') {
+          // アクティブファイルへの追記をモック
+          res.statusCode = 204; // No Content
+          res.end();
         } else if (req.url === '/') {
           // Obsidian API root endpoint
           res.statusCode = 200;
@@ -270,6 +274,41 @@ const testCases = {
         response => response.result !== undefined,
         // 期待される結果: 成功メッセージ
         response => response.result.content[0].text.includes('Active file updated successfully')
+      ]
+    }
+  ],
+
+  'append-to-active-file': [
+    {
+      name: 'アクティブファイルにコンテンツを追記',
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'append-to-active-file',
+          arguments: { content: '\n\n## 追記されたセクション\n\nこれは追記されたコンテンツです。' }
+        }
+      },
+      assertions: [
+        // 期待される結果: 成功レスポンス
+        response => response.result !== undefined,
+        // 期待される結果: 成功メッセージ
+        response => response.result.content[0].text.includes('アクティブファイルにコンテンツを追記しました')
+      ]
+    },
+    {
+      name: '空のコンテンツを追記',
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'append-to-active-file',
+          arguments: { content: '' }
+        }
+      },
+      assertions: [
+        // 期待される結果: 成功レスポンス
+        response => response.result !== undefined,
+        // 期待される結果: 成功メッセージ
+        response => response.result.content[0].text.includes('アクティブファイルにコンテンツを追記しました')
       ]
     }
   ]

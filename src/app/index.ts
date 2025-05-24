@@ -6,6 +6,7 @@ import { handleHealthCheck, HealthCheckSchema } from '../features/health-check/i
 import { getServerStatusHandler, getServerStatusArgsSchema } from '../features/get-server-status/index.js';
 import { getActiveFileHandler, getActiveFileSchema } from '../features/get-active-file/index.js';
 import { updateActiveFileHandler, updateActiveFileTool } from '../features/update-active-file/index.js';
+import { appendToActiveFileHandler, appendToActiveFileSchema } from '../features/append-to-active-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -109,6 +110,14 @@ server.tool(
   wrapHandler(updateActiveFileHandler, 'update-active-file')
 );
 appLogger.debug("Registered tool: update-active-file");
+
+server.tool(
+  "append-to-active-file",
+  "Append content to the end of the currently active file in Obsidian",
+  appendToActiveFileSchema.shape,
+  wrapHandler(appendToActiveFileHandler, 'append-to-active-file')
+);
+appLogger.debug("Registered tool: append-to-active-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
