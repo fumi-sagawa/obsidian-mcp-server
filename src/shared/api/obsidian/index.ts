@@ -1,0 +1,1 @@
+export { ObsidianAPIClient } from './obsidian-api.js';

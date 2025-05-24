@@ -14,6 +14,10 @@ export interface Config {
   nwsApiBaseUrl: string;
   nwsUserAgent: string;
   
+  // Obsidian API
+  obsidianApiUrl?: string;
+  obsidianApiKey?: string;
+  
   // Development
   prettyLogs: boolean;
   logTimestamps: boolean;

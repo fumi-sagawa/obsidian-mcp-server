@@ -13,9 +13,9 @@
     "inspector": "node scripts/inspector-wrapper.js",
     "inspector:debug": "LOG_LEVEL=debug PRETTY_LOGS=true node scripts/inspector-wrapper.js",
     "inspector:clean": "./scripts/kill-inspector-ports.sh",
-    "test": "node --import tsx --experimental-test-coverage --test src/**/*.test.ts",
-    "test:watch": "node --import tsx --experimental-test-coverage --test --watch src/**/*.test.ts",
-    "test:unit": "node --import tsx --test src/**/*.test.ts",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:unit": "vitest run",
     "test:tools": "npm run build && node test/test-tools.js",
     "test:tools:mock": "npm run build && node test/test-tools-mock.js",
     "test:tool": "npm run build && ./test/test-single.sh",
@@ -40,7 +40,9 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^3.1.4",
     "tsx": "^4.7.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^3.1.4"
   }
 }

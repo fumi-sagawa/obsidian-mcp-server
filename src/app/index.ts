@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { getAlertsHandler, alertsSchema } from '../features/get-alerts/index.js';
 import { getForecastHandler, forecastSchema } from '../features/get-forecast/index.js';
 import { handleHealthCheck, HealthCheckSchema } from '../features/health-check/index.js';
+import { getServerStatusHandler, getServerStatusArgsSchema } from '../features/get-server-status/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -82,6 +83,14 @@ server.tool(
   wrapHandler(handleHealthCheck, 'health-check')
 );
 appLogger.debug("Registered tool: health-check");
+
+server.tool(
+  "get-server-status",
+  "Get Obsidian server status and version information",
+  getServerStatusArgsSchema,
+  wrapHandler(getServerStatusHandler, 'get-server-status')
+);
+appLogger.debug("Registered tool: get-server-status");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

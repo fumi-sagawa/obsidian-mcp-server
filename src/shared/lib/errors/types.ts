@@ -4,6 +4,7 @@ export enum ErrorCode {
   API_RESPONSE_INVALID = 'API_RESPONSE_INVALID',
   API_TIMEOUT = 'API_TIMEOUT',
   API_RATE_LIMIT = 'API_RATE_LIMIT',
+  API_CONNECTION_ERROR = 'API_CONNECTION_ERROR',
   
   // Validation Errors (2xxx)
   VALIDATION_FAILED = 'VALIDATION_FAILED',
@@ -12,6 +13,7 @@ export enum ErrorCode {
   
   // System Errors (3xxx)
   SYSTEM_ERROR = 'SYSTEM_ERROR',
+  SYSTEM_UNEXPECTED = 'SYSTEM_UNEXPECTED',
   CONFIGURATION_ERROR = 'CONFIGURATION_ERROR',
   
   // Business Logic Errors (4xxx)

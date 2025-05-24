@@ -62,6 +62,10 @@ export function loadConfig(): Config {
     nwsApiBaseUrl: getEnvString('NWS_API_BASE_URL', 'https://api.weather.gov'),
     nwsUserAgent: getEnvString('NWS_USER_AGENT', '(weather-mcp-server, contact@example.com)'),
     
+    // Obsidian API
+    obsidianApiUrl: process.env.OBSIDIAN_API_URL,
+    obsidianApiKey: process.env.OBSIDIAN_API_KEY,
+    
     // Development
     prettyLogs: getEnvBoolean('PRETTY_LOGS', isDevelopment),
     logTimestamps: getEnvBoolean('LOG_TIMESTAMPS', true),

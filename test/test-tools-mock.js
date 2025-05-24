@@ -19,7 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const serverPath = join(__dirname, '..', 'build', 'index.js');
 
 // モックAPIサーバーの作成
-class MockNWSApiServer {
+class MockApiServer {
   constructor() {
     this.server = null;
     this.port = 0;
@@ -31,7 +31,35 @@ class MockNWSApiServer {
         res.setHeader('Content-Type', 'application/json');
         
         // URLパスに基づいてモックレスポンスを返す
-        if (req.url.includes('/alerts?area=CA')) {
+        if (req.url === '/') {
+          // Obsidian API root endpoint
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            authenticated: true,
+            status: 'OK',
+            service: 'Obsidian Local REST API',
+            versions: {
+              obsidian: '1.5.0',
+              self: '1.0.0'
+            },
+            manifest: {
+              id: 'obsidian-local-rest-api',
+              name: 'Local REST API',
+              version: '3.1.0',
+              minAppVersion: '0.12.0',
+              description: 'Get, change or otherwise interact with your notes in Obsidian via a REST API.',
+              author: 'Adam Coddington',
+              authorUrl: 'https://coddingtonbear.net/',
+              isDesktopOnly: true,
+              dir: '.obsidian/plugins/obsidian-local-rest-api'
+            },
+            certificateInfo: {
+              validityDays: 364.6621255324074,
+              regenerateRecommended: false
+            },
+            apiExtensions: []
+          }));
+        } else if (req.url.includes('/alerts?area=CA')) {
           res.statusCode = 200;
           res.end(JSON.stringify({
             features: [
@@ -182,6 +210,29 @@ const testCases = {
         response => response.result.content[0].text.includes('Sunny')
       ]
     }
+  ],
+  
+  'get-server-status': [
+    {
+      name: 'Obsidianサーバーステータスを取得',
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'get-server-status',
+          arguments: {}
+        }
+      },
+      assertions: [
+        // 期待される結果: 成功レスポンス
+        response => response.result !== undefined,
+        // 期待される結果: Obsidian Server Statusを含む
+        response => response.result.content[0].text.includes('Obsidian Server Status'),
+        // 期待される結果: 認証状態を含む
+        response => response.result.content[0].text.includes('Authenticated: Yes'),
+        // 期待される結果: バージョン情報を含む
+        response => response.result.content[0].text.includes('Obsidian Version: 1.5.0')
+      ]
+    }
   ]
 };
 
@@ -191,6 +242,7 @@ async function runTest(testCase, mockBaseUrl) {
     const env = {
       ...process.env,
       NWS_API_BASE_URL: mockBaseUrl,
+      OBSIDIAN_API_URL: mockBaseUrl,
       LOG_LEVEL: 'error' // テスト中はエラーログのみ
     };
 
@@ -247,7 +299,7 @@ async function main() {
   console.log('=== Weather MCP Server モックテスト ===\n');
   
   // モックサーバーを起動
-  const mockServer = new MockNWSApiServer();
+  const mockServer = new MockApiServer();
   await mockServer.start();
   
   try {
