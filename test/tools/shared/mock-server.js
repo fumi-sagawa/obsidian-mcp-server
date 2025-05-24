@@ -43,6 +43,29 @@ export class MockApiServer {
               { id: 'quick-switcher:open', name: 'Quick switcher: Open quick switcher' }
             ]
           }));
+        } else if (req.method === 'POST' && req.url.startsWith('/commands/')) {
+          // コマンド実行をモック
+          const commandId = decodeURIComponent(req.url.substring('/commands/'.length, req.url.length - 1));
+          
+          if (commandId === 'non-existent-command') {
+            // 存在しないコマンドの場合は404
+            res.statusCode = 404;
+            res.end(JSON.stringify({
+              errorCode: 40149,
+              message: 'The command you specified does not exist.'
+            }));
+          } else if (commandId === '') {
+            // 空のコマンドID
+            res.statusCode = 400;
+            res.end(JSON.stringify({
+              errorCode: 40001,
+              message: 'Command ID is required'
+            }));
+          } else {
+            // 正常なコマンド実行
+            res.statusCode = 204; // No Content
+            res.end();
+          }
         } else if (req.url === '/') {
           // Obsidian API root endpoint
           res.statusCode = 200;

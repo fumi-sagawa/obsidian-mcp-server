@@ -23,6 +23,7 @@ import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to
 import { tests as insertIntoActiveFileTests } from './tools/obsidian/insert-into-active-file/mock.js';
 import { deleteActiveFileMockTests as deleteActiveFileTests } from './tools/obsidian/delete-active-file/mock.js';
 import { testCases as listCommandsTests } from './tools/list-commands/mock.js';
+import { testCases as executeCommandTests } from './tools/execute-command/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -34,7 +35,8 @@ const testSuites = {
   'append-to-active-file': appendToActiveFileTests,
   'insert-into-active-file': insertIntoActiveFileTests,
   'delete-active-file': deleteActiveFileTests,
-  'list-commands': listCommandsTests
+  'list-commands': listCommandsTests,
+  'execute-command': executeCommandTests
 };
 
 // メイン実行

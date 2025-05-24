@@ -149,6 +149,15 @@ export class ObsidianAPIClient {
         throw ApiError.fromResponse(response, errorBody);
       }
 
+      // 204 No Contentの場合はJSONパースをスキップ
+      if (response.status === 204) {
+        this.apiLogger.trace('Obsidian API request successful', {
+          status: response.status,
+          message: 'No content response'
+        });
+        return undefined as T;
+      }
+
       const data = await response.json() as T;
       this.apiLogger.trace('Obsidian API request successful', {
         status: response.status,

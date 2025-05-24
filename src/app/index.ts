@@ -10,6 +10,7 @@ import { appendToActiveFileHandler, appendToActiveFileSchema } from '../features
 import { insertIntoActiveFileHandler, insertIntoActiveFileSchema } from '../features/insert-into-active-file/index.js';
 import { deleteActiveFileHandler, deleteActiveFileSchema } from '../features/delete-active-file/index.js';
 import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-commands/index.js';
+import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -145,6 +146,14 @@ server.tool(
   wrapHandler(listCommandsHandler, 'list-commands')
 );
 appLogger.debug("Registered tool: list-commands");
+
+server.tool(
+  "execute-command",
+  "Execute a command in Obsidian by its command ID",
+  executeCommandArgsSchema.shape,
+  wrapHandler(executeCommandHandler, 'execute-command')
+);
+appLogger.debug("Registered tool: execute-command");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
