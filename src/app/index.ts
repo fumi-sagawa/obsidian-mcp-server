@@ -12,6 +12,7 @@ import { deleteActiveFileHandler, deleteActiveFileSchema } from '../features/del
 import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-commands/index.js';
 import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
 import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
+import { getPeriodicNoteHandler, getPeriodicNoteSchema } from '../features/get-periodic-note/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -163,6 +164,14 @@ server.tool(
   wrapHandler(openFileHandler, 'open-file')
 );
 appLogger.debug("Registered tool: open-file");
+
+server.tool(
+  "get-periodic-note",
+  "Get a periodic note (daily, weekly, monthly, quarterly, or yearly) from Obsidian",
+  getPeriodicNoteSchema.shape,
+  wrapHandler(getPeriodicNoteHandler, 'get-periodic-note')
+);
+appLogger.debug("Registered tool: get-periodic-note");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

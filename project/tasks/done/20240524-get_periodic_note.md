@@ -9,35 +9,31 @@ Obsidianの定期ノート機能（デイリー、ウィークリー、マンス
 ## To-Be（完了条件）
 - [ ] 型定義ファイル：`src/features/get-periodic-note/types.ts`
 - [ ] PeriodType型（'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'）
-- [ ] PeriodicNoteContent型（content: string, date: string, exists: boolean）
+- [ ] NoteJsonスキーマに基づく型定義（API仕様に準拠）
 - [ ] テストファイル `src/features/get-periodic-note/tests/get-periodic-note-handler.test.ts` を作成
 - [ ] 型テスト：period列挙型の検証
 - [ ] 正常系テスト：各期間タイプでの取得
-- [ ] 日付テスト：今日、過去、未来の日付
-- [ ] 存在確認テスト：ノートが存在しない場合
-- [ ] フォーマットテスト：日付形式の違い
+- [ ] 存在確認テスト：ノートが存在しない場合（404エラー）
 - [ ] エラーテスト：無効なperiodタイプ
 - [ ] ハンドラー実装：`src/features/get-periodic-note/get-periodic-note-handler.ts`
 - [ ] Zodスキーマ定義：`src/features/get-periodic-note/schema.ts`
-- [ ] 日付処理実装：`src/features/get-periodic-note/date-handler.ts`
 - [ ] index.tsでのエクスポート
 - [ ] app/index.tsへのツール登録
 - [ ] 全テストが通る
 - [ ] 統合テストで動作確認
 
 ## 実装方針
-1. 期間タイプの厳密な型定義を最初に作成
+1. 期間タイプの厳密な型定義を最初に作成（API仕様に準拠）
 2. 型定義に基づいてテストを設計（TDD）
-3. 日付指定オプションの実装
-4. 存在しないノートへの対応
-5. タイムゾーンの考慮
+3. 存在しないノートへの対応（404エラーハンドリング）
+4. NoteJsonスキーマのデシリアライゼーション
 
 ## 関連情報
 - APIエンドポイント: GET /periodic/{period}/
 - 参考資料: /project/参考文献/openapi.yaml
 - 関連ツール: update_periodic_note, append_to_periodic_note
-- パスパラメータ: period（daily/weekly/monthly等）
-- クエリパラメータ: date（オプション）
+- パスパラメータ: period（daily/weekly/monthly/quarterly/yearly）
+- レスポンス: NoteJsonスキーマまたはtext/markdown
 
 ## 作業ログ
 ### 作業開始時に記録
