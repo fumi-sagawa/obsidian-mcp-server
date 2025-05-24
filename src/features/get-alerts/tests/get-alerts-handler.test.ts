@@ -1,5 +1,4 @@
-import { describe, it, mock, beforeEach } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // 依存性を注入したテスト用ハンドラーを作成
 function createTestHandler(dependencies: {
@@ -95,22 +94,22 @@ function createTestHandler(dependencies: {
 
 // モック依存関係
 const mockNwsApi = {
-  getAlerts: mock.fn()
+  getAlerts: vi.fn()
 };
 
 const mockLogger = {
   child: () => ({
-    info: mock.fn(),
-    error: mock.fn(),
-    warn: mock.fn(),
-    debug: mock.fn()
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn()
   })
 };
 
-const mockHandleError = mock.fn((error) => error);
+const mockHandleError = vi.fn((error) => error);
 
 const mockMetricsMiddleware = {
-  trackWeatherAPICall: mock.fn(async (operation, fn) => fn())
+  trackWeatherAPICall: vi.fn(async (operation, fn) => fn())
 };
 
 const mockValidationError = {
@@ -136,9 +135,7 @@ describe('getAlertsハンドラー', () => {
   });
   beforeEach(() => {
     // 各テストの前にすべてのモックをリセット
-    mockNwsApi.getAlerts.mock.resetCalls();
-    mockHandleError.mock.resetCalls();
-    mockMetricsMiddleware.trackWeatherAPICall.mock.resetCalls();
+    vi.clearAllMocks();
   });
 
   it('有効な州コードに対してアラートを返すべき', async () => {
@@ -160,70 +157,70 @@ describe('getAlertsハンドラー', () => {
       ]
     };
 
-    mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve(mockAlertData));
+    mockNwsApi.getAlerts.mockResolvedValue(mockAlertData);
 
     const result = await getAlertsHandler({ state: 'CA' });
 
-    assert.strictEqual(mockNwsApi.getAlerts.mock.calls.length, 1);
-    assert.strictEqual(mockNwsApi.getAlerts.mock.calls[0].arguments[0], 'CA');
-    assert.strictEqual(result.content[0].type, 'text');
-    assert(result.content[0].text.includes('Active alerts for CA'));
-    assert(result.content[0].text.includes('Winter Storm Warning'));
+    expect(mockNwsApi.getAlerts).toHaveBeenCalledTimes(1);
+    expect(mockNwsApi.getAlerts).toHaveBeenCalledWith('CA');
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Active alerts for CA');
+    expect(result.content[0].text).toContain('Winter Storm Warning');
   });
 
   it('アラートが存在しない場合はアラートなしメッセージを返すべき', async () => {
-    mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({ features: [] }));
+    mockNwsApi.getAlerts.mockResolvedValue({ features: [] });
 
     const result = await getAlertsHandler({ state: 'HI' });
 
-    assert.strictEqual(result.content[0].type, 'text');
-    assert.strictEqual(result.content[0].text, 'No active alerts for HI');
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toBe('No active alerts for HI');
   });
 
   it('無効な州コードを処理すべき', async () => {
     const result = await getAlertsHandler({ state: 'XX' });
 
-    assert.strictEqual(mockNwsApi.getAlerts.mock.calls.length, 0);
-    assert.strictEqual(result.content[0].type, 'text');
-    assert(result.content[0].text.includes('Error:'));
-    assert(result.content[0].text.includes('Invalid state code: XX'));
+    expect(mockNwsApi.getAlerts).not.toHaveBeenCalled();
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('Error:');
+    expect(result.content[0].text).toContain('Invalid state code: XX');
   });
 
   it('州コードを大文字に変換すべき', async () => {
-    mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({ features: [] }));
+    mockNwsApi.getAlerts.mockResolvedValue({ features: [] });
 
     await getAlertsHandler({ state: 'ca' });
 
-    assert.strictEqual(mockNwsApi.getAlerts.mock.calls[0].arguments[0], 'CA');
+    expect(mockNwsApi.getAlerts).toHaveBeenCalledWith('CA');
   });
 
   it('APIエラーを適切に処理すべき', async () => {
     const apiError = new Error('Network error');
-    mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.reject(apiError));
-    mockHandleError.mock.mockImplementation((error) => ({ message: 'API request failed' }));
+    mockNwsApi.getAlerts.mockRejectedValue(apiError);
+    mockHandleError.mockReturnValue({ message: 'API request failed' });
 
     const result = await getAlertsHandler({ state: 'CA' });
 
-    assert.strictEqual(result.content[0].type, 'text');
-    assert.strictEqual(result.content[0].text, 'Error: API request failed');
-    assert.strictEqual(mockHandleError.mock.calls.length, 1);
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toBe('Error: API request failed');
+    expect(mockHandleError).toHaveBeenCalledTimes(1);
   });
 
   it('featuresプロパティが欠落している場合を処理すべき', async () => {
-    mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({}));
+    mockNwsApi.getAlerts.mockResolvedValue({});
 
     const result = await getAlertsHandler({ state: 'CA' });
 
-    assert.strictEqual(result.content[0].type, 'text');
-    assert.strictEqual(result.content[0].text, 'No active alerts for CA');
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toBe('No active alerts for CA');
   });
 
   it('成功したコールのメトリクスを追跡すべき', async () => {
-    mockNwsApi.getAlerts.mock.mockImplementation(() => Promise.resolve({ features: [] }));
+    mockNwsApi.getAlerts.mockResolvedValue({ features: [] });
 
     await getAlertsHandler({ state: 'CA' });
 
-    assert.strictEqual(mockMetricsMiddleware.trackWeatherAPICall.mock.calls.length, 1);
-    assert.strictEqual(mockMetricsMiddleware.trackWeatherAPICall.mock.calls[0].arguments[0], 'get-alerts');
+    expect(mockMetricsMiddleware.trackWeatherAPICall).toHaveBeenCalledTimes(1);
+    expect(mockMetricsMiddleware.trackWeatherAPICall).toHaveBeenCalledWith('get-alerts', expect.any(Function));
   });
 });
