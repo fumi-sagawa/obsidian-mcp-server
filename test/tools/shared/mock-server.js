@@ -171,6 +171,64 @@ export class MockApiServer {
           // 成功レスポンス
           res.statusCode = 200;
           res.end(''); // open エンドポイントは空のレスポンスを返す
+        } else if (req.method === 'POST' && req.url.startsWith('/search/simple/')) {
+          // simple search エンドポイント
+          const urlParts = req.url.split('?');
+          const queryParams = new URLSearchParams(urlParts[1] || '');
+          const query = queryParams.get('query');
+          const contextLength = parseInt(queryParams.get('contextLength') || '100', 10);
+          
+          if (!query) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: 'Query parameter is required' }));
+            return;
+          }
+          
+          // モック結果を返す
+          if (query.includes('xyzabcdefghijklmnop')) {
+            // 結果なしの場合
+            res.statusCode = 200;
+            res.end(JSON.stringify([]));
+          } else if (query === '会議' || query === 'meeting') {
+            res.statusCode = 200;
+            res.end(JSON.stringify([
+              {
+                filename: 'notes/meetings/2024-01-20.md',
+                matches: [
+                  {
+                    match: { start: 10, end: 17 },
+                    context: '今日は重要な会議がありました。'
+                  }
+                ],
+                score: 0.95
+              },
+              {
+                filename: 'notes/daily/2024-01-19.md',
+                matches: [
+                  {
+                    match: { start: 20, end: 27 },
+                    context: '明日の会議の準備をする必要があります。'
+                  }
+                ],
+                score: 0.82
+              }
+            ]));
+          } else {
+            // デフォルトケース
+            res.statusCode = 200;
+            res.end(JSON.stringify([
+              {
+                filename: `notes/test-${Date.now()}.md`,
+                matches: [
+                  {
+                    match: { start: 0, end: query.length },
+                    context: `This is a test result for query: ${query} with context length ${contextLength}`
+                  }
+                ],
+                score: 0.75
+              }
+            ]));
+          }
         } else {
           res.statusCode = 404;
           res.end(JSON.stringify({ error: 'Not found' }));

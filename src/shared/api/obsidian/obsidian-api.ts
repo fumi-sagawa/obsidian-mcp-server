@@ -3,6 +3,7 @@ import { ApiError, SystemError, ErrorCode } from '../../lib/errors/index.js';
 import { getConfig } from '../../config/index.js';
 import type { GetActiveFileResponse } from '../../../features/get-active-file/types.js';
 import type { GetPeriodicNoteResponse, PeriodType } from '../../../features/get-periodic-note/types.js';
+import type { SearchResult } from '../../../features/simple-search/types.js';
 
 /**
  * Obsidian Local REST APIクライアント
@@ -1040,6 +1041,120 @@ export class ObsidianAPIClient {
             408,
             undefined,
             { url }
+          );
+        }
+
+        if (error.message.includes('ECONNREFUSED') || error.message.includes('Network')) {
+          throw new ApiError(
+            'Connection refused',
+            ErrorCode.API_CONNECTION_ERROR,
+            503,
+            undefined,
+            { url, originalError: error.message }
+          );
+        }
+      }
+
+      throw new SystemError(
+        'Unexpected error during API request',
+        error instanceof Error ? error : undefined,
+        { url }
+      );
+    }
+  }
+
+  /**
+   * シンプル検索を実行
+   */
+  async searchSimple(query: string, contextLength?: number): Promise<SearchResult[]> {
+    const params = new URLSearchParams({ query });
+    if (contextLength !== undefined) {
+      params.append('contextLength', contextLength.toString());
+    }
+    
+    const url = `${this.baseUrl}/search/simple/?${params}`;
+    
+    this.apiLogger.debug('Executing simple search', { 
+      url,
+      query,
+      contextLength,
+      hasApiKey: !!this.apiKey
+    });
+
+    const controller = new AbortController();
+    const config = getConfig();
+    const timeoutId = setTimeout(() => controller.abort(), config.apiTimeout);
+
+    try {
+      const headers: Record<string, string> = {
+        'Accept': 'application/json',
+      };
+
+      if (this.apiKey) {
+        headers['Authorization'] = `Bearer ${this.apiKey}`;
+      } else {
+        this.apiLogger.warn('No API key configured for Obsidian API');
+      }
+
+      const fetchOptions: RequestInit = {
+        method: 'POST',
+        headers,
+        signal: controller.signal,
+      };
+
+      // HTTPSの場合は証明書検証を無効化（自己署名証明書対応）
+      if (typeof process !== 'undefined' && process.versions && process.versions.node && this.baseUrl.startsWith('https:')) {
+        (fetchOptions as any).agent = new (await import('https')).Agent({
+          rejectUnauthorized: false
+        });
+      }
+
+      const response = await fetch(url, fetchOptions);
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.apiLogger.error('Unauthorized: API key is invalid or missing');
+          throw new ApiError(
+            'Unauthorized: Invalid or missing API key',
+            ErrorCode.API_REQUEST_FAILED,
+            401,
+            undefined,
+            { url }
+          );
+        }
+        const errorBody = await response.text().catch(() => null);
+        this.apiLogger.error('API request failed', { 
+          status: response.status, 
+          statusText: response.statusText,
+          errorBody 
+        } as any);
+        throw ApiError.fromResponse(response, errorBody);
+      }
+
+      const data = await response.json() as SearchResult[];
+      this.apiLogger.trace('Simple search completed successfully', {
+        status: response.status,
+        resultsCount: data.length
+      });
+
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new ApiError(
+            'Request timeout',
+            ErrorCode.API_TIMEOUT,
+            408,
+            undefined,
+            { url, timeout: config.apiTimeout }
           );
         }
 
