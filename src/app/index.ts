@@ -4,6 +4,7 @@ import { getAlertsHandler, alertsSchema } from '../features/get-alerts/index.js'
 import { getForecastHandler, forecastSchema } from '../features/get-forecast/index.js';
 import { handleHealthCheck, HealthCheckSchema } from '../features/health-check/index.js';
 import { getServerStatusHandler, getServerStatusArgsSchema } from '../features/get-server-status/index.js';
+import { getActiveFileHandler, getActiveFileSchema } from '../features/get-active-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -91,6 +92,14 @@ server.tool(
   wrapHandler(getServerStatusHandler, 'get-server-status')
 );
 appLogger.debug("Registered tool: get-server-status");
+
+server.tool(
+  "get-active-file",
+  "Get the currently active file in Obsidian",
+  getActiveFileSchema,
+  wrapHandler(getActiveFileHandler, 'get-active-file')
+);
+appLogger.debug("Registered tool: get-active-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
