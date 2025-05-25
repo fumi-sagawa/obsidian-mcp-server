@@ -22,6 +22,7 @@ import { testCases as updateActiveFileTests } from './tools/obsidian/update-acti
 import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to-active-file/mock.js';
 import { testCases as insertIntoActiveFileTests } from './tools/obsidian/insert-into-active-file/mock.js';
 import { testCases as deleteActiveFileTests } from './tools/obsidian/delete-active-file/mock.js';
+import { testCases as deletePeriodicNoteTests } from './tools/delete-periodic-note/mock.js';
 import { testCases as listCommandsTests } from './tools/list-commands/mock.js';
 import { testCases as executeCommandTests } from './tools/execute-command/mock.js';
 import { testCases as openFileTests } from './tools/open-file/mock.js';
@@ -43,6 +44,7 @@ const testSuites = {
   'append-to-active-file': appendToActiveFileTests,
   'insert-into-active-file': insertIntoActiveFileTests,
   'delete-active-file': deleteActiveFileTests,
+  'delete-periodic-note': deletePeriodicNoteTests,
   'list-commands': listCommandsTests,
   'execute-command': executeCommandTests,
   'open-file': openFileTests,

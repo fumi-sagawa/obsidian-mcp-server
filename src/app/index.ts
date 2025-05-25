@@ -9,6 +9,7 @@ import { updateActiveFileHandler, updateActiveFileTool } from '../features/updat
 import { appendToActiveFileHandler, appendToActiveFileSchema } from '../features/append-to-active-file/index.js';
 import { insertIntoActiveFileHandler, insertIntoActiveFileSchema } from '../features/insert-into-active-file/index.js';
 import { deleteActiveFileHandler, deleteActiveFileSchema } from '../features/delete-active-file/index.js';
+import { deletePeriodicNoteHandler, deletePeriodicNoteToolConfig } from '../features/delete-periodic-note/index.js';
 import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-commands/index.js';
 import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
 import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
@@ -146,6 +147,14 @@ server.tool(
   wrapHandler(deleteActiveFileHandler, 'delete-active-file')
 );
 appLogger.debug("Registered tool: delete-active-file");
+
+server.tool(
+  deletePeriodicNoteToolConfig.name,
+  deletePeriodicNoteToolConfig.description,
+  deletePeriodicNoteToolConfig.inputSchema.shape,
+  wrapHandler(deletePeriodicNoteHandler, 'delete-periodic-note')
+);
+appLogger.debug("Registered tool: delete-periodic-note");
 
 server.tool(
   "list-commands",

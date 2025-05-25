@@ -258,6 +258,23 @@ export class MockApiServer {
           // Simulate successful append (204 No Content)
           res.statusCode = 204;
           res.end();
+        } else if (req.method === 'DELETE' && req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)) {
+          // DELETE periodic note
+          const period = req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)[1];
+          
+          // テスト用に特定の条件でエラーをシミュレート
+          if (period === 'nonexistent') {
+            res.statusCode = 404;
+            res.end(JSON.stringify({
+              error: 'No nonexistent note found',
+              errorCode: 40401
+            }));
+            return;
+          }
+          
+          // 成功の場合（204 No Content）
+          res.statusCode = 204;
+          res.end();
         } else if (req.method === 'POST' && req.url.startsWith('/search/simple/')) {
           // simple search エンドポイント
           const urlParts = req.url.split('?');

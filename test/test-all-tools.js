@@ -19,6 +19,7 @@ import { testCases as getServerStatusTests } from './tools/get-server-status/int
 import { testCases as updateActiveFileTests } from './tools/obsidian/update-active-file/integration.js';
 import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to-active-file/integration.js';
 import { testCases as deleteActiveFileTests } from './tools/obsidian/delete-active-file/integration.js';
+import { testCases as deletePeriodicNoteTests } from './tools/delete-periodic-note/integration.js';
 import { testCases as listCommandsTests } from './tools/list-commands/integration.js';
 import { testCases as openFileTests } from './tools/open-file/integration.js';
 import { testCases as getPeriodicNoteTests } from './tools/get-periodic-note/integration.js';
@@ -37,6 +38,7 @@ const testSuites = {
   'update_active_file': updateActiveFileTests,
   'append-to-active-file': appendToActiveFileTests,
   'delete-active-file': deleteActiveFileTests,
+  'delete-periodic-note': deletePeriodicNoteTests,
   'list-commands': listCommandsTests,
   'open-file': openFileTests,
   'get-periodic-note': getPeriodicNoteTests,
