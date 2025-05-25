@@ -81,5 +81,27 @@ MCPサーバーとして最適な出力形式を提供するため、以下の�
 - モックテスト: `npm run test:tools:mock`
 
 ## 作業ログ
-### 作業開始時
-- 未実装
+### 2025-05-25 19:05
+- タスクを開始し、ブランチ feature/20250125-fix-output-formatting を作成
+- 全ツールの出力形式を調査し、以下のフォーマット関数を特定：
+  - get-active-file: formatActiveFileResponse
+  - list-commands: formatCommands
+  - list-vault-files: formatFileList
+  - simple-search: formatSearchResults
+
+### 2025-05-25 19:14
+- 全ての不適切なフォーマット処理を修正完了：
+  1. get-active-file: フォーマット関数を削除し、JSON.stringifyでAPIレスポンスをそのまま返すよう修正
+  2. list-commands: format-commands.tsを削除し、APIレスポンスの構造を保持
+  3. list-vault-files: format-file-list.tsを削除し、filesとitemsの構造を保持して返す
+  4. simple-search: format-results.tsを削除し、検索結果の構造をそのまま返す
+- 全てのテストを新しい出力形式に合わせて更新
+- 全ての単体テストが成功することを確認（268 tests passed）
+
+### 2025-05-25 19:23
+- 追加修正：list-directoryツールのフォーマット処理も発見し、修正
+  - formatDirectoryListingとformatListingText関数による文字列フォーマットを削除
+  - JSON.stringifyでAPIレスポンスの構造を保持して返すよう修正
+  - テストも新しい出力形式に合わせて更新
+- 全ての単体テストが成功することを確認（273 tests passed）
+- カバレッジ: 79.42%

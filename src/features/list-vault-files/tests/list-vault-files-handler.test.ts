@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { listVaultFilesHandler } from '../list-vault-files-handler.js';
 import { obsidianApi } from '../../../shared/api/obsidian/index.js';
-import type { VaultFileListResponse, VaultItem, ListVaultFilesResult } from '../types.js';
+import type { VaultFileListResponse, VaultItem } from '../types.js';
 
 vi.mock('../../../shared/api/obsidian/index.js');
 
@@ -36,14 +36,15 @@ describe('listVaultFilesHandler', () => {
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
     
-    const text = result.content[0].text;
+    const parsedResponse = JSON.parse(result.content[0].text);
     
-    // フォーマットの確認
-    expect(text).toContain('📁 Vault Files');
-    expect(text).toContain('📄 Note.md');
-    expect(text).toContain('📁 Daily/');
-    expect(text).toContain('📁 Projects/');
-    expect(text).toContain('3 directories, 3 files');
+    // APIレスポンスの構造が保持されていることを確認
+    expect(parsedResponse).toHaveProperty('files');
+    expect(parsedResponse).toHaveProperty('items');
+    expect(parsedResponse.files).toEqual(mockResponse.files);
+    expect(parsedResponse.items).toHaveLength(6);
+    expect(parsedResponse.items.filter((item: VaultItem) => item.type === 'directory')).toHaveLength(3);
+    expect(parsedResponse.items.filter((item: VaultItem) => item.type === 'file')).toHaveLength(3);
   });
 
   it('空のVaultディレクトリを正しく処理できる', async () => {
@@ -58,7 +59,10 @@ describe('listVaultFilesHandler', () => {
     expect(result).toHaveProperty('content');
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
-    expect(result.content[0].text).toContain('🔍 Vault is empty');
+    
+    const parsedResponse = JSON.parse(result.content[0].text);
+    expect(parsedResponse.files).toEqual([]);
+    expect(parsedResponse.items).toEqual([]);
   });
 
   it('大量のファイルを含むディレクトリを処理できる', async () => {
@@ -80,7 +84,12 @@ describe('listVaultFilesHandler', () => {
     expect(result).toHaveProperty('content');
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
-    expect(result.content[0].text).toContain('50 directories, 50 files');
+    
+    const parsedResponse = JSON.parse(result.content[0].text);
+    expect(parsedResponse.files).toHaveLength(100);
+    expect(parsedResponse.items).toHaveLength(100);
+    expect(parsedResponse.items.filter((item: VaultItem) => item.type === 'directory')).toHaveLength(50);
+    expect(parsedResponse.items.filter((item: VaultItem) => item.type === 'file')).toHaveLength(50);
   });
 
   it('ファイルタイプを正しく判別できる', async () => {
@@ -103,14 +112,17 @@ describe('listVaultFilesHandler', () => {
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
     
-    const text = result.content[0].text;
+    const parsedResponse = JSON.parse(result.content[0].text);
     // ファイルとディレクトリが正しく分類されているか確認
-    expect(text).toContain('📄 document.md');
-    expect(text).toContain('📄 file.txt');
-    expect(text).toContain('📄 .hidden');
-    expect(text).toContain('📁 folder/');
-    expect(text).toContain('📁 another_folder/');
-    expect(text).toContain('📁 .hidden_folder/');
+    const files = parsedResponse.items.filter((item: VaultItem) => item.type === 'file');
+    const directories = parsedResponse.items.filter((item: VaultItem) => item.type === 'directory');
+    
+    expect(files).toContainEqual({ name: 'document.md', type: 'file' });
+    expect(files).toContainEqual({ name: 'file.txt', type: 'file' });
+    expect(files).toContainEqual({ name: '.hidden', type: 'file' });
+    expect(directories).toContainEqual({ name: 'folder/', type: 'directory' });
+    expect(directories).toContainEqual({ name: 'another_folder/', type: 'directory' });
+    expect(directories).toContainEqual({ name: '.hidden_folder/', type: 'directory' });
   });
 
   it('API接続エラー時に適切なエラーをスローする', async () => {
@@ -153,13 +165,13 @@ describe('listVaultFilesHandler', () => {
     expect(result.content).toHaveLength(1);
     expect(result.content[0]).toHaveProperty('type', 'text');
     
-    const text = result.content[0].text;
-    // 特殊文字を含むファイル名が正しく表示されているか確認
-    expect(text).toContain('📄 日本語のファイル.md');
-    expect(text).toContain('📄 file with spaces.md');
-    expect(text).toContain('📄 file-with-dashes.md');
-    expect(text).toContain('📄 file_with_underscores.md');
-    expect(text).toContain('📄 file.multiple.dots.md');
-    expect(text).toContain('📁 Folder with Spaces/');
+    const parsedResponse = JSON.parse(result.content[0].text);
+    // 特殊文字を含むファイル名が正しく保持されているか確認
+    expect(parsedResponse.files).toContain('日本語のファイル.md');
+    expect(parsedResponse.files).toContain('file with spaces.md');
+    expect(parsedResponse.files).toContain('file-with-dashes.md');
+    expect(parsedResponse.files).toContain('file_with_underscores.md');
+    expect(parsedResponse.files).toContain('file.multiple.dots.md');
+    expect(parsedResponse.files).toContain('Folder with Spaces/');
   });
 });

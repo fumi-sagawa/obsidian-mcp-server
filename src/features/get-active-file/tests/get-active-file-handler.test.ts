@@ -44,13 +44,7 @@ describe('getActiveFileHandler', () => {
       content: [
         {
           type: 'text',
-          text: `Active file: ${mockResponse.path}
-Size: ${mockResponse.stat.size} bytes
-Modified: ${new Date(mockResponse.stat.mtime).toISOString()}
-Tags: ${mockResponse.tags.join(', ')}
-
-Content:
-${mockResponse.content}`,
+          text: JSON.stringify(mockResponse, null, 2),
         },
       ],
     });
@@ -66,7 +60,9 @@ ${mockResponse.content}`,
       content: [
         {
           type: 'text',
-          text: 'No active file is currently open in Obsidian',
+          text: JSON.stringify({
+            error: 'No active file is currently open in Obsidian'
+          }, null, 2),
         },
       ],
     });
@@ -82,7 +78,9 @@ ${mockResponse.content}`,
       content: [
         {
           type: 'text',
-          text: 'Cannot connect to Obsidian. Make sure Obsidian is running and the Local REST API plugin is enabled.',
+          text: JSON.stringify({
+            error: 'Cannot connect to Obsidian. Make sure Obsidian is running and the Local REST API plugin is enabled.'
+          }, null, 2),
         },
       ],
     });
@@ -109,13 +107,7 @@ ${mockResponse.content}`,
       content: [
         {
           type: 'text',
-          text: `Active file: ${mockResponse.path}
-Size: ${mockResponse.stat.size} bytes
-Modified: ${new Date(mockResponse.stat.mtime).toISOString()}
-Tags: (none)
-
-Content:
-${mockResponse.content}`,
+          text: JSON.stringify(mockResponse, null, 2),
         },
       ],
     });
@@ -131,7 +123,9 @@ ${mockResponse.content}`,
       content: [
         {
           type: 'text',
-          text: 'Unexpected error',
+          text: JSON.stringify({
+            error: 'Unexpected error'
+          }, null, 2),
         },
       ],
     });

@@ -1,6 +1,5 @@
 import { ObsidianAPIClient } from '../../shared/api/index.js';
 import { logger } from '../../shared/lib/logger/index.js';
-import { formatCommands } from './format-commands.js';
 import type { ListCommandsResponse } from './types.js';
 
 /**
@@ -23,13 +22,11 @@ export async function listCommandsHandler(
       commandCount: response.commands.length
     });
 
-    // コマンドをフォーマット
-    const formattedText = formatCommands(response.commands);
-
+    // APIレスポンスをそのまま返す
     return {
       content: [{
         type: 'text',
-        text: formattedText
+        text: JSON.stringify(response, null, 2)
       }]
     };
   } catch (error) {
@@ -39,10 +36,24 @@ export async function listCommandsHandler(
     if (error && typeof error === 'object' && 'response' in error) {
       const axiosError = error as any;
       if (axiosError.response?.data?.error) {
-        throw new Error(`APIエラー: ${axiosError.response.data.error}`);
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              error: `APIエラー: ${axiosError.response.data.error}`
+            }, null, 2)
+          }]
+        };
       }
     }
 
-    throw new Error('コマンド一覧の取得中にエラーが発生しました');
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          error: 'コマンド一覧の取得中にエラーが発生しました'
+        }, null, 2)
+      }]
+    };
   }
 }

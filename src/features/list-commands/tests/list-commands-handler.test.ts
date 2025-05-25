@@ -66,10 +66,10 @@ describe('list-commands-handler', () => {
 
       expect(mockGet).toHaveBeenCalledWith('/commands/');
       expect(result.content[0].type).toBe('text');
-      expect(result.content[0].text).toContain('利用可能なコマンド一覧');
-      expect(result.content[0].text).toContain('global-search:open');
-      expect(result.content[0].text).toContain('Search: Search in all files');
-      expect(result.content[0].text).toContain('3個のコマンドが見つかりました');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse).toEqual(mockResponse);
+      expect(parsedResponse.commands).toHaveLength(3);
+      expect(parsedResponse.commands[0].id).toBe('global-search:open');
     });
 
     it('コマンドが空の場合も適切に処理される', async () => {
@@ -81,7 +81,9 @@ describe('list-commands-handler', () => {
 
       const result = await listCommandsHandler({});
 
-      expect(result.content[0].text).toContain('利用可能なコマンドが見つかりませんでした');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse).toEqual(mockResponse);
+      expect(parsedResponse.commands).toHaveLength(0);
     });
 
     it('大量のコマンドも適切にフォーマットされる', async () => {
@@ -96,9 +98,10 @@ describe('list-commands-handler', () => {
 
       const result = await listCommandsHandler({});
 
-      expect(result.content[0].text).toContain('50個のコマンドが見つかりました');
-      expect(result.content[0].text).toContain('command-0');
-      expect(result.content[0].text).toContain('command-49');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.commands).toHaveLength(50);
+      expect(parsedResponse.commands[0].id).toBe('command-0');
+      expect(parsedResponse.commands[49].id).toBe('command-49');
     });
   });
 
@@ -106,7 +109,9 @@ describe('list-commands-handler', () => {
     it('API接続エラー時は適切なエラーメッセージを返す', async () => {
       mockGet.mockRejectedValueOnce(new Error('Network error'));
 
-      await expect(listCommandsHandler({})).rejects.toThrow('コマンド一覧の取得中にエラーが発生しました');
+      const result = await listCommandsHandler({});
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.error).toBe('コマンド一覧の取得中にエラーが発生しました');
     });
 
     it('APIエラーレスポンスを適切に処理する', async () => {
@@ -117,12 +122,14 @@ describe('list-commands-handler', () => {
         }
       });
 
-      await expect(listCommandsHandler({})).rejects.toThrow('APIエラー: Unauthorized');
+      const result = await listCommandsHandler({});
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.error).toBe('APIエラー: Unauthorized');
     });
   });
 
-  describe('フォーマット', () => {
-    it('コマンドが見やすい形式で表示される', async () => {
+  describe('構造化出力', () => {
+    it('APIレスポンスの構造が保持される', async () => {
       const mockResponse: ListCommandsResponse = {
         commands: [
           { id: 'app:go-back', name: 'Navigate back' },
@@ -134,17 +141,14 @@ describe('list-commands-handler', () => {
       mockGet.mockResolvedValueOnce(mockResponse);
 
       const result = await listCommandsHandler({});
-
-      const text = result.content[0].text;
+      const parsedResponse = JSON.parse(result.content[0].text);
       
-      // ヘッダーとフッターの確認
-      expect(text).toContain('📋 利用可能なコマンド一覧');
-      expect(text).toContain('3個のコマンドが見つかりました');
-      
-      // 各コマンドの表示形式を確認
-      expect(text).toMatch(/app:go-back\s+Navigate back/);
-      expect(text).toMatch(/app:go-forward\s+Navigate forward/);
-      expect(text).toMatch(/app:open-settings\s+Open settings/);
+      // APIレスポンスの構造が保持されていることを確認
+      expect(parsedResponse).toEqual(mockResponse);
+      expect(parsedResponse.commands).toHaveLength(3);
+      expect(parsedResponse.commands[0]).toEqual({ id: 'app:go-back', name: 'Navigate back' });
+      expect(parsedResponse.commands[1]).toEqual({ id: 'app:go-forward', name: 'Navigate forward' });
+      expect(parsedResponse.commands[2]).toEqual({ id: 'app:open-settings', name: 'Open settings' });
     });
   });
 });

@@ -2,8 +2,6 @@ import { simpleSearchRequestSchema } from './schema.js';
 import { obsidianApi } from '../../shared/api/obsidian/index.js';
 import { ValidationError, ApiError, ErrorCode } from '../../shared/lib/errors/index.js';
 import { logger } from '../../shared/lib/logger/index.js';
-import { formatSearchResults } from './format-results.js';
-import type { SimpleSearchResponse } from './types.js';
 
 export async function simpleSearchHandler(params: unknown): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   const startTime = Date.now();
@@ -38,14 +36,12 @@ export async function simpleSearchHandler(params: unknown): Promise<{ content: A
       }
     );
 
-    // 結果をフォーマットしてMCP形式で返す
-    const formattedText = formatSearchResults(results);
-    
+    // APIレスポンスの構造を保持して返す
     return {
       content: [
         {
           type: "text" as const,
-          text: formattedText,
+          text: JSON.stringify(results, null, 2),
         },
       ],
     };

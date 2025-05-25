@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { simpleSearchHandler } from '../simple-search-handler.js';
 import { obsidianApi } from '../../../shared/api/obsidian/index.js';
-import type { SimpleSearchResponse, SearchResult } from '../types.js';
+import type { SearchResult } from '../types.js';
 import { ValidationError, ApiError } from '../../../shared/lib/errors/index.js';
 
 // Obsidian APIのモック
@@ -55,7 +55,9 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('notes/daily/2024-01-20.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse).toEqual(mockResults);
+      expect(parsedResponse[0].filename).toBe('notes/daily/2024-01-20.md');
       expect(obsidianApi.searchSimple).toHaveBeenCalledWith('test', undefined);
     });
 
@@ -93,9 +95,10 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('2件のファイルが見つかりました');
-      expect(response.content[0].text).toContain('notes/projects/todo.md');
-      expect(response.content[0].text).toContain('notes/ideas.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse).toHaveLength(2);
+      expect(parsedResponse[0].filename).toBe('notes/projects/todo.md');
+      expect(parsedResponse[1].filename).toBe('notes/ideas.md');
     });
 
     it('contextLengthを指定して検索できる', async () => {
@@ -118,7 +121,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('notes/test.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse[0].filename).toBe('notes/test.md');
       expect(obsidianApi.searchSimple).toHaveBeenCalledWith('This', 200);
     });
   });
@@ -144,7 +148,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('notes/日記/2024-01-20.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse[0].filename).toBe('notes/日記/2024-01-20.md');
       expect(obsidianApi.searchSimple).toHaveBeenCalledWith('会議', undefined);
     });
 
@@ -168,7 +173,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('notes/プロジェクト/タスク管理.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse[0].filename).toBe('notes/プロジェクト/タスク管理.md');
     });
   });
 
@@ -193,7 +199,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('notes/tags.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse[0].filename).toBe('notes/tags.md');
     });
 
     it('特殊文字を含むクエリで検索できる', async () => {
@@ -216,7 +223,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('notes/code.md');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse[0].filename).toBe('notes/code.md');
     });
   });
 
@@ -242,7 +250,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('検索結果が見つかりませんでした');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse).toEqual([]);
     });
 
     it('存在しないパターンでも正常に処理される', async () => {
@@ -252,7 +261,8 @@ describe('simple_search', () => {
 
       expect(response.content).toHaveLength(1);
       expect(response.content[0].type).toBe('text');
-      expect(response.content[0].text).toContain('検索結果が見つかりませんでした');
+      const parsedResponse = JSON.parse(response.content[0].text);
+      expect(parsedResponse).toEqual([]);
       expect(obsidianApi.searchSimple).toHaveBeenCalledWith('絶対に存在しないクエリ文字列', undefined);
     });
   });

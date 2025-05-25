@@ -8,7 +8,7 @@ const handlerLogger = logger.child({ feature: 'get-active-file' });
 /**
  * アクティブファイルを取得する（内部処理）
  */
-export async function getActiveFileCore(args: Record<string, unknown>): Promise<{ success: boolean; data?: GetActiveFileResponse; error?: { message: string } }> {
+export async function getActiveFileCore(_args: Record<string, unknown>): Promise<{ success: boolean; data?: GetActiveFileResponse; error?: { message: string } }> {
   handlerLogger.debug('Getting active file');
 
   try {
@@ -63,12 +63,11 @@ export async function getActiveFileHandler(args: Record<string, unknown>): Promi
   const result = await getActiveFileCore(args);
 
   if (result.success && result.data) {
-    const formattedContent = formatActiveFileResponse(result.data);
     return {
       content: [
         {
           type: "text",
-          text: formattedContent
+          text: JSON.stringify(result.data, null, 2)
         }
       ]
     };
@@ -77,23 +76,11 @@ export async function getActiveFileHandler(args: Record<string, unknown>): Promi
       content: [
         {
           type: "text",
-          text: result.error?.message || 'Failed to get active file'
+          text: JSON.stringify({
+            error: result.error?.message || 'Failed to get active file'
+          }, null, 2)
         }
       ]
     };
   }
-}
-
-function formatActiveFileResponse(file: GetActiveFileResponse): string {
-  const lines: string[] = [
-    `Active file: ${file.path}`,
-    `Size: ${file.stat.size} bytes`,
-    `Modified: ${new Date(file.stat.mtime).toISOString()}`,
-    `Tags: ${file.tags.length > 0 ? file.tags.join(', ') : '(none)'}`,
-    '',
-    'Content:',
-    file.content,
-  ];
-
-  return lines.join('\n');
 }

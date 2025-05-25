@@ -1,15 +1,14 @@
 import { logger } from '../../shared/lib/logger/index.js';
 import { obsidianApi } from '../../shared/api/obsidian/index.js';
-import { formatFileList } from './format-file-list.js';
 import { ApiError, BusinessError, ValidationError, ErrorCode } from '../../shared/lib/errors/index.js';
-import type { ListVaultFilesParams, ListVaultFilesResult, VaultItem } from './types.js';
+import type { ListVaultFilesParams, VaultItem } from './types.js';
 
 /**
  * Vaultルートディレクトリのファイル一覧を取得するハンドラー
  * @param params パラメータ（空オブジェクト）
  * @returns MCPフォーマットのレスポンス
  */
-export async function listVaultFilesHandler(params: ListVaultFilesParams): Promise<{ content: Array<{ type: "text"; text: string }> }> {
+export async function listVaultFilesHandler(_params: ListVaultFilesParams): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   const handlerLogger = logger.child({ handler: 'list-vault-files' });
   
   try {
@@ -33,20 +32,21 @@ export async function listVaultFilesHandler(params: ListVaultFilesParams): Promi
       type: name.endsWith('/') ? 'directory' : 'file'
     }));
 
-    // フォーマットされた結果を生成
-    const content = formatFileList(items);
-
     handlerLogger.info('Vault file list retrieved successfully', {
       itemCount: items.length,
       fileCount: items.filter(item => item.type === 'file').length,
       directoryCount: items.filter(item => item.type === 'directory').length
     });
 
+    // APIレスポンスの構造を保持して返す
     return {
       content: [
         {
           type: "text" as const,
-          text: content
+          text: JSON.stringify({
+            files: response.files,
+            items: items
+          }, null, 2)
         }
       ]
     };

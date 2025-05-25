@@ -85,10 +85,11 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('Directory: notes');
-      expect(result.content[0].text).toContain('📄 note1.md');
-      expect(result.content[0].text).toContain('📄 note2.md');
-      expect(result.content[0].text).toContain('📁 subfolder/');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.directory).toBe('notes');
+      expect(parsedResponse.files).toContain('note1.md');
+      expect(parsedResponse.files).toContain('note2.md');
+      expect(parsedResponse.directories).toContain('subfolder/');
       expect(mockListDirectory).toHaveBeenCalledWith('notes');
     });
 
@@ -105,8 +106,9 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('Directory: empty-folder');
-      expect(result.content[0].text).toContain('No files found');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.directory).toBe('empty-folder');
+      expect(parsedResponse.totalItems).toBe(0);
       expect(mockListDirectory).toHaveBeenCalledWith('empty-folder');
     });
 
@@ -123,10 +125,11 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('Directory: (root)');
-      expect(result.content[0].text).toContain('📄 root-note.md');
-      expect(result.content[0].text).toContain('📁 documents/');
-      expect(result.content[0].text).toContain('📁 projects/');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.directory).toBe('(root)');
+      expect(parsedResponse.files).toContain('root-note.md');
+      expect(parsedResponse.directories).toContain('documents/');
+      expect(parsedResponse.directories).toContain('projects/');
     });
   });
 
@@ -144,10 +147,11 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('projects/web/frontend/components');
-      expect(result.content[0].text).toContain('📄 Button.tsx');
-      expect(result.content[0].text).toContain('📄 Modal.tsx');
-      expect(result.content[0].text).toContain('📁 common/');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.directory).toBe('projects/web/frontend/components');
+      expect(parsedResponse.files).toContain('Button.tsx');
+      expect(parsedResponse.files).toContain('Modal.tsx');
+      expect(parsedResponse.directories).toContain('common/');
       expect(mockListDirectory).toHaveBeenCalledWith('projects/web/frontend/components');
     });
   });
@@ -166,9 +170,10 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('my notes/daily notes');
-      expect(result.content[0].text).toContain('📄 2024-05-24.md');
-      expect(result.content[0].text).toContain('📁 templates/');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.directory).toBe('my notes/daily notes');
+      expect(parsedResponse.files).toContain('2024-05-24.md');
+      expect(parsedResponse.directories).toContain('templates/');
       expect(mockListDirectory).toHaveBeenCalledWith('my notes/daily notes');
     });
 
@@ -185,10 +190,11 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('ノート/プロジェクト');
-      expect(result.content[0].text).toContain('📄 メモ.md');
-      expect(result.content[0].text).toContain('📁 タスク/');
-      expect(result.content[0].text).toContain('📄 会議録.md');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.directory).toBe('ノート/プロジェクト');
+      expect(parsedResponse.files).toContain('メモ.md');
+      expect(parsedResponse.directories).toContain('タスク/');
+      expect(parsedResponse.files).toContain('会議録.md');
     });
 
     it('先頭のスラッシュが削除されること', async () => {
@@ -224,8 +230,8 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
       
-      expect(result.content[0].text).toContain('Error');
-      expect(result.content[0].text).toContain('Directory not found');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.error).toContain('Directory not found');
     });
 
     it('無効なパス形式のエラーが処理されること', async () => {
@@ -235,14 +241,15 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
       
-      expect(result.content[0].text).toContain('Error');
-      expect(result.content[0].text).toContain('Path traversal not allowed');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.error).toContain('Path traversal not allowed');
     });
 
     it('空のディレクトリパスがエラーになること（バリデーション）', async () => {
       const result = await listDirectoryHandler({});
       
-      expect(result.content[0].text).toContain('Error');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.error).toContain('Error');
     });
 
     it('APIエラーが適切に処理されること', async () => {
@@ -255,8 +262,8 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
       
-      expect(result.content[0].text).toContain('Error');
-      expect(result.content[0].text).toContain('API connection failed');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.error).toContain('API connection failed');
     });
   });
 
@@ -280,14 +287,16 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      // ファイルにはファイルアイコン
-      expect(result.content[0].text).toContain('📄 document.md');
-      expect(result.content[0].text).toContain('📄 image.png');
-      expect(result.content[0].text).toContain('📄 script.js');
+      const parsedResponse = JSON.parse(result.content[0].text);
       
-      // ディレクトリにはフォルダアイコン
-      expect(result.content[0].text).toContain('📁 folder/');
-      expect(result.content[0].text).toContain('📁 another-folder/');
+      // ファイルの確認
+      expect(parsedResponse.files).toContain('document.md');
+      expect(parsedResponse.files).toContain('image.png');
+      expect(parsedResponse.files).toContain('script.js');
+      
+      // ディレクトリの確認
+      expect(parsedResponse.directories).toContain('folder/');
+      expect(parsedResponse.directories).toContain('another-folder/');
     });
 
     it('統計情報が正しく表示されること', async () => {
@@ -309,9 +318,10 @@ describe('list-directory-handler', () => {
 
       const result = await listDirectoryHandler(request);
 
-      expect(result.content[0].text).toContain('Total: 5 items');
-      expect(result.content[0].text).toContain('Files: 3');
-      expect(result.content[0].text).toContain('Directories: 2');
+      const parsedResponse = JSON.parse(result.content[0].text);
+      expect(parsedResponse.totalItems).toBe(5);
+      expect(parsedResponse.files).toHaveLength(3);
+      expect(parsedResponse.directories).toHaveLength(2);
     });
   });
 });

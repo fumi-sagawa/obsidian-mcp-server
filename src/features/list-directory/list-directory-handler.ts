@@ -70,50 +70,6 @@ function formatDirectoryListing(directoryPath: string, response: ListDirectoryRe
 }
 
 /**
- * フォーマット済みレスポンスを文字列に変換
- * @param formatted フォーマット済みレスポンス
- * @returns 整形されたテキスト
- */
-function formatListingText(formatted: ListDirectoryFormattedResponse): string {
-  const lines: string[] = [];
-  
-  lines.push(`📁 Directory: ${formatted.directory}`);
-  lines.push('');
-
-  if (formatted.totalItems === 0) {
-    lines.push('🔍 No files found in this directory.');
-    return lines.join('\n');
-  }
-
-  // ディレクトリを先に表示
-  if (formatted.directories.length > 0) {
-    lines.push('📂 Directories:');
-    formatted.directories
-      .sort()
-      .forEach(dir => {
-        lines.push(`  📁 ${dir}`);
-      });
-    lines.push('');
-  }
-
-  // ファイルを表示
-  if (formatted.files.length > 0) {
-    lines.push('📋 Files:');
-    formatted.files
-      .sort()
-      .forEach(file => {
-        lines.push(`  📄 ${file}`);
-      });
-    lines.push('');
-  }
-
-  // 統計情報
-  lines.push(`📊 Total: ${formatted.totalItems} items (Files: ${formatted.files.length}, Directories: ${formatted.directories.length})`);
-
-  return lines.join('\n');
-}
-
-/**
  * ディレクトリを一覧表示（内部処理）
  * @param request ディレクトリ一覧表示リクエスト
  * @returns 一覧表示結果
@@ -187,13 +143,11 @@ export async function listDirectoryHandler(args: Record<string, unknown>): Promi
   try {
     const result = await listDirectoryCore(args as unknown as ListDirectoryRequest);
     
-    const text = formatListingText(result);
-    
     return {
       content: [
         {
           type: "text",
-          text
+          text: JSON.stringify(result, null, 2)
         }
       ]
     };
@@ -204,7 +158,9 @@ export async function listDirectoryHandler(args: Record<string, unknown>): Promi
       content: [
         {
           type: "text",
-          text: `Error listing directory: ${errorMessage}`
+          text: JSON.stringify({
+            error: `Error listing directory: ${errorMessage}`
+          }, null, 2)
         }
       ]
     };
