@@ -1,119 +1,116 @@
-# MCPツールテストスクリプト
+# Obsidian MCP Server テストガイド
 
-このディレクトリには、MCPサーバーのツールをテストするためのスクリプトが含まれています。
+このディレクトリには、Obsidian MCP Serverの統合テストとモックテストが含まれています。
 
-## test-tools.js
+## テスト構造
 
-実際のNWS APIを使用した統合テストを実行します。各テストケースには期待される結果のアサーションが含まれています。
+```
+test/
+├── tools/                      # 各ツールのテスト
+│   ├── get-file/
+│   │   ├── integration.js      # 実際のAPIを使用した統合テスト
+│   │   └── mock.js             # モックAPIを使用したテスト
+│   ├── create-or-update-file/
+│   ├── search-notes/
+│   └── ...その他のツール
+├── shared/                     # 共通テストユーティリティ
+│   ├── test-runner.js          # テスト実行エンジン
+│   └── mock-server.js          # モックAPIサーバー
+├── test-all-tools.js           # 全統合テストの実行
+└── test-all-tools-mock.js      # 全モックテストの実行
+```
 
-### 使用方法
+## テストの実行
+
+### 全てのツールをテスト
 
 ```bash
-# すべてのツールをテスト
+# モックAPIを使用（安全・推奨）
 npm run test:tools
 
-# 特定のツールのみテスト
-npm run test:tools get-alerts
-npm run test:tools get-forecast
-npm run test:tools health-check
-
-# 詳細モード（レスポンスの詳細を表示）
-npm run test:tools -- --verbose
+# 実際のObsidian APIを使用（要：Obsidian起動）
+npm run test:tools:dangerous
 ```
 
-### 注意事項
-
-- 実際のAPIを使用するため、ネットワーク接続が必要です
-- APIレスポンスは時間によって変わる可能性があります
-
-## test-tools-mock.js
-
-モックAPIサーバーを使用した決定的なテストを実行します。外部APIに依存せず、常に同じ結果を返します。
-
-### 使用方法
+### 単一ツールをテスト
 
 ```bash
-# すべてのツールをモックテスト
-npm run test:tools:mock
+# 対話式でツールを選択
+npm run test:tool
 
-# 特定のツールのみモックテスト
-npm run test:tools:mock get-alerts
-npm run test:tools:mock get-forecast
+# 直接指定
+./test/test-single.sh get-file '{"filename":"test.md"}'
+./test/test-single.sh mock create-or-update-file '{"filename":"new.md","content":"# New File"}'
 ```
 
-### モックデータ
+## テストケースの追加
 
-- **CA州の警報**: 固定の「Test Alert」を返す
-- **HI州の警報**: 警報なしを返す
-- **XX州の警報**: バリデーションエラー
-- **サンフランシスコの予報**: 固定の晴れ/65°Fを返す
+新しいツールのテストを追加する場合：
 
-### 利点
+1. `test/tools/新機能名/` ディレクトリを作成
+2. `integration.js` と `mock.js` を作成
+3. 各ファイルで以下をエクスポート：
+   - `toolName`: ツール名
+   - `testCases`: テストケースの配列
 
-- 常に同じ結果を返すため、CIパイプラインに最適
-- ネットワーク接続不要
-- 高速実行
-- エッジケースのテストが容易
+### テストケースの例
 
-### テストケース
-
-各ツールには以下のテストケースが定義されています：
-
-- **get-alerts**
-  - 正常な州コードで警報を取得
-  - 無効な州コードでエラー
-
-- **get-forecast**
-  - サンフランシスコの予報を取得
-  - 必須パラメータ欠落でエラー
-
-- **health-check**
-  - ヘルスチェックを実行
-
-## test-single.sh
-
-単一のMCPツールコマンドを手動で実行するためのヘルパースクリプトです。
-
-### 使用方法
-
-```bash
-# 直接実行
-./scripts/test-single.sh get-alerts '{"state":"CA"}'
-./scripts/test-single.sh get-forecast '{"latitude":37.7749,"longitude":-122.4194}'
-./scripts/test-single.sh health-check '{}'
-
-# npmスクリプト経由
-npm run test:tool get-alerts '{"state":"CA"}'
-```
-
-## 新しいツールの追加
-
-新しいツールをテストに追加する場合：
-
-1. `test-tools.js`の`testCases`オブジェクトに新しいツールのテストケースを追加
-2. 各テストケースに以下を定義：
-   - `name`: テストケースの説明
-   - `request`: MCPリクエストのパラメータ
-   - `assertions`: 期待される結果を検証する関数の配列
-
-例：
 ```javascript
-'new-tool': [
+// test/tools/get-file/mock.js
+export const toolName = 'get_file';
+
+export const testCases = [
   {
-    name: '正常系のテスト',
-    request: {
-      method: 'tools/call',
-      params: {
-        name: 'new-tool',
-        arguments: { param: 'value' }
-      }
-    },
-    assertions: [
-      // 成功レスポンスを確認
-      response => response.result !== undefined,
-      // 特定の内容を確認
-      response => response.result.content[0].text.includes('expected text')
-    ]
+    name: 'ファイルの取得に成功',
+    params: { filename: 'test.md' },
+    expected: {
+      content: '# Test File\n\nThis is a test file.',
+      path: 'test.md'
+    }
+  },
+  {
+    name: 'ファイルが見つからない場合',
+    params: { filename: 'nonexistent.md' },
+    expectedError: /File not found/
   }
-]
+];
 ```
+
+## モックサーバー
+
+モックサーバーは `test/shared/mock-server.js` で定義されています。新しいエンドポイントを追加する場合は、このファイルを編集してください。
+
+### モックレスポンスの例
+
+```javascript
+// Obsidian REST APIのレスポンスを模倣
+app.get('/vault/:filename', (req, res) => {
+  const { filename } = req.params;
+  
+  if (filename === 'test.md') {
+    res.json({
+      content: '# Test File\n\nThis is a test file.',
+      path: 'test.md',
+      tags: ['test'],
+      frontmatter: {},
+      stat: {
+        ctime: Date.now(),
+        mtime: Date.now(),
+        size: 35
+      }
+    });
+  } else {
+    res.status(404).json({
+      error: 'File not found',
+      errorCode: 40104
+    });
+  }
+});
+```
+
+## テストのベストプラクティス
+
+1. **モックテストを優先**: 開発中はモックテストを使用して高速にイテレーション
+2. **実APIテストは慎重に**: データの変更を伴うテストは十分注意して実行
+3. **エラーケースも網羅**: 正常系だけでなく、異常系のテストも必ず追加
+4. **テストの独立性**: 各テストケースは他のテストに依存しないように設計

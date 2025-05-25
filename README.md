@@ -1,8 +1,26 @@
 # Obsidian MCP Server
 
+[![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
+
 Model Context Protocol (MCP) を使用して、Obsidian Local REST API と統合するサーバーです。AIアシスタントやその他のアプリケーションからObsidianのノート管理機能を利用できるようになります。
 
-## 機能
+## 🚀 クイックスタート
+
+```bash
+# 1. 依存関係をインストール
+npm install
+
+# 2. ビルド
+npm run build
+
+# 3. 環境変数を設定してMCP Inspectorで実行
+OBSIDIAN_API_KEY=your-api-key npm run inspector
+```
+
+詳細なセットアップ手順は [SETUP.md](./SETUP.md) を、開発者向け情報は [DEVELOPMENT.md](./DEVELOPMENT.md) をご覧ください。
+
+## 📋 主な機能
 
 - **ファイル操作**: Obsidian内のファイルの作成、読み取り、更新、削除
 - **アクティブファイル管理**: 現在開いているファイルの操作
@@ -11,197 +29,18 @@ Model Context Protocol (MCP) を使用して、Obsidian Local REST API と統合
 - **定期ノート**: 日次・週次・月次・年次ノートの管理
 - **MCP統合**: MCP互換のAIアシスタントとシームレスに統合
 
-## 前提条件
+## 📚 ドキュメント
 
-- Obsidianがインストールされていること
-- Local REST APIプラグインがインストール・有効化されていること
-- APIキーが設定されていること
+- [SETUP.md](./SETUP.md) - 詳細なインストールと設定ガイド
+- [DEVELOPMENT.md](./DEVELOPMENT.md) - アーキテクチャ、開発手法、コントリビューション方法
+- [CLAUDE.md](./CLAUDE.md) - Claude Code向け開発ガイドライン
 
-## インストール
-
-```bash
-npm install
-npm run build
-```
-
-## 設定
-
-環境変数で以下を設定してください：
-
-```bash
-# 必須
-export OBSIDIAN_API_KEY="your-api-key-here"
-
-# オプション
-export OBSIDIAN_API_URL="http://127.0.0.1:27123"  # デフォルト
-export OBSIDIAN_HTTPS_CERT="/path/to/cert.pem"    # HTTPS使用時
-```
-
-## 使用方法
-
-このサーバーはMCPプロトコルを実装しており、MCP互換のクライアントで使用できます。
-
-### 利用可能なツール（実装予定）
-
-#### 基本的なファイル操作
-- `get_server_status` - サーバー状態の取得
-- `get_file_content` - ファイル内容の取得
-- `create_or_update_file` - ファイルの作成・更新
-- `delete_file` - ファイルの削除
-- `list_vault_files` - ファイル一覧の取得
-
-#### アクティブファイル操作
-- `get_active_file` - アクティブファイルの取得
-- `update_active_file` - アクティブファイルの更新
-- `append_to_active_file` - アクティブファイルへの追記
-
-#### 検索機能
-- `search_notes` - テキストベースの検索
-- `search_notes` - 詳細な検索機能
-
-## アーキテクチャ
-
-このプロジェクトは、スケーラブルなアーキテクチャのために [Feature-Sliced Design (FSD)](https://feature-sliced.design/) の原則に従っています。
-
-### プロジェクト構造
-
-```
-src/
-├── app/              # アプリケーション初期化
-├── features/         # 機能モジュール
-│   ├── get_server_status/   # サーバー状態取得機能
-│   └── [その他の機能]/      # 各Obsidian機能の実装
-├── entities/         # ドメインモデル
-│   └── obsidian/     # Obsidian関連の型定義
-├── shared/           # 共有リソース
-│   └── api/          # Obsidian API統合
-└── index.ts          # エントリーポイント
-```
-
-### FSD レイヤーの責務
-
-- **app/** - アプリケーションのブートストラップ、MCPサーバー設定
-- **features/** - ビジネス機能の実装（ハンドラー、フォーマット、検証）
-- **entities/** - ドメインモデルと型定義
-- **shared/** - 共通ユーティリティ、外部APIクライアント
-
-## 開発
-
-### 開発手法 - テスト駆動開発（TDD）
-
-このプロジェクトはテスト駆動開発（TDD）を採用しています：
-
-1. **要件整理** - 新機能の要件を明確に定義
-2. **テスト作成** - 要件を満たすテストコードを先に作成
-3. **実装** - テストが通る最小限のコードを実装
-4. **リファクタリング** - コードの品質を向上
-
-### ビルド
-
-```bash
-npm run build
-```
-
-TypeScriptをJavaScriptにコンパイルし、適切な実行権限を設定します。
-
-### テスト
-
-```bash
-# 単体テスト（Unit Test）
-npm test              # 単体テストをカバレッジ付きで実行
-npm run test:unit     # カバレッジなしで高速実行
-npm run test:watch    # ファイル変更を監視して自動実行
-
-# 統合テスト（Integration Test）
-npm run test:tools              # 全ツールの統合テスト
-npm run test:tools:mock         # 全ツールのモックテスト
-npm run test:tools get_server_status   # 特定ツールの統合テスト
-npm run test:tool               # 単一ツールの対話式テスト
-```
-
-#### テスト構造
-
-このプロジェクトは3層のテスト戦略を採用しています：
-
-```
-test/
-├── tools/                      # 統合テスト
-│   ├── check_service_health/
-│   ├── get_server_status/
-│   ├── obsidian/               # Obsidian関連ツール
-│   │   ├── update_active_file/
-│   │   └── append_to_active_file/
-│   └── shared/                 # 共通テスト機能
-│       ├── test-runner.js      # テスト実行エンジン
-│       └── mock-server.js      # モックAPIサーバー
-├── test-all-tools.js           # 統合テスト実行
-└── test-all-tools-mock.js      # モックテスト実行
-```
-
-**テストレベル：**
-- **Unit Test**: 個別の関数やクラスの動作をテスト（`src/**/*.test.ts`）
-- **Integration Test**: MCPプロトコル → ハンドラー → API連携の統合テスト
-- **E2E Test**: ユーザーの実際の操作フローのテスト（将来実装）
-
-**新しいツールのテスト追加方法：**
-1. `test/tools/新機能名/` ディレクトリを作成
-2. `integration.js` と `mock.js` ファイルを作成
-3. メインのテストランナーファイルでインポートを追加
-
-### 開発モード
-
-```bash
-npm run dev           # 開発モード（ログレベル: debug）
-npm run dev:trace     # トレースモード（全ログ出力）
-npm run inspector     # MCP Inspector での実行
-```
-
-### Obsidian API 設定
-
-Obsidian Local REST API を使用するには、APIキーの設定が必要です：
-
-```bash
-# 環境変数でAPIキーを設定
-OBSIDIAN_API_KEY=your-api-key npm run inspector
-
-# カスタムURLを使用する場合
-OBSIDIAN_API_KEY=your-api-key OBSIDIAN_API_URL=https://your-obsidian-url:port npm run inspector
-```
-
-APIキーは Obsidian の Local REST API プラグイン設定から取得できます。
-
-## API統合
-
-このサーバーは [Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) を使用しています。
-
-## セットアップ
-
-### 1. 依存関係のインストール
-
-```bash
-npm install
-```
-
-### 2. 環境変数の設定
-
-`.env.example` を `.env` にコピーして、APIキーを設定します：
-
-```bash
-cp .env.example .env
-```
-
-`.env` ファイルを編集して、ObsidianのLocal REST APIプラグインから取得したAPIキーを設定：
-
-```
-OBSIDIAN_API_KEY=your-actual-api-key
-```
-
-## 必要要件
+## 🛠 前提条件
 
 - Node.js 16+
-- TypeScript 5+
-- Obsidian with Local REST API plugin
+- Obsidian with [Local REST API plugin](https://github.com/coddingtonbear/obsidian-local-rest-api)
+- APIキー（Obsidianプラグイン設定から取得）
 
-## ライセンス
+## 📄 ライセンス
 
-MIT
+MIT License - 詳細は [LICENSE](./LICENSE) ファイルを参照してください。

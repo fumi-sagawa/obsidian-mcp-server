@@ -10,15 +10,15 @@
 - テストとデバッグの情報が分散している
 
 ## To-Be（完了条件）
-- [ ] 以下の新しいドキュメント構成を実装：
-  - [ ] README.md - プロジェクト概要とクイックスタート（簡潔に）
-  - [ ] SETUP.md - 詳細なセットアップガイド（ユーザー向け）
-  - [ ] DEVELOPMENT.md - 開発者向け統合ドキュメント（開発環境、テスト、デバッグを含む）
-- [ ] 既存のドキュメントから適切な内容を移行
-- [ ] Weather MCP Server由来の内容を削除
-- [ ] test/README.mdとtest/MANUAL-TESTING.mdの内容をDEVELOPMENT.mdに統合
-- [ ] DEBUG.mdの内容をObsidian MCP Server用に書き直してDEVELOPMENT.mdに統合
-- [ ] 各ドキュメントの役割が明確で、重複がない状態を実現
+- [x] 以下の新しいドキュメント構成を実装：
+  - [x] README.md - プロジェクト概要とクイックスタート（簡潔に）
+  - [x] SETUP.md - 詳細なセットアップガイド（ユーザー向け）
+  - [x] DEVELOPMENT.md - 開発者向け統合ドキュメント（開発環境、テスト、デバッグを含む）
+- [x] 既存のドキュメントから適切な内容を移行
+- [x] Weather MCP Server由来の内容を削除
+- [x] test/README.mdとtest/MANUAL-TESTING.mdの内容をDEVELOPMENT.mdに統合
+- [x] DEBUG.mdの内容をObsidian MCP Server用に書き直してDEVELOPMENT.mdに統合
+- [x] 各ドキュメントの役割が明確で、重複がない状態を実現
 
 ## 実装方針
 
@@ -58,3 +58,13 @@
 - タスクチケットを作成
 - 現在のドキュメント構成の問題点を分析
 - 新しいドキュメント構成を設計
+
+### 2025-05-26 完了
+- README.mdを簡潔化（バッジ追加、3ステップのクイックスタート）
+- SETUP.mdを作成（詳細なセットアップ手順、トラブルシューティング含む）
+- DEVELOPMENT.mdを作成（FSD、TDD、テスト戦略、デバッグ方法を統合）
+- Weather MCP Server由来の内容を削除：
+  - DEBUG.mdを削除（内容はDEVELOPMENT.mdに統合）
+  - test/README.mdをObsidian用に書き換え
+  - test/MANUAL-TESTING.mdをObsidian用に書き換え
+- 全体の整合性を確認し、ドキュメント間の参照が正しいことを検証

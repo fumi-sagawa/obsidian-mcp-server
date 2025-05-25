@@ -1,167 +1,228 @@
-# MCP Inspector を使った手動テスト手順
+# Obsidian MCP Server 手動テストガイド
 
-このドキュメントでは、MCP Inspector を使用して Weather MCP Server の機能を手動でテストする手順を説明します。
+このドキュメントでは、MCP Inspectorを使用してObsidian MCP Serverの機能を手動でテストする方法を説明します。
 
-## 前提条件
+## MCP Inspectorのセットアップ
 
-- Node.js 18以上がインストールされていること
-- プロジェクトの依存関係がインストールされていること（`npm install`）
-- MCP Inspector が利用可能であること
-
-## MCP Inspector の起動
+### 1. MCP Inspectorの起動
 
 ```bash
-npm run inspector
+# 環境変数を設定して起動
+OBSIDIAN_API_KEY=your-api-key npm run inspector
+
+# デバッグモードで起動（詳細なログ出力）
+OBSIDIAN_API_KEY=your-api-key npm run inspector:debug
 ```
 
-デバッグモードで起動する場合：
-```bash
-npm run inspector:debug
+### 2. 接続確認
+
+MCP Inspectorが起動したら、ブラウザで自動的に開きます。左側のサイドバーに利用可能なツールの一覧が表示されることを確認してください。
+
+## 基本的なテスト手順
+
+### サーバーステータスの確認
+
+1. 左側のツール一覧から `get_server_status` を選択
+2. パラメータは不要（`{}`のまま）
+3. 「Execute」をクリック
+
+期待される結果：
+```json
+{
+  "status": "connected",
+  "version": "1.0.0",
+  "vaultName": "Your Vault Name"
+}
 ```
 
-## テスト手順
+### ファイル操作のテスト
 
-### 1. 気象警報の取得テスト
+#### ファイルの作成
 
-#### 1.1 正常系テスト
-
-1. MCP Inspector のツール一覧から `get-alerts` を選択
-2. パラメータに以下を入力：
+1. `create_or_update_file` を選択
+2. パラメータを入力：
    ```json
    {
-     "state": "CA"
+     "filename": "test-note.md",
+     "content": "# テストノート\n\nこれはMCP経由で作成されたノートです。"
    }
    ```
-3. "Send" ボタンをクリック
-4. 期待される結果：
-   - カリフォルニア州の気象警報情報が表示される
-   - 警報がない場合は "No active alerts" というメッセージが表示される
+3. 「Execute」をクリック
 
-#### 1.2 エラー系テスト
+#### ファイルの読み取り
 
-1. 無効な州コードでテスト：
+1. `get_file` を選択
+2. パラメータを入力：
    ```json
    {
-     "state": "XX"
+     "filename": "test-note.md"
    }
    ```
-2. 期待される結果：
-   - エラーメッセージが表示される
-   - ステータスコード 400 エラー
+3. 「Execute」をクリック
 
-### 2. 天気予報の取得テスト
+#### ファイルへの追記
 
-#### 2.1 正常系テスト
-
-1. MCP Inspector のツール一覧から `get-forecast` を選択
-2. パラメータに以下を入力：
+1. `append_to_file` を選択
+2. パラメータを入力：
    ```json
    {
-     "latitude": 40.7128,
-     "longitude": -74.0060
+     "filename": "test-note.md",
+     "content": "\n## 追記されたセクション\n\n追加のコンテンツです。"
    }
    ```
-3. "Send" ボタンをクリック
-4. 期待される結果：
-   - ニューヨーク市の7日間の天気予報が表示される
-   - 各日の気温、天気の説明が含まれる
+3. 「Execute」をクリック
 
-#### 2.2 境界値テスト
+### 検索機能のテスト
 
-1. 最北端の座標：
+#### 簡易検索
+
+1. `simple_search` を選択
+2. パラメータを入力：
    ```json
    {
-     "latitude": 71.3875,
-     "longitude": -156.4811
+     "query": "テスト",
+     "contextLength": 50
    }
    ```
+3. 「Execute」をクリック
 
-2. 最南端の座標：
+#### 詳細検索
+
+1. `search_notes` を選択
+2. Dataview DQL形式で検索：
    ```json
    {
-     "latitude": 18.9110,
-     "longitude": -155.6813
+     "query": "TABLE file.name FROM \"\" WHERE contains(file.content, \"テスト\")",
+     "queryType": "dataview"
    }
    ```
+3. 「Execute」をクリック
 
-### 3. ヘルスチェックテスト
+### アクティブファイル操作
 
-1. MCP Inspector のツール一覧から `health-check` を選択
-2. パラメータは不要（空のまま）
-3. "Send" ボタンをクリック
-4. 期待される結果：
+#### アクティブファイルの取得
+
+1. Obsidianで任意のファイルを開く
+2. `get_active_file` を選択
+3. パラメータは不要（`{}`）
+4. 「Execute」をクリック
+
+#### アクティブファイルの更新
+
+1. `update_active_file` を選択
+2. パラメータを入力：
    ```json
    {
-     "status": "healthy",
-     "checks": {
-       "memory": {
-         "status": "healthy",
-         "details": { ... }
-       },
-       "nws_api": {
-         "status": "healthy",
-         "details": { ... }
-       }
-     }
+     "content": "# 更新されたコンテンツ\n\n完全に新しい内容です。"
    }
    ```
+3. 「Execute」をクリック
 
-### 4. エラーハンドリングのテスト
+### コマンド実行
 
-#### 4.1 ネットワークエラーのシミュレーション
+#### コマンド一覧の取得
 
-1. インターネット接続を切断
-2. 任意のツールを実行
-3. 期待される結果：
-   - 適切なエラーメッセージが表示される
-   - サーバーがクラッシュしない
+1. `list_commands` を選択
+2. パラメータは不要（`{}`）
+3. 「Execute」をクリック
 
-#### 4.2 レート制限のテスト
+#### コマンドの実行
 
-1. 同じリクエストを連続で10回以上送信
-2. 期待される結果：
-   - リトライメカニズムが動作する
-   - 最終的にレスポンスが返される
+1. `execute_command` を選択
+2. パラメータを入力（例：グラフビューを開く）：
+   ```json
+   {
+     "commandId": "graph:open"
+   }
+   ```
+3. 「Execute」をクリック
 
-## 検証項目チェックリスト
+## 高度なテストシナリオ
 
-### 基本機能
-- [ ] `get-alerts` が正常に動作する
-- [ ] `get-forecast` が正常に動作する
-- [ ] `health-check` が正常に動作する
+### 定期ノートの操作
 
-### エラーハンドリング
-- [ ] 無効なパラメータでエラーが返される
-- [ ] ネットワークエラー時に適切なメッセージが表示される
-- [ ] サーバーがクラッシュしない
+#### 今日のデイリーノートを取得
 
-### パフォーマンス
-- [ ] レスポンスが30秒以内に返される
-- [ ] メモリ使用量が異常に増加しない
+1. `get_periodic_note` を選択
+2. パラメータを入力：
+   ```json
+   {
+     "period": "daily"
+   }
+   ```
+3. 「Execute」をクリック
 
-### ログ出力
-- [ ] リクエストIDが生成される
-- [ ] エラー時にスタックトレースが記録される
-- [ ] スロークエリが検出される（1秒以上）
+#### 週次ノートに追記
+
+1. `append_to_periodic_note` を選択
+2. パラメータを入力：
+   ```json
+   {
+     "period": "weekly",
+     "content": "\n## 今週の振り返り\n\n- タスク1完了\n- タスク2進行中"
+   }
+   ```
+3. 「Execute」をクリック
+
+### ディレクトリ操作
+
+#### Vault内のファイル一覧
+
+1. `list_vault_files` を選択
+2. パラメータを入力：
+   ```json
+   {
+     "path": "/"
+   }
+   ```
+3. 「Execute」をクリック
+
+#### 特定ディレクトリの内容
+
+1. `list_directory` を選択
+2. パラメータを入力：
+   ```json
+   {
+     "path": "/Projects"
+   }
+   ```
+3. 「Execute」をクリック
 
 ## トラブルシューティング
 
-### MCP Inspector が起動しない場合
-1. ポートが使用されていないか確認
-2. `node_modules` を削除して再インストール
-3. Node.js のバージョンを確認
+### エラーが発生した場合
 
-### レスポンスが返ってこない場合
-1. ログレベルを `debug` に設定して実行
-2. ネットワーク接続を確認
-3. NWS API のステータスを確認
+1. **認証エラー (401)**
+   - APIキーが正しく設定されているか確認
+   - Obsidianの設定でLocal REST APIプラグインが有効になっているか確認
 
-### エラーの詳細を確認したい場合
-```bash
-DEBUG_MODE=true npm run inspector:debug
-```
+2. **接続エラー**
+   - Obsidianが起動しているか確認
+   - Local REST APIのポート（デフォルト: 27123）が使用可能か確認
 
-## 参考情報
+3. **ファイルが見つからない (404)**
+   - ファイルパスが正しいか確認（Vaultルートからの相対パス）
+   - ファイル名の大文字小文字が正確か確認
 
-- [NWS API Documentation](https://www.weather.gov/documentation/services-web-api)
-- [MCP Protocol Specification](https://github.com/modelcontextprotocol/specification)
+### デバッグ情報の確認
+
+MCP Inspectorの右側のペインで以下を確認できます：
+- リクエストの詳細
+- レスポンスの内容
+- エラーメッセージ
+- 実行時間
+
+## パフォーマンステスト
+
+大量のファイルがあるVaultでのテスト：
+
+1. `list_vault_files` で1000件以上のファイルを取得
+2. レスポンス時間を確認
+3. メモリ使用量をモニタリング（開発者ツールで確認）
+
+## セキュリティテスト
+
+1. 無効なAPIキーでの接続試行
+2. 存在しないファイルへのアクセス
+3. 特殊文字を含むファイル名の処理
+4. 大きなコンテンツ（1MB以上）の処理
