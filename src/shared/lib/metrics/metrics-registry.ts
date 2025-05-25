@@ -89,13 +89,6 @@ export class MetricsRegistry {
     this.histogram('mcp.request.duration');
     this.gauge('mcp.connections.active');
     
-    // Weather-specific metrics
-    this.counter('weather.api.calls');
-    this.counter('weather.api.errors');
-    this.histogram('weather.api.response_time');
-    this.gauge('weather.cache.size');
-    this.counter('weather.cache.hits');
-    this.counter('weather.cache.misses');
   }
 
   getSystemInfo() {

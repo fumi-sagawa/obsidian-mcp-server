@@ -180,62 +180,6 @@ export class MockApiServer {
             },
             apiExtensions: []
           }));
-        } else if (req.url.includes('/alerts?area=CA')) {
-          res.statusCode = 200;
-          res.end(JSON.stringify({
-            features: [
-              {
-                properties: {
-                  event: 'Test Alert',
-                  headline: 'Test Alert for CA',
-                  severity: 'Moderate',
-                  urgency: 'Expected',
-                  status: 'Actual',
-                  description: 'This is a test alert',
-                  areaDesc: 'Test Area, CA',
-                  effective: '2025-01-23T10:00:00Z',
-                  expires: '2025-01-24T10:00:00Z'
-                }
-              }
-            ]
-          }));
-        } else if (req.url.includes('/alerts?area=XX')) {
-          res.statusCode = 404;
-          res.end(JSON.stringify({ error: 'Not found' }));
-        } else if (req.url.includes('/alerts?area=HI')) {
-          res.statusCode = 200;
-          res.end(JSON.stringify({ features: [] }));
-        } else if (req.url.includes('/points/37.7749,-122.4194')) {
-          res.statusCode = 200;
-          res.end(JSON.stringify({
-            properties: {
-              forecast: `http://localhost:${this.port}/gridpoints/MTR/85,105/forecast`
-            }
-          }));
-        } else if (req.url.includes('/gridpoints/MTR/85,105/forecast')) {
-          res.statusCode = 200;
-          res.end(JSON.stringify({
-            properties: {
-              periods: [
-                {
-                  name: 'Today',
-                  temperature: 65,
-                  temperatureUnit: 'F',
-                  windSpeed: '10 mph',
-                  windDirection: 'W',
-                  shortForecast: 'Sunny'
-                },
-                {
-                  name: 'Tonight',
-                  temperature: 50,
-                  temperatureUnit: 'F',
-                  windSpeed: '5 mph',
-                  windDirection: 'W',
-                  shortForecast: 'Clear'
-                }
-              ]
-            }
-          }));
         } else if (req.method === 'POST' && req.url.startsWith('/open/')) {
           // open-file エンドポイント
           const filename = decodeURIComponent(req.url.split('/open/')[1].split('?')[0]);

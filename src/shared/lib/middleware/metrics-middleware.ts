@@ -51,39 +51,4 @@ export class MetricsMiddleware {
     }
   }
 
-  async trackWeatherAPICall<T>(
-    operation: string,
-    handler: () => Promise<T>
-  ): Promise<T> {
-    const labels = { operation };
-    
-    // Increment API calls
-    metrics.counter('weather.api.calls').increment(labels);
-    
-    try {
-      const result = await measureDuration(
-        'weather.api.response_time',
-        labels,
-        handler
-      );
-      
-      return result;
-    } catch (error) {
-      // Track API errors
-      metrics.counter('weather.api.errors').increment(labels);
-      throw error;
-    }
-  }
-
-  trackCacheOperation(hit: boolean): void {
-    if (hit) {
-      metrics.counter('weather.cache.hits').increment();
-    } else {
-      metrics.counter('weather.cache.misses').increment();
-    }
-  }
-
-  updateCacheSize(size: number): void {
-    metrics.gauge('weather.cache.size').set(size);
-  }
 }

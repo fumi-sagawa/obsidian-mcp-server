@@ -58,10 +58,6 @@ export function loadConfig(): Config {
     apiRetryAttempts: getEnvNumber('API_RETRY_ATTEMPTS', 3),
     apiRetryDelay: getEnvNumber('API_RETRY_DELAY', 1000), // 1 second
     
-    // NWS API specific
-    nwsApiBaseUrl: getEnvString('NWS_API_BASE_URL', 'https://api.weather.gov'),
-    nwsUserAgent: getEnvString('NWS_USER_AGENT', '(weather-mcp-server, contact@example.com)'),
-    
     // Obsidian API
     obsidianApiUrl: process.env.OBSIDIAN_API_URL,
     obsidianApiKey: process.env.OBSIDIAN_API_KEY,

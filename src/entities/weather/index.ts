@@ -1,1 +1,0 @@
-export type { WeatherAlert, WeatherForecast } from './types.js';

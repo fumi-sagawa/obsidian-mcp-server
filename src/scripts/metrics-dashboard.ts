@@ -13,7 +13,7 @@ function printDashboard() {
   const systemInfo = metrics.getSystemInfo();
   
   console.log('='.repeat(60));
-  console.log('Weather MCP Server - Metrics Dashboard');
+  console.log('Obsidian MCP Server - Metrics Dashboard');
   console.log('='.repeat(60));
   console.log(`Last Updated: ${new Date().toISOString()}`);
   console.log();
@@ -88,64 +88,6 @@ function printDashboard() {
     console.log();
   }
   
-  // Weather API Metrics
-  console.log('🌤️  Weather API Metrics');
-  console.log('-'.repeat(60));
-  
-  let apiCalls = 0;
-  let apiErrors = 0;
-  const apiCallsByOperation: Record<string, number> = {};
-  
-  if (snapshot.counters['weather.api.calls']) {
-    for (const metric of snapshot.counters['weather.api.calls']) {
-      apiCalls += metric.value;
-      if (metric.labels?.operation) {
-        apiCallsByOperation[metric.labels.operation] = (apiCallsByOperation[metric.labels.operation] || 0) + metric.value;
-      }
-    }
-  }
-  
-  if (snapshot.counters['weather.api.errors']) {
-    for (const metric of snapshot.counters['weather.api.errors']) {
-      apiErrors += metric.value;
-    }
-  }
-  
-  console.log(`Total API Calls: ${apiCalls}`);
-  console.log(`API Errors: ${apiErrors}`);
-  console.log(`API Error Rate: ${apiCalls > 0 ? ((apiErrors / apiCalls) * 100).toFixed(2) : '0.00'}%`);
-  
-  if (Object.keys(apiCallsByOperation).length > 0) {
-    console.log('\nAPI Calls by Operation:');
-    for (const [operation, count] of Object.entries(apiCallsByOperation)) {
-      console.log(`  ${operation}: ${count}`);
-    }
-  }
-  
-  // Cache Metrics
-  let cacheHits = 0;
-  let cacheMisses = 0;
-  
-  if (snapshot.counters['weather.cache.hits']) {
-    for (const metric of snapshot.counters['weather.cache.hits']) {
-      cacheHits += metric.value;
-    }
-  }
-  
-  if (snapshot.counters['weather.cache.misses']) {
-    for (const metric of snapshot.counters['weather.cache.misses']) {
-      cacheMisses += metric.value;
-    }
-  }
-  
-  if (cacheHits > 0 || cacheMisses > 0) {
-    console.log();
-    console.log('💾 Cache Metrics');
-    console.log('-'.repeat(60));
-    console.log(`Cache Hits: ${cacheHits}`);
-    console.log(`Cache Misses: ${cacheMisses}`);
-    console.log(`Hit Rate: ${(cacheHits + cacheMisses) > 0 ? ((cacheHits / (cacheHits + cacheMisses)) * 100).toFixed(2) : '0.00'}%`);
-  }
   
   console.log('\n' + '='.repeat(60));
 }

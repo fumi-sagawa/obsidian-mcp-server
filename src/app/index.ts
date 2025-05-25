@@ -1,7 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { getAlertsHandler, alertsSchema } from '../features/get-alerts/index.js';
-import { getForecastHandler, forecastSchema } from '../features/get-forecast/index.js';
 import { handleHealthCheck, HealthCheckSchema } from '../features/health-check/index.js';
 import { getServerStatusHandler, getServerStatusArgsSchema } from '../features/get-server-status/index.js';
 import { getActiveFileHandler, getActiveFileSchema } from '../features/get-active-file/index.js';

@@ -10,9 +10,6 @@ export interface Config {
   apiRetryAttempts: number;
   apiRetryDelay: number;
   
-  // NWS API specific
-  nwsApiBaseUrl: string;
-  nwsUserAgent: string;
   
   // Obsidian API
   obsidianApiUrl?: string;

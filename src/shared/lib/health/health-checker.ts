@@ -1,7 +1,6 @@
 import { MetricsRegistry } from '../metrics/index.js';
 import type { HealthCheck, SystemHealth, HealthCheckResult } from './types.js';
 import { HealthStatus } from './types.js';
-import { NWSAPIHealthCheck } from './checks/nws-api-check.js';
 import { MemoryHealthCheck } from './checks/memory-check.js';
 
 export class HealthChecker {
@@ -92,7 +91,6 @@ export class HealthChecker {
   }
 
   private registerDefaultChecks(): void {
-    this.registerCheck(new NWSAPIHealthCheck());
     this.registerCheck(new MemoryHealthCheck());
   }
 }
