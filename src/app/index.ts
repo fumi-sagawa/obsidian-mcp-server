@@ -17,6 +17,7 @@ import { appendToPeriodicNoteHandler, appendToPeriodicNoteTool } from '../featur
 import { appendToFileHandler, appendToFileRequestSchema } from '../features/append-to-file/index.js';
 import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
+import { createOrUpdateFileHandler, createOrUpdateFileSchema } from '../features/create-or-update-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -200,6 +201,14 @@ server.tool(
   wrapHandler(simpleSearchHandler, 'simple-search')
 );
 appLogger.debug("Registered tool: simple-search");
+
+server.tool(
+  "create-or-update-file",
+  "Create a new file in your vault or update the content of an existing one",
+  createOrUpdateFileSchema.shape,
+  wrapHandler(createOrUpdateFileHandler, 'create-or-update-file')
+);
+appLogger.debug("Registered tool: create-or-update-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

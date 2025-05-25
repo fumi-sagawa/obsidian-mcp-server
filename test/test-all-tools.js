@@ -25,6 +25,7 @@ import { testCases as getPeriodicNoteTests } from './tools/get-periodic-note/int
 import { testCases as appendToPeriodicNoteTests } from './tools/append-to-periodic-note/integration.js';
 import { testCases as simpleSearchTests } from './tools/simple-search/integration.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/integration.js';
+import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/integration.js';
 
 // テストケース定義
 const testSuites = {
@@ -40,7 +41,8 @@ const testSuites = {
   'get-periodic-note': getPeriodicNoteTests,
   'append-to-periodic-note': appendToPeriodicNoteTests,
   'simple-search': simpleSearchTests,
-  'append-to-file': appendToFileTests
+  'append-to-file': appendToFileTests,
+  'create-or-update-file': createOrUpdateFileTests
 };
 
 // メイン実行

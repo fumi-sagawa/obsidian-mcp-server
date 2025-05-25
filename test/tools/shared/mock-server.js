@@ -19,6 +19,21 @@ export class MockApiServer {
           // アクティブファイルの更新をモック
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'GET' && req.url.startsWith('/vault/')) {
+          // ファイルの取得をモック
+          const filename = decodeURIComponent(req.url.substring('/vault/'.length));
+          if (filename.includes('existing-file')) {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/markdown');
+            res.end('# Existing Content\n\nThis is an existing file.');
+          } else {
+            res.statusCode = 404;
+            res.end(JSON.stringify({ error: 'File not found' }));
+          }
+        } else if (req.method === 'PUT' && req.url.startsWith('/vault/')) {
+          // ファイルの作成・更新をモック
+          res.statusCode = 204; // No Content
+          res.end();
         } else if (req.method === 'POST' && req.url === '/active/') {
           // アクティブファイルへの追記をモック
           res.statusCode = 204; // No Content

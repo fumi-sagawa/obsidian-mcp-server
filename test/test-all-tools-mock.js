@@ -30,6 +30,7 @@ import { testCases as appendToPeriodicNoteTests } from './tools/append-to-period
 import { testCases as simpleSearchTests } from './tools/simple-search/mock.js';
 import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/mock.js';
+import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -48,7 +49,8 @@ const testSuites = {
   'append-to-periodic-note': appendToPeriodicNoteTests,
   'simple-search': simpleSearchTests,
   'search_notes': searchNotesTests,
-  'append-to-file': appendToFileTests
+  'append-to-file': appendToFileTests,
+  'create-or-update-file': createOrUpdateFileTests
 };
 
 // メイン実行
