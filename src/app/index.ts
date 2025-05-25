@@ -13,6 +13,7 @@ import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-c
 import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
 import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
 import { getPeriodicNoteHandler, getPeriodicNoteSchema } from '../features/get-periodic-note/index.js';
+import { appendToPeriodicNoteHandler, appendToPeriodicNoteTool } from '../features/append-to-periodic-note/index.js';
 import { appendToFileHandler, appendToFileRequestSchema } from '../features/append-to-file/index.js';
 import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
@@ -175,6 +176,14 @@ server.tool(
   wrapHandler(getPeriodicNoteHandler, 'get-periodic-note')
 );
 appLogger.debug("Registered tool: get-periodic-note");
+
+server.tool(
+  appendToPeriodicNoteTool.name,
+  appendToPeriodicNoteTool.description,
+  appendToPeriodicNoteTool.inputSchema.shape,
+  wrapHandler(appendToPeriodicNoteHandler, 'append-to-periodic-note')
+);
+appLogger.debug("Registered tool: append-to-periodic-note");
 
 server.tool(
   "append-to-file",

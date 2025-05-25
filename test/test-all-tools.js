@@ -22,6 +22,7 @@ import { testCases as deleteActiveFileTests } from './tools/obsidian/delete-acti
 import { testCases as listCommandsTests } from './tools/list-commands/integration.js';
 import { testCases as openFileTests } from './tools/open-file/integration.js';
 import { testCases as getPeriodicNoteTests } from './tools/get-periodic-note/integration.js';
+import { testCases as appendToPeriodicNoteTests } from './tools/append-to-periodic-note/integration.js';
 import { testCases as simpleSearchTests } from './tools/simple-search/integration.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/integration.js';
 
@@ -37,6 +38,7 @@ const testSuites = {
   'list-commands': listCommandsTests,
   'open-file': openFileTests,
   'get-periodic-note': getPeriodicNoteTests,
+  'append-to-periodic-note': appendToPeriodicNoteTests,
   'simple-search': simpleSearchTests,
   'append-to-file': appendToFileTests
 };
