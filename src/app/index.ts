@@ -13,6 +13,7 @@ import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-c
 import { executeCommandHandler, executeCommandArgsSchema } from '../features/execute-command/index.js';
 import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
 import { getPeriodicNoteHandler, getPeriodicNoteSchema } from '../features/get-periodic-note/index.js';
+import { appendToFileHandler, appendToFileRequestSchema } from '../features/append-to-file/index.js';
 import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
@@ -174,6 +175,14 @@ server.tool(
   wrapHandler(getPeriodicNoteHandler, 'get-periodic-note')
 );
 appLogger.debug("Registered tool: get-periodic-note");
+
+server.tool(
+  "append-to-file",
+  "Append content to a file in your vault (creates it if it doesn't exist)",
+  appendToFileRequestSchema.shape,
+  wrapHandler(appendToFileHandler, 'append-to-file')
+);
+appLogger.debug("Registered tool: append-to-file");
 
 server.tool(
   "simple-search",

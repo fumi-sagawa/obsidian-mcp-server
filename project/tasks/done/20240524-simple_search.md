@@ -57,3 +57,6 @@ Obsidian Local REST APIの `/search/simple/` エンドポイント（POST）に�
 - モックテストファイルの作成完了
 - 全ユニットテスト合格
 - ビルド成功
+- コミット完了
+- developブランチにマージ完了
+- 実装完了！
