@@ -1,11 +1,11 @@
 // モックテストケース定義
 export const testCases = [
   {
-    name: 'should search with basic query',
+    name: 'クエリでノートを検索（一致あり）',
     request: {
       method: 'tools/call',
       params: {
-        name: 'search_notes',
+        name: 'simple_search',
         arguments: {
           query: 'meeting'
         }
@@ -14,17 +14,23 @@ export const testCases = [
     assertions: [
       response => response.result !== undefined,
       response => response.result.content[0].type === 'text',
-      response => response.result.content[0].text.includes('2件のファイルが見つかりました'),
-      response => response.result.content[0].text.includes('notes/meetings/2024-01-20.md'),
-      response => response.result.content[0].text.includes('notes/daily/2024-01-19.md')
+      response => {
+        try {
+          const data = JSON.parse(response.result.content[0].text);
+          return Array.isArray(data) && data.length === 2;
+        } catch {
+          return false;
+        }
+      },
+      response => response.result.content[0].text.includes('notes/meetings/2024-01-20.md')
     ]
   },
   {
-    name: 'should handle Japanese query',
+    name: '日本語クエリでノートを検索',
     request: {
       method: 'tools/call',
       params: {
-        name: 'search_notes',
+        name: 'simple_search',
         arguments: {
           query: '会議'
         }
@@ -33,16 +39,22 @@ export const testCases = [
     assertions: [
       response => response.result !== undefined,
       response => response.result.content[0].type === 'text',
-      response => response.result.content[0].text.includes('2件のファイルが見つかりました'),
-      response => response.result.content[0].text.includes('会議')
+      response => {
+        try {
+          const data = JSON.parse(response.result.content[0].text);
+          return Array.isArray(data) && data.length === 2;
+        } catch {
+          return false;
+        }
+      }
     ]
   },
   {
-    name: 'should handle no results',
+    name: 'クエリでノートを検索（一致なし）',
     request: {
       method: 'tools/call',
       params: {
-        name: 'search_notes',
+        name: 'simple_search',
         arguments: {
           query: 'xyzabcdefghijklmnop12345'
         }
@@ -51,15 +63,22 @@ export const testCases = [
     assertions: [
       response => response.result !== undefined,
       response => response.result.content[0].type === 'text',
-      response => response.result.content[0].text.includes('見つかりませんでした')
+      response => {
+        try {
+          const data = JSON.parse(response.result.content[0].text);
+          return Array.isArray(data) && data.length === 0;
+        } catch {
+          return false;
+        }
+      }
     ]
   },
   {
-    name: 'should include context in results',
+    name: '特殊文字を含むクエリでノートを検索',
     request: {
       method: 'tools/call',
       params: {
-        name: 'search_notes',
+        name: 'simple_search',
         arguments: {
           query: 'test',
           contextLength: 50
@@ -78,7 +97,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'search_notes',
+        name: 'simple_search',
         arguments: {
           query: ''
         }

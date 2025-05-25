@@ -18,6 +18,7 @@ import { updatePeriodicNoteHandler, updatePeriodicNoteSchema } from '../features
 import { appendToFileHandler, appendToFileRequestSchema } from '../features/append-to-file/index.js';
 import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
+import { searchNotesHandler, searchNotesSchema } from '../features/search-notes/index.js';
 import { createOrUpdateFileHandler, createOrUpdateFileSchema } from '../features/create-or-update-file/index.js';
 import { deleteFileHandler, deleteFileSchema } from '../features/delete-file/index.js';
 import { getFileHandler, GetFileRequestSchema } from '../features/get-file/index.js';
@@ -224,11 +225,19 @@ appLogger.debug("Registered tool: delete_periodic_note");
 // ========== 検索・一覧系 ==========
 server.tool(
   "search_notes",
-  "Search notes by text query across entire vault",
-  simpleSearchRequestSchema.shape,
-  wrapHandler(simpleSearchHandler, 'search_notes')
+  "Search notes using JsonLogic queries with advanced filtering",
+  searchNotesSchema.shape,
+  wrapHandler(searchNotesHandler, 'search_notes')
 );
 appLogger.debug("Registered tool: search_notes");
+
+server.tool(
+  "simple_search",
+  "Search notes by simple text query across entire vault",
+  simpleSearchRequestSchema.shape,
+  wrapHandler(simpleSearchHandler, 'simple_search')
+);
+appLogger.debug("Registered tool: simple_search");
 
 server.tool(
   "list_directory",
