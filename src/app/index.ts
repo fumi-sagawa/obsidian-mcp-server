@@ -23,6 +23,7 @@ import { createOrUpdateFileHandler, createOrUpdateFileSchema } from '../features
 import { deleteFileHandler, deleteFileSchema } from '../features/delete-file/index.js';
 import { getFileHandler, GetFileRequestSchema } from '../features/get-file/index.js';
 import { listDirectoryHandler, listDirectorySchema } from '../features/list-directory/index.js';
+import { listVaultFilesHandler, listVaultFilesTool } from '../features/list-vault-files/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -254,6 +255,14 @@ server.tool(
   wrapHandler(listDirectoryHandler, 'list-directory')
 );
 appLogger.debug("Registered tool: list-directory");
+
+server.tool(
+  listVaultFilesTool.name,
+  listVaultFilesTool.description,
+  listVaultFilesTool.inputSchema.shape,
+  wrapHandler(listVaultFilesHandler, 'list-vault-files')
+);
+appLogger.debug("Registered tool: list-vault-files");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
