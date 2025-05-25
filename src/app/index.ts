@@ -20,6 +20,7 @@ import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
 import { createOrUpdateFileHandler, createOrUpdateFileSchema } from '../features/create-or-update-file/index.js';
 import { deleteFileHandler, deleteFileSchema } from '../features/delete-file/index.js';
+import { getFileHandler, GetFileRequestSchema } from '../features/get-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -227,6 +228,14 @@ server.tool(
   wrapHandler(deleteFileHandler, 'delete-file')
 );
 appLogger.debug("Registered tool: delete-file");
+
+server.tool(
+  "get-file",
+  "Get the content of a specific file from your vault",
+  GetFileRequestSchema.shape,
+  wrapHandler(getFileHandler, 'get-file')
+);
+appLogger.debug("Registered tool: get-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {
