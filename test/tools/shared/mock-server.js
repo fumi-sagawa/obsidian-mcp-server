@@ -171,6 +171,33 @@ export class MockApiServer {
           // 成功レスポンス
           res.statusCode = 200;
           res.end(''); // open エンドポイントは空のレスポンスを返す
+        } else if (req.method === 'POST' && req.url.startsWith('/vault/')) {
+          // vault/{filename} エンドポイント（ファイルへの追記）
+          const filename = decodeURIComponent(req.url.split('/vault/')[1]);
+          
+          // ディレクトリへの追記エラー
+          if (filename.endsWith('/')) {
+            res.statusCode = 405;
+            res.end(JSON.stringify({ 
+              error: 'Cannot append to directory',
+              errorCode: 40501
+            }));
+            return;
+          }
+          
+          // 無効なファイルパス
+          if (filename.includes('../')) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ 
+              error: 'Bad request',
+              errorCode: 40001
+            }));
+            return;
+          }
+          
+          // 成功レスポンス
+          res.statusCode = 204; // No Content
+          res.end();
         } else if (req.method === 'POST' && req.url.startsWith('/search/simple/')) {
           // simple search エンドポイント
           const urlParts = req.url.split('?');

@@ -23,6 +23,7 @@ import { testCases as listCommandsTests } from './tools/list-commands/integratio
 import { testCases as openFileTests } from './tools/open-file/integration.js';
 import { testCases as getPeriodicNoteTests } from './tools/get-periodic-note/integration.js';
 import { testCases as simpleSearchTests } from './tools/simple-search/integration.js';
+import { testCases as appendToFileTests } from './tools/append-to-file/integration.js';
 
 // テストケース定義
 const testSuites = {
@@ -36,7 +37,8 @@ const testSuites = {
   'list-commands': listCommandsTests,
   'open-file': openFileTests,
   'get-periodic-note': getPeriodicNoteTests,
-  'simple-search': simpleSearchTests
+  'simple-search': simpleSearchTests,
+  'append-to-file': appendToFileTests
 };
 
 // メイン実行
