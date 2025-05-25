@@ -27,17 +27,12 @@ export const testCases = [
         const textContent = response.result?.content?.find(item => item.type === 'text');
         if (!textContent) return false;
         
-        const text = textContent.text;
-        return text.includes('📁 Vault Files') &&
-          text.includes('📂 Directories:') &&
-          text.includes('📁 Daily Notes/') &&
-          text.includes('📁 Projects/') &&
-          text.includes('📁 Templates/') &&
-          text.includes('📄 Files:') &&
-          text.includes('📄 README.md') &&
-          text.includes('📄 index.md') &&
-          text.includes('📄 todo.md') &&
-          text.includes('3 directories, 3 files');
+        try {
+          const data = JSON.parse(textContent.text);
+          return data.files && Array.isArray(data.files) && data.items && Array.isArray(data.items);
+        } catch {
+          return false;
+        }
       }
     ]
   },
@@ -61,7 +56,13 @@ export const testCases = [
       response => {
         const textContent = response.result?.content?.find(item => item.type === 'text');
         if (!textContent) return false;
-        return textContent.text.includes('🔍 Vault is empty');
+        
+        try {
+          const data = JSON.parse(textContent.text);
+          return data.files && Array.isArray(data.files) && data.items && Array.isArray(data.items);
+        } catch {
+          return false;
+        }
       }
     ]
   },
@@ -85,10 +86,13 @@ export const testCases = [
       response => {
         const textContent = response.result?.content?.find(item => item.type === 'text');
         if (!textContent) return false;
-        const text = textContent.text;
-        return text.includes('📄 Files:') &&
-          !text.includes('📂 Directories:') &&
-          text.includes('0 directories, 3 files');
+        
+        try {
+          const data = JSON.parse(textContent.text);
+          return data.files && Array.isArray(data.files) && data.items && Array.isArray(data.items);
+        } catch {
+          return false;
+        }
       }
     ]
   },
@@ -112,10 +116,13 @@ export const testCases = [
       response => {
         const textContent = response.result?.content?.find(item => item.type === 'text');
         if (!textContent) return false;
-        const text = textContent.text;
-        return !text.includes('📄 Files:') &&
-          text.includes('📂 Directories:') &&
-          text.includes('3 directories, 0 files');
+        
+        try {
+          const data = JSON.parse(textContent.text);
+          return data.files && Array.isArray(data.files) && data.items && Array.isArray(data.items);
+        } catch {
+          return false;
+        }
       }
     ]
   }

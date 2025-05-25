@@ -76,13 +76,17 @@ export class MockApiServer {
         } else if (req.method === 'GET' && req.url.startsWith('/vault/')) {
           // ファイルの取得をモック
           const filename = decodeURIComponent(req.url.substring('/vault/'.length));
-          if (filename.includes('existing-file')) {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/markdown');
-            res.end('# Existing Content\n\nThis is an existing file.');
-          } else {
-            res.statusCode = 404;
-            res.end(JSON.stringify({ error: 'File not found' }));
+          // ディレクトリリストAPIと区別するため、末尾が / でない場合のみファイルとして処理
+          if (!filename.endsWith('/')) {
+            if (filename.includes('existing-file') || filename === 'test.md' || 
+                filename === '日本語ファイル.md' || filename === 'notes/daily/2024-05-25.md') {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'text/markdown');
+              res.end(`# ${filename}\n\nThis is the content of ${filename}.`);
+            } else {
+              res.statusCode = 404;
+              res.end(JSON.stringify({ error: 'File not found' }));
+            }
           }
         } else if (req.method === 'PUT' && req.url.startsWith('/vault/')) {
           // ファイルの作成・更新をモック
@@ -113,6 +117,21 @@ export class MockApiServer {
           // アクティブファイルへのPATCH操作をモック
           res.statusCode = 200; // OK
           res.end();
+        } else if (req.method === 'GET' && req.url === '/active/') {
+          // アクティブファイルの取得をモック
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({
+            path: 'active-note.md',
+            content: '# Active File\n\nThis is the active file content.',
+            frontmatter: {},
+            tags: [],
+            stat: {
+              ctime: Date.now() - 86400000,
+              mtime: Date.now(),
+              size: 100
+            }
+          }));
         } else if (req.method === 'DELETE' && req.url === '/active/') {
           // アクティブファイルの削除をモック
           res.statusCode = 204; // No Content
@@ -256,6 +275,13 @@ export class MockApiServer {
           // Simulate successful append (204 No Content)
           res.statusCode = 204;
           res.end();
+        } else if (req.method === 'PUT' && req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)) {
+          // PUT periodic note (update)
+          const period = req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)[1];
+          
+          // 成功の場合（204 No Content）
+          res.statusCode = 204;
+          res.end();
         } else if (req.method === 'DELETE' && req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)) {
           // DELETE periodic note
           const period = req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)[1];
@@ -331,6 +357,17 @@ export class MockApiServer {
               }
             ]));
           }
+        } else if (req.method === 'PATCH' && req.url.startsWith('/vault/')) {
+          // insert_to_file エンドポイント（PATCH /vault/{filename}）
+          const filename = decodeURIComponent(req.url.split('/vault/')[1]);
+          
+          // 成功レスポンス
+          res.statusCode = 200;
+          res.end('');
+        } else if (req.method === 'POST' && req.url === '/search/') {
+          // search_notes エンドポイント（POST /search/）
+          res.statusCode = 200;
+          res.end(JSON.stringify([])); // 空の結果を返す
         } else if (req.method === 'GET' && req.url.match(/^\/vault\/.*\/$/)) {
           // list-directory エンドポイント（GET /vault/{pathToDirectory}/）
           const pathMatch = req.url.match(/^\/vault\/(.*)\/$/);

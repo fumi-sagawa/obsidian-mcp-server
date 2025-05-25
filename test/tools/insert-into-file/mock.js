@@ -118,7 +118,7 @@ export const testCases = [
     },
     assertions: [
       response => response.error !== undefined,
-      response => response.error.message.includes('Filename cannot be empty')
+      response => response.error.message.includes('Filename must not be empty')
     ]
   },
   {

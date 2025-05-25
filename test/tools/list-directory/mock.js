@@ -24,7 +24,8 @@ export const testCases = [
       },
       (response) => {
         try {
-          return response.result.content[0].text.includes('Directory: (root)');
+          const data = JSON.parse(response.result.content[0].text);
+          return data.directory === '(root)';
         } catch (e) {
           return false;
         }
@@ -52,7 +53,8 @@ export const testCases = [
       },
       (response) => {
         try {
-          return response.result.content[0].text.includes('Directory: notes');
+          const data = JSON.parse(response.result.content[0].text);
+          return data.directory === 'notes';
         } catch (e) {
           return false;
         }
@@ -80,7 +82,8 @@ export const testCases = [
       },
       (response) => {
         try {
-          return response.result.content[0].text.includes('Directory: projects/web/frontend');
+          const data = JSON.parse(response.result.content[0].text);
+          return data.directory === 'projects/web/frontend';
         } catch (e) {
           return false;
         }
@@ -108,7 +111,8 @@ export const testCases = [
       },
       (response) => {
         try {
-          return response.result.content[0].text.includes('Directory: my notes/日本語フォルダ');
+          const data = JSON.parse(response.result.content[0].text);
+          return data.directory === 'my notes/日本語フォルダ';
         } catch (e) {
           return false;
         }
@@ -182,7 +186,8 @@ export const testCases = [
       },
       (response) => {
         try {
-          return response.result.content[0].text.includes('Directory: notes/daily');
+          const data = JSON.parse(response.result.content[0].text);
+          return data.directory === 'notes/daily';
         } catch (e) {
           return false;
         }
