@@ -198,6 +198,34 @@ export class MockApiServer {
           // 成功レスポンス
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'GET' && req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)) {
+          // GET periodic note
+          const period = req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)[1];
+          const periodPaths = {
+            daily: 'Daily Notes/2024-05-24.md',
+            weekly: 'Weekly Notes/2024-W21.md',
+            monthly: 'Monthly Notes/2024-05.md',
+            quarterly: 'Quarterly Notes/2024-Q2.md',
+            yearly: 'Yearly Notes/2024.md'
+          };
+          
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            path: periodPaths[period] || `${period} notes/current.md`,
+            content: 'Mock periodic note content',
+            tags: [],
+            frontmatter: {},
+            stat: {
+              ctime: Date.now() - 86400000,
+              mtime: Date.now(),
+              size: 100
+            }
+          }));
+        } else if (req.method === 'POST' && req.url.match(/^\/periodic\/(daily|weekly|monthly|quarterly|yearly)\/?$/)) {
+          // POST to append to periodic note
+          // Simulate successful append (204 No Content)
+          res.statusCode = 204;
+          res.end();
         } else if (req.method === 'POST' && req.url.startsWith('/search/simple/')) {
           // simple search エンドポイント
           const urlParts = req.url.split('?');
