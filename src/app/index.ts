@@ -8,6 +8,7 @@ import { getActiveFileHandler, getActiveFileSchema } from '../features/get-activ
 import { updateActiveFileHandler, updateActiveFileTool } from '../features/update-active-file/index.js';
 import { appendToActiveFileHandler, appendToActiveFileSchema } from '../features/append-to-active-file/index.js';
 import { insertIntoActiveFileHandler, insertIntoActiveFileSchema } from '../features/insert-into-active-file/index.js';
+import { insertIntoFileHandler, insertIntoFileSchema } from '../features/insert-into-file/index.js';
 import { deleteActiveFileHandler, deleteActiveFileSchema } from '../features/delete-active-file/index.js';
 import { deletePeriodicNoteHandler, deletePeriodicNoteToolConfig } from '../features/delete-periodic-note/index.js';
 import { listCommandsHandler, ListCommandsInputSchema } from '../features/list-commands/index.js';
@@ -140,6 +141,14 @@ server.tool(
   wrapHandler(insertIntoActiveFileHandler, 'insert-into-active-file')
 );
 appLogger.debug("Registered tool: insert-into-active-file");
+
+server.tool(
+  "insert-into-file",
+  "Insert content into a specific file relative to a heading, block reference, or frontmatter field",
+  insertIntoFileSchema.shape,
+  wrapHandler(insertIntoFileHandler, 'insert-into-file')
+);
+appLogger.debug("Registered tool: insert-into-file");
 
 server.tool(
   "delete-active-file",

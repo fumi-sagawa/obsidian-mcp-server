@@ -1793,6 +1793,144 @@ export class ObsidianAPIClient {
   }
 
   /**
+   * ファイルに対してPATCH操作を実行
+   */
+  async patchFile(filename: string, headers: Record<string, string>, content: string): Promise<void> {
+    const encodedFilename = encodeURIComponent(filename);
+    const url = `${this.baseUrl}/vault/${encodedFilename}`;
+    this.apiLogger.debug('Patching file', { 
+      url,
+      filename,
+      headers,
+      contentLength: content.length,
+      hasApiKey: !!this.apiKey
+    });
+
+    const controller = new AbortController();
+    const config = getConfig();
+    const timeoutId = setTimeout(() => controller.abort(), config.apiTimeout);
+
+    try {
+      const requestHeaders: Record<string, string> = {
+        ...headers
+      };
+
+      if (this.apiKey) {
+        requestHeaders['Authorization'] = `Bearer ${this.apiKey}`;
+      } else {
+        this.apiLogger.warn('No API key configured for Obsidian API');
+      }
+
+      const fetchOptions: RequestInit = {
+        method: 'PATCH',
+        headers: requestHeaders,
+        body: content,
+        signal: controller.signal,
+      };
+
+      // HTTPSの場合は証明書検証を無効化（自己署名証明書対応）
+      if (typeof process !== 'undefined' && process.versions && process.versions.node && this.baseUrl.startsWith('https:')) {
+        (fetchOptions as any).agent = new (await import('https')).Agent({
+          rejectUnauthorized: false
+        });
+      }
+
+      const response = await fetch(url, fetchOptions);
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.apiLogger.error('Unauthorized: API key is invalid or missing');
+          throw new ApiError(
+            'Unauthorized: Invalid or missing API key',
+            ErrorCode.API_REQUEST_FAILED,
+            401,
+            undefined,
+            { url }
+          );
+        }
+        if (response.status === 404) {
+          throw new ApiError(
+            'File or target not found',
+            ErrorCode.API_NOT_FOUND,
+            404,
+            undefined,
+            { url, filename, headers }
+          );
+        }
+        if (response.status === 400) {
+          const errorBody = await response.text().catch(() => null);
+          throw new ApiError(
+            errorBody || 'Bad request',
+            ErrorCode.API_REQUEST_FAILED,
+            400,
+            undefined,
+            { url, filename, headers }
+          );
+        }
+        if (response.status === 405) {
+          throw new ApiError(
+            'Cannot patch directory',
+            ErrorCode.API_REQUEST_FAILED,
+            405,
+            undefined,
+            { url, filename }
+          );
+        }
+        const errorBody = await response.text().catch(() => null);
+        this.apiLogger.error('API request failed', { 
+          status: response.status, 
+          statusText: response.statusText,
+          errorBody,
+          headers 
+        } as any);
+        throw ApiError.fromResponse(response, errorBody);
+      }
+
+      // 200 OK が返される
+      this.apiLogger.trace('File patched successfully', {
+        status: response.status,
+        filename
+      });
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new ApiError(
+            'Request timeout',
+            ErrorCode.API_TIMEOUT,
+            408,
+            undefined,
+            { url, timeout: config.apiTimeout }
+          );
+        }
+
+        if (error.message.includes('ECONNREFUSED') || error.message.includes('Network')) {
+          throw new ApiError(
+            'Connection refused',
+            ErrorCode.API_CONNECTION_ERROR,
+            503,
+            undefined,
+            { url, originalError: error.message }
+          );
+        }
+      }
+
+      throw new SystemError(
+        'Unexpected error during API request',
+        error instanceof Error ? error : undefined,
+        { url }
+      );
+    }
+  }
+
+  /**
    * ファイルを作成または更新
    */
   async createOrUpdateFile(filename: string, content: string): Promise<void> {

@@ -21,6 +21,7 @@ import { testCases as getServerStatusTests } from './tools/get-server-status/moc
 import { testCases as updateActiveFileTests } from './tools/obsidian/update-active-file/mock.js';
 import { testCases as appendToActiveFileTests } from './tools/obsidian/append-to-active-file/mock.js';
 import { testCases as insertIntoActiveFileTests } from './tools/obsidian/insert-into-active-file/mock.js';
+import { testCases as insertIntoFileTests } from './tools/insert-into-file/mock.js';
 import { testCases as deleteActiveFileTests } from './tools/obsidian/delete-active-file/mock.js';
 import { testCases as deletePeriodicNoteTests } from './tools/delete-periodic-note/mock.js';
 import { testCases as listCommandsTests } from './tools/list-commands/mock.js';
@@ -43,6 +44,7 @@ const testSuites = {
   'update_active_file': updateActiveFileTests,
   'append-to-active-file': appendToActiveFileTests,
   'insert-into-active-file': insertIntoActiveFileTests,
+  'insert-into-file': insertIntoFileTests,
   'delete-active-file': deleteActiveFileTests,
   'delete-periodic-note': deletePeriodicNoteTests,
   'list-commands': listCommandsTests,
