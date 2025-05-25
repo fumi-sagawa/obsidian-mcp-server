@@ -31,14 +31,13 @@ import { testCases as getPeriodicNoteMockTests } from './tools/get-periodic-note
 import { testCases as appendToPeriodicNoteTests } from './tools/append-to-periodic-note/mock.js';
 import { testCases as updatePeriodicNoteMockTests } from './tools/update-periodic-note/mock.js';
 import { testCases as simpleSearchTests } from './tools/simple-search/mock.js';
-// import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
+import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/mock.js';
 import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/mock.js';
 import { testCases as deleteFileTests } from './tools/delete-file/mock.js';
 import { testCases as listDirectoryTests } from './tools/list-directory/mock.js';
 import { testCases as listVaultFilesTests } from './tools/list-vault-files/mock.js';
 import { testCases as getFileTests } from './tools/get-file/mock.js';
-import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
 import { testCases as getActiveFileTests } from './tools/obsidian/get-active-file/mock.js';
 
 // テストスイート定義
@@ -61,14 +60,14 @@ const testSuites = {
   'get_periodic_note': getPeriodicNoteMockTests,
   'append_to_periodic_note': appendToPeriodicNoteTests,
   'update_periodic_note': updatePeriodicNoteMockTests,
-  'search_notes': simpleSearchTests,  // simple-search → search_notes
+  'search_notes': searchNotesTests,
+  'simple_search': simpleSearchTests,
   'append_to_file': appendToFileTests,
   'create_or_update_file': createOrUpdateFileTests,
   'delete_file': deleteFileTests,
   'list_directory': listDirectoryTests,
   'list_vault_files': listVaultFilesTests,
-  'get_file': getFileTests,
-  'search_notes_json': searchNotesTests,
+  'get_file_content': getFileTests,
   'get_active_file': getActiveFileTests
 };
 

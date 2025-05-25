@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get_file',
+        name: 'get_file_content',
         arguments: {
           filename: 'test.md'
         }
@@ -28,7 +28,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get_file',
+        name: 'get_file_content',
         arguments: {
           filename: '日本語ファイル.md'
         }
@@ -46,7 +46,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get_file',
+        name: 'get_file_content',
         arguments: {
           filename: 'notes/daily/2024-05-25.md'
         }
@@ -64,7 +64,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get_file',
+        name: 'get_file_content',
         arguments: {
           filename: 'non-existent-file.md'
         }
@@ -82,7 +82,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get_file',
+        name: 'get_file_content',
         arguments: {
           filename: ''
         }

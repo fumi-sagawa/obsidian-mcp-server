@@ -54,14 +54,14 @@ const testSuites = {
   'get_periodic_note': getPeriodicNoteTests,
   'append_to_periodic_note': appendToPeriodicNoteTests,
   'update_periodic_note': updatePeriodicNoteTests,
-  'search_notes': simpleSearchTests,
+  'search_notes': searchNotesTests,
+  'simple_search': simpleSearchTests,
   'append_to_file': appendToFileTests,
   'create_or_update_file': createOrUpdateFileTests,
   'delete_file': deleteFileTests,
-  'get_file': getFileTests,
+  'get_file_content': getFileTests,
   'execute_command': executeCommandTests,
   'list_directory': listDirectoryTests,
-  'search_notes_json': searchNotesTests,
   'get_active_file': getActiveFileTests
 };
 
