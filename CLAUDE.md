@@ -40,9 +40,17 @@ npm run test:unit          # カバレッジなしで高速実行
 npm run test:watch         # ファイル変更を監視して自動実行
 
 # 手動テスト（MCPプロトコル経由）
-npm run test:tools         # 全ツールの統合テスト
-npm run test:tools:mock    # モックサーバーでのテスト
-npm run test:tool          # 単一ツールのテスト（対話式）
+npm run test:tools         # 全ツールのモックテスト（安全・デフォルト）
+npm run test:tools:dangerous  # 全ツールの実APIテスト（危険）
+npm run test:tool          # 単一ツールのモックテスト（対話式・安全）
+
+# 単一ツールのテスト例
+# モックサーバー使用（デフォルト・安全）
+./test/test-single.sh get-server-status '{}'
+./test/test-single.sh mock get-file '{"filename":"test.md"}'
+
+# 実際のAPI使用（危険）
+./test/test-single.sh dangerous get-server-status '{}'
 
 # ヘルスチェック
 npm run health-check       # スタンドアロンのヘルスチェック実行
