@@ -25,11 +25,16 @@ import { testCases as listCommandsTests } from './tools/list-commands/integratio
 import { testCases as openFileTests } from './tools/open-file/integration.js';
 import { testCases as getPeriodicNoteTests } from './tools/get-periodic-note/integration.js';
 import { testCases as appendToPeriodicNoteTests } from './tools/append-to-periodic-note/integration.js';
-import { updatePeriodicNoteTests } from './tools/update-periodic-note/integration.js';
+import { testCases as updatePeriodicNoteTests } from './tools/update-periodic-note/integration.js';
 import { testCases as simpleSearchTests } from './tools/simple-search/integration.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/integration.js';
 import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/integration.js';
 import { testCases as deleteFileTests } from './tools/delete-file/integration.js';
+import { testCases as getFileTests } from './tools/get-file/integration.js';
+import { testCases as executeCommandTests } from './tools/execute-command/integration.js';
+import { testCases as listDirectoryTests } from './tools/list-directory/integration.js';
+import { testCases as searchNotesTests } from './tools/search-notes/integration.js';
+import { testCases as getActiveFileTests } from './tools/obsidian/get-active-file/integration.js';
 
 // テストケース定義
 const testSuites = {
@@ -52,7 +57,12 @@ const testSuites = {
   'search_notes': simpleSearchTests,
   'append_to_file': appendToFileTests,
   'create_or_update_file': createOrUpdateFileTests,
-  'delete_file': deleteFileTests
+  'delete_file': deleteFileTests,
+  'get_file': getFileTests,
+  'execute_command': executeCommandTests,
+  'list_directory': listDirectoryTests,
+  'search_notes_json': searchNotesTests,
+  'get_active_file': getActiveFileTests
 };
 
 // メイン実行

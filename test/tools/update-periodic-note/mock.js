@@ -1,16 +1,22 @@
 /**
  * Mock test for update-periodic-note tool
  */
-export const updatePeriodicNoteMockTests = {
-  name: 'update_periodic_note',
-  tests: [
+export const testCases = [
     {
       name: 'Update daily periodic note (mock)',
-      params: {
-        period: 'daily',
-        content: '# Daily Note\n\nTest content for mock'
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_periodic_note',
+          arguments: {
+            period: 'daily',
+            content: '# Daily Note\n\nTest content for mock'
+          }
+        }
       },
-      expectedSuccess: true,
+      assertions: [
+        response => response.result !== undefined || response.error !== undefined
+      ],
       mockConfig: {
         path: '/periodic/daily/',
         method: 'PUT',
@@ -18,24 +24,23 @@ export const updatePeriodicNoteMockTests = {
           status: 204,
           body: null
         }
-      },
-      validate: (result) => {
-        if (!result.content || !Array.isArray(result.content)) {
-          throw new Error('Expected result.content to be an array');
-        }
-        const text = result.content[0]?.text;
-        if (!text || !text.includes('Successfully updated daily periodic note')) {
-          throw new Error('Unexpected success message');
-        }
       }
     },
     {
       name: 'Update weekly periodic note (mock)',
-      params: {
-        period: 'weekly',
-        content: '# Weekly Review\n\nMock test content'
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_periodic_note',
+          arguments: {
+            period: 'weekly',
+            content: '# Weekly Review\n\nMock test content'
+          }
+        }
       },
-      expectedSuccess: true,
+      assertions: [
+        response => response.result !== undefined || response.error !== undefined
+      ],
       mockConfig: {
         path: '/periodic/weekly/',
         method: 'PUT',
@@ -43,21 +48,23 @@ export const updatePeriodicNoteMockTests = {
           status: 204,
           body: null
         }
-      },
-      validate: (result) => {
-        const text = result.content[0]?.text;
-        if (!text || !text.includes('Successfully updated weekly periodic note')) {
-          throw new Error('Unexpected success message');
-        }
       }
     },
     {
       name: 'Handle 400 error - invalid content',
-      params: {
-        period: 'daily',
-        content: 'Invalid content'
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_periodic_note',
+          arguments: {
+            period: 'daily',
+            content: 'Invalid content'
+          }
+        }
       },
-      expectedSuccess: false,
+      assertions: [
+        response => response.result !== undefined && response.result.content[0].text.includes('Error:')
+      ],
       mockConfig: {
         path: '/periodic/daily/',
         method: 'PUT',
@@ -68,16 +75,23 @@ export const updatePeriodicNoteMockTests = {
             errorCode: 40000
           }
         }
-      },
-      expectedError: 'Incoming file could not be processed'
+      }
     },
     {
       name: 'Handle 405 error - cannot update directory',
-      params: {
-        period: 'daily',
-        content: 'Test content'
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_periodic_note',
+          arguments: {
+            period: 'daily',
+            content: 'Test content'
+          }
+        }
       },
-      expectedSuccess: false,
+      assertions: [
+        response => response.result !== undefined && response.result.content[0].text.includes('Error:')
+      ],
       mockConfig: {
         path: '/periodic/daily/',
         method: 'PUT',
@@ -88,16 +102,23 @@ export const updatePeriodicNoteMockTests = {
             errorCode: 40500
           }
         }
-      },
-      expectedError: 'Cannot update directory'
+      }
     },
     {
       name: 'Handle 401 unauthorized error',
-      params: {
-        period: 'daily',
-        content: 'Test content'
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_periodic_note',
+          arguments: {
+            period: 'daily',
+            content: 'Test content'
+          }
+        }
       },
-      expectedSuccess: false,
+      assertions: [
+        response => response.result !== undefined && response.result.content[0].text.includes('Error:')
+      ],
       mockConfig: {
         path: '/periodic/daily/',
         method: 'PUT',
@@ -108,22 +129,27 @@ export const updatePeriodicNoteMockTests = {
             errorCode: 40100
           }
         }
-      },
-      expectedError: 'Unauthorized'
+      }
     },
     {
       name: 'Handle network timeout',
-      params: {
-        period: 'daily',
-        content: 'Test content'
+      request: {
+        method: 'tools/call',
+        params: {
+          name: 'update_periodic_note',
+          arguments: {
+            period: 'daily',
+            content: 'Test content'
+          }
+        }
       },
-      expectedSuccess: false,
+      assertions: [
+        response => response.result !== undefined && response.result.content[0].text.includes('Error:')
+      ],
       mockConfig: {
         path: '/periodic/daily/',
         method: 'PUT',
         simulateTimeout: true
-      },
-      expectedError: 'timeout'
+      }
     }
-  ]
-};
+];

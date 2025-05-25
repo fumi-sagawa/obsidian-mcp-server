@@ -55,7 +55,7 @@ export const testCases = [
       }
     },
     assertions: [
-      response => response.error !== undefined
+      response => response.result !== undefined && response.result.content[0].text.includes('Error:')
     ],
     skipIfMock: false
   }
