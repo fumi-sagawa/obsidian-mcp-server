@@ -49,7 +49,29 @@ Obsidian Local REST APIの定期ノート更新機能（PUT /periodic/{period}/�
 - 要件定義: `/project/要件定義.md` セクション 2.1.6
 
 ## 作業ログ
-### YYYY-MM-DD HH:MM
-- 作業内容の記録
-- 発生した問題と解決方法
-- 次回の作業予定
+### 2025-05-25 15:55
+- タスクファイルを読み込み、実装を開始
+- OpenAPI仕様書からPUT /periodic/{period}/ エンドポイントの詳細を確認
+- feature/20240524-update_periodic_note ブランチを作成し、タスクファイルをdoingフォルダに移動
+
+### 2025-05-25 15:56
+- フィーチャーディレクトリ構造を作成
+- 型定義（types.ts）を作成 - Period型とリクエスト/レスポンス型を定義
+- Zodスキーマ（schema.ts）を作成 - period列挙値とcontent文字列の検証を実装
+- 単体テスト（update-periodic-note-handler.test.ts）を作成 - 各期間タイプ、Markdown形式、エラーケースをカバー
+- ハンドラー実装（update-periodic-note-handler.ts）を作成 - PUTメソッドで定期ノートを更新
+- index.tsでエクスポートを管理
+
+### 2025-05-25 15:57
+- obsidian-api.tsに`updatePeriodicNote`メソッドを追加 - PUT /periodic/{period}/ を呼び出す実装
+- 統合テストファイル（integration.js、mock.js）を作成
+- app/index.tsにツール登録を追加
+- テストランナーファイルに統合テストをインポート
+- TypeScriptの型エラーを修正（戻り値の型定義を明示的に設定）
+- ビルドとテストが全て成功したことを確認
+
+### 実装完了
+- 全てのTo-Do項目が完了
+- 単体テスト11件全てパス
+- ビルドエラーなし
+- 統合テストの準備も完了

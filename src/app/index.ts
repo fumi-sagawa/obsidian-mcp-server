@@ -16,6 +16,7 @@ import { executeCommandHandler, executeCommandArgsSchema } from '../features/exe
 import { openFileHandler, openFileSchema } from '../features/open-file/index.js';
 import { getPeriodicNoteHandler, getPeriodicNoteSchema } from '../features/get-periodic-note/index.js';
 import { appendToPeriodicNoteHandler, appendToPeriodicNoteTool } from '../features/append-to-periodic-note/index.js';
+import { updatePeriodicNoteHandler, updatePeriodicNoteSchema } from '../features/update-periodic-note/index.js';
 import { appendToFileHandler, appendToFileRequestSchema } from '../features/append-to-file/index.js';
 import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
@@ -207,6 +208,14 @@ server.tool(
   wrapHandler(appendToPeriodicNoteHandler, 'append-to-periodic-note')
 );
 appLogger.debug("Registered tool: append-to-periodic-note");
+
+server.tool(
+  "update-periodic-note",
+  "Update the content of a periodic note (daily, weekly, monthly, quarterly, or yearly) in Obsidian",
+  updatePeriodicNoteSchema.shape,
+  wrapHandler(updatePeriodicNoteHandler, 'update-periodic-note')
+);
+appLogger.debug("Registered tool: update-periodic-note");
 
 server.tool(
   "append-to-file",
