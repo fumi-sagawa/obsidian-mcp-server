@@ -2,7 +2,7 @@
  * delete-active-file 統合テスト（実APIサーバー用）
  */
 export const testCases = {
-  name: 'delete-active-file',
+  name: 'delete_active_file',
   tests: [
     {
       name: 'delete active file successfully',

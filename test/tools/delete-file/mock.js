@@ -8,7 +8,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: 'test-file.md'
         }
@@ -30,7 +30,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: 'non-existent.md'
         }
@@ -52,7 +52,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: ''
         }
@@ -72,7 +72,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: '../dangerous.md'
         }
@@ -94,7 +94,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: '/etc/passwd'
         }
@@ -116,7 +116,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: 'folder/'
         }
@@ -138,7 +138,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: '.obsidian/config'
         }

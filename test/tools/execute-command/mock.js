@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'execute-command',
+        name: 'execute_command',
         arguments: {
           commandId: 'global-search:open'
         }
@@ -25,7 +25,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'execute-command',
+        name: 'execute_command',
         arguments: {}
       }
     },
@@ -45,7 +45,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'execute-command',
+        name: 'execute_command',
         arguments: {
           commandId: 'non-existent-command'
         }

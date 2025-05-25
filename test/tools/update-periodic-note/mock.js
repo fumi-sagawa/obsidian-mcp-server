@@ -2,7 +2,7 @@
  * Mock test for update-periodic-note tool
  */
 export const updatePeriodicNoteMockTests = {
-  name: 'update-periodic-note',
+  name: 'update_periodic_note',
   tests: [
     {
       name: 'Update daily periodic note (mock)',

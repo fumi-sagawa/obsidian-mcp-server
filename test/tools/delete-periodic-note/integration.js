@@ -2,7 +2,7 @@
  * delete-periodic-note 統合テスト（実APIサーバー用）
  */
 export const testCases = {
-  name: 'delete-periodic-note',
+  name: 'delete_periodic_note',
   tests: [
     {
       name: 'delete daily note successfully',

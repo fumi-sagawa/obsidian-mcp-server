@@ -8,7 +8,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test-create-update/new-integration-file.md',
           content: '# Integration Test\n\nThis is created by integration test.'
@@ -32,7 +32,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test-create-update/update-integration-file.md',
           content: '# Updated Content\n\nThis has been updated by the test.'
@@ -57,7 +57,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test-create-update/deep/nested/directory/file.md',
           content: '# Nested File\n\nFile in a deeply nested directory.'
@@ -81,7 +81,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test-create-update/special-chars.md',
           content: '# 日本語タイトル\n\n特殊文字テスト: 🎉 ★ ♥ © ®\n\n```javascript\nconst message = "Hello, World!";\nconsole.log(message);\n```'

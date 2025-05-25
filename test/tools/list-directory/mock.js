@@ -8,7 +8,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: ''
         }
@@ -36,7 +36,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: 'notes'
         }
@@ -64,7 +64,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: 'projects/web/frontend'
         }
@@ -92,7 +92,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: 'my notes/日本語フォルダ'
         }
@@ -120,7 +120,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: 'non-existent-directory'
         }
@@ -148,7 +148,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: '../../../etc'
         }
@@ -166,7 +166,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-directory',
+        name: 'list_directory',
         arguments: {
           pathToDirectory: '/notes/daily'
         }

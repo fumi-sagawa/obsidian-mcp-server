@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'simple-search',
+        name: 'search_notes',
         arguments: {
           query: 'meeting'
         }
@@ -24,7 +24,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'simple-search',
+        name: 'search_notes',
         arguments: {
           query: '会議'
         }
@@ -42,7 +42,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'simple-search',
+        name: 'search_notes',
         arguments: {
           query: 'xyzabcdefghijklmnop12345'
         }
@@ -59,7 +59,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'simple-search',
+        name: 'search_notes',
         arguments: {
           query: 'test',
           contextLength: 50
@@ -78,7 +78,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'simple-search',
+        name: 'search_notes',
         arguments: {
           query: ''
         }

@@ -1,11 +1,11 @@
-// list-commandsモックテスト
+// list_commandsモックテスト
 export const testCases = [
   {
     name: 'Obsidianで利用可能なコマンド一覧を取得',
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-commands',
+        name: 'list_commands',
         arguments: {}
       }
     },

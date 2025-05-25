@@ -8,7 +8,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test/new-file.md',
           content: '# New File\n\nThis is a new file created by the test.'
@@ -33,7 +33,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test/existing-file.md',
           content: '# Updated File\n\nThis content has been updated.'
@@ -53,7 +53,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test/deep/nested/path/file.md',
           content: '# Nested File\n\nFile in a nested directory.'
@@ -71,7 +71,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test/empty-file.md',
           content: ''
@@ -89,7 +89,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: '../outside-vault.md',
           content: 'This should fail'
@@ -108,7 +108,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'create-or-update-file',
+        name: 'create_or_update_file',
         arguments: {
           filename: 'test/file.md'
           // contentが不足

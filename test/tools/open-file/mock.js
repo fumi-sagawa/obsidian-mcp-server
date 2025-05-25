@@ -8,7 +8,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'open-file',
+        name: 'open_file',
         arguments: {
           filename: 'notes/test.md'
         }
@@ -36,7 +36,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'open-file',
+        name: 'open_file',
         arguments: {
           filename: 'notes/test.md',
           newLeaf: true
@@ -65,7 +65,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'open-file',
+        name: 'open_file',
         arguments: {
           filename: 'notes/テスト ノート (2024).md'
         }
@@ -93,7 +93,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'open-file',
+        name: 'open_file',
         arguments: {
           filename: '../../../etc/passwd'
         }
@@ -121,7 +121,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'open-file',
+        name: 'open_file',
         arguments: {
           filename: ''
         }

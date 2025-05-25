@@ -4,7 +4,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'test-append.md',
           content: '\n## 新しいセクション\n追記されたコンテンツ'
@@ -28,7 +28,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'test-empty.md',
           content: ''
@@ -52,7 +52,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'テスト用ファイル.md',
           content: '# 日本語の見出し\n\nこれは日本語のコンテンツです。\n絵文字も含みます: 😊 🎉 🌸'
@@ -76,7 +76,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           content: 'テストコンテンツ'
           // filename が欠落
@@ -94,7 +94,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'test-without-extension',
           content: 'テストコンテンツ'

@@ -4,7 +4,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "test-insert-file.md",
           operation: "append",
@@ -24,7 +24,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "test-insert-file.md",
           operation: "replace",
@@ -44,7 +44,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "nonexistent-file.md",
           operation: "append", 

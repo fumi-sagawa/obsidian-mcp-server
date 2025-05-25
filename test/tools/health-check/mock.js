@@ -1,11 +1,11 @@
-// health-checkモックテスト
+// check_service_healthモックテスト
 export const testCases = [
   {
     name: 'ヘルスチェックを実行',
     request: {
       method: 'tools/call',
       params: {
-        name: 'health-check',
+        name: 'check_service_health',
         arguments: {}
       }
     },

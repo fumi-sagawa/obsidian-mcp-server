@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'health-check',
+        name: 'check_service_health',
         arguments: {}
       }
     },

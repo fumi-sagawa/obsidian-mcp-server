@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'list-commands',
+        name: 'list_commands',
         arguments: {}
       }
     },

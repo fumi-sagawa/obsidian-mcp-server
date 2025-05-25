@@ -6,7 +6,7 @@
 export const testCases = [
   {
     name: 'ファイルを開く（デフォルト）',
-    toolName: 'open-file',
+    toolName: 'open_file',
     params: {
       filename: 'test-note.md'
     },
@@ -19,7 +19,7 @@ export const testCases = [
   },
   {
     name: 'ファイルを新しいリーフで開く',
-    toolName: 'open-file',
+    toolName: 'open_file',
     params: {
       filename: 'test-note.md',
       newLeaf: true
@@ -33,7 +33,7 @@ export const testCases = [
   },
   {
     name: '存在しないファイルを開く（新規作成）',
-    toolName: 'open-file',
+    toolName: 'open_file',
     params: {
       filename: `test-notes/new-note-${Date.now()}.md`
     },

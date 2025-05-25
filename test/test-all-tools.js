@@ -12,8 +12,8 @@
 import { runTestSuite } from './tools/shared/test-runner.js';
 
 // 各ツールのテストケースをインポート
-import { testCases as getAlertsTests } from './tools/get-alerts/integration.js';
-import { testCases as getForecastTests } from './tools/get-forecast/integration.js';
+// import { testCases as getAlertsTests } from './tools/get-alerts/integration.js';
+// import { testCases as getForecastTests } from './tools/get-forecast/integration.js';
 import { testCases as healthCheckTests } from './tools/health-check/integration.js';
 import { testCases as getServerStatusTests } from './tools/get-server-status/integration.js';
 import { testCases as updateActiveFileTests } from './tools/obsidian/update-active-file/integration.js';
@@ -33,24 +33,26 @@ import { testCases as deleteFileTests } from './tools/delete-file/integration.js
 
 // テストケース定義
 const testSuites = {
-  'get-alerts': getAlertsTests,
-  'get-forecast': getForecastTests,
-  'health-check': healthCheckTests,
-  'get-server-status': getServerStatusTests,
+  // 削除されたツール
+  // 'get-alerts': getAlertsTests,
+  // 'get-forecast': getForecastTests,
+  
+  'check_service_health': healthCheckTests,
+  'get_server_status': getServerStatusTests,
   'update_active_file': updateActiveFileTests,
-  'append-to-active-file': appendToActiveFileTests,
-  'insert-into-file': insertIntoFileTests,
-  'delete-active-file': deleteActiveFileTests,
-  'delete-periodic-note': deletePeriodicNoteTests,
-  'list-commands': listCommandsTests,
-  'open-file': openFileTests,
-  'get-periodic-note': getPeriodicNoteTests,
-  'append-to-periodic-note': appendToPeriodicNoteTests,
-  'update-periodic-note': updatePeriodicNoteTests,
-  'simple-search': simpleSearchTests,
-  'append-to-file': appendToFileTests,
-  'create-or-update-file': createOrUpdateFileTests,
-  'delete-file': deleteFileTests
+  'append_to_active_file': appendToActiveFileTests,
+  'insert_to_file': insertIntoFileTests,
+  'delete_active_file': deleteActiveFileTests,
+  'delete_periodic_note': deletePeriodicNoteTests,
+  'list_commands': listCommandsTests,
+  'open_file': openFileTests,
+  'get_periodic_note': getPeriodicNoteTests,
+  'append_to_periodic_note': appendToPeriodicNoteTests,
+  'update_periodic_note': updatePeriodicNoteTests,
+  'search_notes': simpleSearchTests,
+  'append_to_file': appendToFileTests,
+  'create_or_update_file': createOrUpdateFileTests,
+  'delete_file': deleteFileTests
 };
 
 // メイン実行

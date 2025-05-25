@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-active-file',
+        name: 'insert_to_active_file',
         arguments: {
           operation: 'append',
           targetType: 'heading',
@@ -24,7 +24,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-active-file',
+        name: 'insert_to_active_file',
         arguments: {
           operation: 'prepend',
           targetType: 'block',
@@ -43,7 +43,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-active-file',
+        name: 'insert_to_active_file',
         arguments: {
           operation: 'replace',
           targetType: 'frontmatter',
@@ -62,7 +62,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-active-file',
+        name: 'insert_to_active_file',
         arguments: {
           operation: 'append',
           targetType: 'block',
@@ -82,7 +82,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-active-file',
+        name: 'insert_to_active_file',
         arguments: {
           operation: 'append',
           targetType: 'heading',

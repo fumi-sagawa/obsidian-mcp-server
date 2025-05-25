@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-active-file',
+        name: 'append_to_active_file',
         arguments: { content: '\n\n## 追記されたセクション\n\nこれは追記されたコンテンツです。' }
       }
     },
@@ -21,7 +21,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-active-file',
+        name: 'append_to_active_file',
         arguments: { content: '' }
       }
     },

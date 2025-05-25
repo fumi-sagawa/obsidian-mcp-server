@@ -4,7 +4,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "test-note.md",
           operation: "append",
@@ -24,7 +24,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "notes/research.md", 
           operation: "prepend",
@@ -44,7 +44,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "blog/article.md",
           operation: "replace",
@@ -64,7 +64,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "data/cities.md",
           operation: "append",
@@ -85,7 +85,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "hierarchical-notes.md",
           operation: "append",
@@ -106,7 +106,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "",
           operation: "append",
@@ -126,7 +126,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'insert-into-file',
+        name: 'insert_to_file',
         arguments: {
           filename: "日本語ノート.md",
           operation: "append",

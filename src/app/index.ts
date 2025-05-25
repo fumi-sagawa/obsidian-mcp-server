@@ -81,197 +81,189 @@ const wrapHandler = <T extends (...args: any[]) => any>(
   }) as T;
 };
 
-server.tool(
-  "get-alerts",
-  "Get weather alerts for a state",
-  alertsSchema,
-  wrapHandler(getAlertsHandler, 'get-alerts')
-);
-appLogger.debug("Registered tool: get-alerts");
+// Weather関連ツールは削除（Obsidian APIには含まれないため）
 
+// ========== サーバー管理系 ==========
 server.tool(
-  "get-forecast",
-  "Get weather forecast for a location",
-  forecastSchema,
-  wrapHandler(getForecastHandler, 'get-forecast')
-);
-appLogger.debug("Registered tool: get-forecast");
-
-server.tool(
-  "health-check",
-  "Check the health status of the weather service",
+  "check_service_health",
+  "Check health status of Obsidian service and connections",
   HealthCheckSchema,
-  wrapHandler(handleHealthCheck, 'health-check')
+  wrapHandler(handleHealthCheck, 'check_service_health')
 );
-appLogger.debug("Registered tool: health-check");
+appLogger.debug("Registered tool: check_service_health");
 
 server.tool(
-  "get-server-status",
-  "Get Obsidian server status and version information",
+  "get_server_status",
+  "Get Obsidian server connection status and version info",
   getServerStatusArgsSchema,
-  wrapHandler(getServerStatusHandler, 'get-server-status')
+  wrapHandler(getServerStatusHandler, 'get_server_status')
 );
-appLogger.debug("Registered tool: get-server-status");
+appLogger.debug("Registered tool: get_server_status");
 
+// ========== アクティブファイル操作系 ==========
 server.tool(
-  "get-active-file",
-  "Get the currently active file in Obsidian",
+  "get_active_file",
+  "Get content and metadata of currently active file",
   getActiveFileSchema,
-  wrapHandler(getActiveFileHandler, 'get-active-file')
+  wrapHandler(getActiveFileHandler, 'get_active_file')
 );
-appLogger.debug("Registered tool: get-active-file");
+appLogger.debug("Registered tool: get_active_file");
 
 server.tool(
-  updateActiveFileTool.name,
-  updateActiveFileTool.description,
+  "update_active_file",
+  "Replace entire content of currently active file",
   updateActiveFileTool.inputSchema.shape,
-  wrapHandler(updateActiveFileHandler, 'update-active-file')
+  wrapHandler(updateActiveFileHandler, 'update_active_file')
 );
-appLogger.debug("Registered tool: update-active-file");
+appLogger.debug("Registered tool: update_active_file");
 
 server.tool(
-  "append-to-active-file",
-  "Append content to the end of the currently active file in Obsidian",
+  "append_to_active_file",
+  "Append text to end of currently active file",
   appendToActiveFileSchema.shape,
-  wrapHandler(appendToActiveFileHandler, 'append-to-active-file')
+  wrapHandler(appendToActiveFileHandler, 'append_to_active_file')
 );
-appLogger.debug("Registered tool: append-to-active-file");
+appLogger.debug("Registered tool: append_to_active_file");
 
 server.tool(
-  "insert-into-active-file",
-  "Insert content into the active file relative to a heading, block reference, or frontmatter field",
+  "insert_to_active_file",
+  "Insert text at specific location in active file",
   insertIntoActiveFileSchema.shape,
-  wrapHandler(insertIntoActiveFileHandler, 'insert-into-active-file')
+  wrapHandler(insertIntoActiveFileHandler, 'insert_to_active_file')
 );
-appLogger.debug("Registered tool: insert-into-active-file");
+appLogger.debug("Registered tool: insert_to_active_file");
 
 server.tool(
-  "insert-into-file",
-  "Insert content into a specific file relative to a heading, block reference, or frontmatter field",
-  insertIntoFileSchema.shape,
-  wrapHandler(insertIntoFileHandler, 'insert-into-file')
-);
-appLogger.debug("Registered tool: insert-into-file");
-
-server.tool(
-  "delete-active-file",
-  "Delete the currently active file in Obsidian (WARNING: This action cannot be undone)",
+  "delete_active_file",
+  "Delete currently active file permanently",
   deleteActiveFileSchema.shape,
-  wrapHandler(deleteActiveFileHandler, 'delete-active-file')
+  wrapHandler(deleteActiveFileHandler, 'delete_active_file')
 );
-appLogger.debug("Registered tool: delete-active-file");
+appLogger.debug("Registered tool: delete_active_file");
 
+// ========== ファイル操作系 ==========
 server.tool(
-  deletePeriodicNoteToolConfig.name,
-  deletePeriodicNoteToolConfig.description,
-  deletePeriodicNoteToolConfig.inputSchema.shape,
-  wrapHandler(deletePeriodicNoteHandler, 'delete-periodic-note')
-);
-appLogger.debug("Registered tool: delete-periodic-note");
-
-server.tool(
-  "list-commands",
-  "Get a list of all available commands in Obsidian",
-  ListCommandsInputSchema,
-  wrapHandler(listCommandsHandler, 'list-commands')
-);
-appLogger.debug("Registered tool: list-commands");
-
-server.tool(
-  "execute-command",
-  "Execute a command in Obsidian by its command ID",
-  executeCommandArgsSchema.shape,
-  wrapHandler(executeCommandHandler, 'execute-command')
-);
-appLogger.debug("Registered tool: execute-command");
-
-server.tool(
-  "open-file",
-  "Open a file in Obsidian (creates it if it doesn't exist)",
-  openFileSchema.shape,
-  wrapHandler(openFileHandler, 'open-file')
-);
-appLogger.debug("Registered tool: open-file");
-
-server.tool(
-  "get-periodic-note",
-  "Get a periodic note (daily, weekly, monthly, quarterly, or yearly) from Obsidian",
-  getPeriodicNoteSchema.shape,
-  wrapHandler(getPeriodicNoteHandler, 'get-periodic-note')
-);
-appLogger.debug("Registered tool: get-periodic-note");
-
-server.tool(
-  appendToPeriodicNoteTool.name,
-  appendToPeriodicNoteTool.description,
-  appendToPeriodicNoteTool.inputSchema.shape,
-  wrapHandler(appendToPeriodicNoteHandler, 'append-to-periodic-note')
-);
-appLogger.debug("Registered tool: append-to-periodic-note");
-
-server.tool(
-  "update-periodic-note",
-  "Update the content of a periodic note (daily, weekly, monthly, quarterly, or yearly) in Obsidian",
-  updatePeriodicNoteSchema.shape,
-  wrapHandler(updatePeriodicNoteHandler, 'update-periodic-note')
-);
-appLogger.debug("Registered tool: update-periodic-note");
-
-server.tool(
-  "append-to-file",
-  "Append content to a file in your vault (creates it if it doesn't exist)",
-  appendToFileRequestSchema.shape,
-  wrapHandler(appendToFileHandler, 'append-to-file')
-);
-appLogger.debug("Registered tool: append-to-file");
-
-server.tool(
-  "simple-search",
-  "Search for documents matching a specified text query",
-  simpleSearchRequestSchema.shape,
-  wrapHandler(simpleSearchHandler, 'simple-search')
-);
-appLogger.debug("Registered tool: simple-search");
-
-server.tool(
-  "create-or-update-file",
-  "Create a new file in your vault or update the content of an existing one",
-  createOrUpdateFileSchema.shape,
-  wrapHandler(createOrUpdateFileHandler, 'create-or-update-file')
-);
-appLogger.debug("Registered tool: create-or-update-file");
-
-server.tool(
-  "delete-file",
-  "Delete a file from your vault",
-  deleteFileSchema.shape,
-  wrapHandler(deleteFileHandler, 'delete-file')
-);
-appLogger.debug("Registered tool: delete-file");
-
-server.tool(
-  "get-file",
-  "Get the content of a specific file from your vault",
+  "get_file_content",
+  "Get content and metadata of specified file",
   GetFileRequestSchema.shape,
-  wrapHandler(getFileHandler, 'get-file')
+  wrapHandler(getFileHandler, 'get_file_content')
 );
-appLogger.debug("Registered tool: get-file");
+appLogger.debug("Registered tool: get_file_content");
 
 server.tool(
-  "list-directory",
-  "List files and directories in a specified directory within your vault",
+  "create_or_update_file",
+  "Create new file or replace content of existing file",
+  createOrUpdateFileSchema.shape,
+  wrapHandler(createOrUpdateFileHandler, 'create_or_update_file')
+);
+appLogger.debug("Registered tool: create_or_update_file");
+
+server.tool(
+  "append_to_file",
+  "Append text to end of specified file",
+  appendToFileRequestSchema.shape,
+  wrapHandler(appendToFileHandler, 'append_to_file')
+);
+appLogger.debug("Registered tool: append_to_file");
+
+server.tool(
+  "insert_to_file",
+  "Insert text at specific location in file",
+  insertIntoFileSchema.shape,
+  wrapHandler(insertIntoFileHandler, 'insert_to_file')
+);
+appLogger.debug("Registered tool: insert_to_file");
+
+server.tool(
+  "delete_file",
+  "Delete specified file permanently",
+  deleteFileSchema.shape,
+  wrapHandler(deleteFileHandler, 'delete_file')
+);
+appLogger.debug("Registered tool: delete_file");
+
+server.tool(
+  "open_file",
+  "Open specified file in Obsidian editor",
+  openFileSchema.shape,
+  wrapHandler(openFileHandler, 'open_file')
+);
+appLogger.debug("Registered tool: open_file");
+
+// ========== 周期ノート系 ==========
+server.tool(
+  "get_periodic_note",
+  "Get content of daily, weekly, monthly, quarterly or yearly note",
+  getPeriodicNoteSchema.shape,
+  wrapHandler(getPeriodicNoteHandler, 'get_periodic_note')
+);
+appLogger.debug("Registered tool: get_periodic_note");
+
+server.tool(
+  "append_to_periodic_note",
+  "Append text to periodic note for specified date",
+  appendToPeriodicNoteTool.inputSchema.shape,
+  wrapHandler(appendToPeriodicNoteHandler, 'append_to_periodic_note')
+);
+appLogger.debug("Registered tool: append_to_periodic_note");
+
+server.tool(
+  "update_periodic_note",
+  "Replace content of periodic note for specified date",
+  updatePeriodicNoteSchema.shape,
+  wrapHandler(updatePeriodicNoteHandler, 'update_periodic_note')
+);
+appLogger.debug("Registered tool: update_periodic_note");
+
+server.tool(
+  "delete_periodic_note",
+  "Delete periodic note for specified date",
+  deletePeriodicNoteToolConfig.inputSchema.shape,
+  wrapHandler(deletePeriodicNoteHandler, 'delete_periodic_note')
+);
+appLogger.debug("Registered tool: delete_periodic_note");
+
+// ========== 検索・一覧系 ==========
+server.tool(
+  "search_notes",
+  "Search notes by text query across entire vault",
+  simpleSearchRequestSchema.shape,
+  wrapHandler(simpleSearchHandler, 'search_notes')
+);
+appLogger.debug("Registered tool: search_notes");
+
+server.tool(
+  "list_directory",
+  "List files and folders in specified directory",
   listDirectorySchema.shape,
-  wrapHandler(listDirectoryHandler, 'list-directory')
+  wrapHandler(listDirectoryHandler, 'list_directory')
 );
-appLogger.debug("Registered tool: list-directory");
+appLogger.debug("Registered tool: list_directory");
 
 server.tool(
-  listVaultFilesTool.name,
-  listVaultFilesTool.description,
+  "list_vault_files",
+  "List all files in vault with optional path filter",
   listVaultFilesTool.inputSchema.shape,
-  wrapHandler(listVaultFilesHandler, 'list-vault-files')
+  wrapHandler(listVaultFilesHandler, 'list_vault_files')
 );
-appLogger.debug("Registered tool: list-vault-files");
+appLogger.debug("Registered tool: list_vault_files");
+
+// ========== コマンド実行系 ==========
+server.tool(
+  "list_commands",
+  "List all available Obsidian commands",
+  ListCommandsInputSchema,
+  wrapHandler(listCommandsHandler, 'list_commands')
+);
+appLogger.debug("Registered tool: list_commands");
+
+server.tool(
+  "execute_command",
+  "Execute Obsidian command by ID",
+  executeCommandArgsSchema.shape,
+  wrapHandler(executeCommandHandler, 'execute_command')
+);
+appLogger.debug("Registered tool: execute_command");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

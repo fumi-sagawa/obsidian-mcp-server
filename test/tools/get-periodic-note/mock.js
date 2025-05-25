@@ -9,7 +9,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get-periodic-note',
+        name: 'get_periodic_note',
         arguments: { period: 'daily' }
       }
     },
@@ -40,7 +40,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get-periodic-note',
+        name: 'get_periodic_note',
         arguments: { period: 'weekly' }
       }
     },
@@ -73,7 +73,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get-periodic-note',
+        name: 'get_periodic_note',
         arguments: { period: 'invalid' }
       }
     },
@@ -89,7 +89,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get-periodic-note',
+        name: 'get_periodic_note',
         arguments: { period: 'monthly' }
       }
     },

@@ -2,7 +2,7 @@
  * Integration test for update-periodic-note tool
  */
 export const updatePeriodicNoteTests = {
-  name: 'update-periodic-note',
+  name: 'update_periodic_note',
   tests: [
     {
       name: 'Update daily periodic note with markdown content',

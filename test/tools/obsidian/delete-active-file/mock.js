@@ -7,7 +7,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-active-file',
+        name: 'delete_active_file',
         arguments: {}
       }
     },
@@ -35,7 +35,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-active-file',
+        name: 'delete_active_file',
         arguments: {}
       }
     },

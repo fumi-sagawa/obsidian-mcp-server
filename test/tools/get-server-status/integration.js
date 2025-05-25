@@ -5,7 +5,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'get-server-status',
+        name: 'get_server_status',
         arguments: {}
       }
     },

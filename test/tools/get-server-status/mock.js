@@ -1,11 +1,11 @@
-// get-server-statusモックテスト
+// get_server_statusモックテスト
 export const testCases = [
   {
     name: 'Obsidianサーバーステータスを取得',
     request: {
       method: 'tools/call',
       params: {
-        name: 'get-server-status',
+        name: 'get_server_status',
         arguments: {}
       }
     },

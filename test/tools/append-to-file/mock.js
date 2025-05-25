@@ -4,7 +4,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'mock-test.md',
           content: '\n## モックセクション\nモックで追記されたコンテンツ'
@@ -28,7 +28,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'notes/daily/2024-05-24.md',
           content: '\n## 今日のまとめ\n- タスク完了\n- 次の計画'
@@ -53,7 +53,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'append-to-file',
+        name: 'append_to_file',
         arguments: {
           filename: 'long-content.md',
           content: 'Lorem ipsum dolor sit amet, '.repeat(100)

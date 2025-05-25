@@ -14,8 +14,8 @@ import { runTestSuite } from './tools/shared/test-runner.js';
 import { MockApiServer } from './tools/shared/mock-server.js';
 
 // 各ツールのモックテストケースをインポート
-import { testCases as getAlertsTests } from './tools/get-alerts/mock.js';
-import { testCases as getForecastTests } from './tools/get-forecast/mock.js';
+// import { testCases as getAlertsTests } from './tools/get-alerts/mock.js';
+// import { testCases as getForecastTests } from './tools/get-forecast/mock.js';
 import { testCases as healthCheckTests } from './tools/health-check/mock.js';
 import { testCases as getServerStatusTests } from './tools/get-server-status/mock.js';
 import { testCases as updateActiveFileTests } from './tools/obsidian/update-active-file/mock.js';
@@ -31,7 +31,7 @@ import { testCases as getPeriodicNoteMockTests } from './tools/get-periodic-note
 import { testCases as appendToPeriodicNoteTests } from './tools/append-to-periodic-note/mock.js';
 import { updatePeriodicNoteMockTests } from './tools/update-periodic-note/mock.js';
 import { testCases as simpleSearchTests } from './tools/simple-search/mock.js';
-import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
+// import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/mock.js';
 import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/mock.js';
 import { testCases as deleteFileTests } from './tools/delete-file/mock.js';
@@ -40,28 +40,29 @@ import { testCases as listVaultFilesTests } from './tools/list-vault-files/mock.
 
 // テストスイート定義
 const testSuites = {
-  'get-alerts': getAlertsTests,
-  'get-forecast': getForecastTests,
-  'health-check': healthCheckTests,
-  'get-server-status': getServerStatusTests,
+  // 削除されたツール
+  // 'get-alerts': getAlertsTests,
+  // 'get-forecast': getForecastTests,
+  
+  'check_service_health': healthCheckTests,
+  'get_server_status': getServerStatusTests,
   'update_active_file': updateActiveFileTests,
-  'append-to-active-file': appendToActiveFileTests,
-  'insert-into-active-file': insertIntoActiveFileTests,
-  'insert-into-file': insertIntoFileTests,
-  'delete-active-file': deleteActiveFileTests,
-  'delete-periodic-note': deletePeriodicNoteTests,
-  'list-commands': listCommandsTests,
-  'execute-command': executeCommandTests,
-  'open-file': openFileTests,
-  'get-periodic-note': getPeriodicNoteMockTests,
-  'append-to-periodic-note': appendToPeriodicNoteTests,
-  'update-periodic-note': updatePeriodicNoteMockTests,
-  'simple-search': simpleSearchTests,
-  'search_notes': searchNotesTests,
-  'append-to-file': appendToFileTests,
-  'create-or-update-file': createOrUpdateFileTests,
-  'delete-file': deleteFileTests,
-  'list-directory': listDirectoryTests,
+  'append_to_active_file': appendToActiveFileTests,
+  'insert_to_active_file': insertIntoActiveFileTests,
+  'insert_to_file': insertIntoFileTests,
+  'delete_active_file': deleteActiveFileTests,
+  'delete_periodic_note': deletePeriodicNoteTests,
+  'list_commands': listCommandsTests,
+  'execute_command': executeCommandTests,
+  'open_file': openFileTests,
+  'get_periodic_note': getPeriodicNoteMockTests,
+  'append_to_periodic_note': appendToPeriodicNoteTests,
+  'update_periodic_note': updatePeriodicNoteMockTests,
+  'search_notes': simpleSearchTests,  // simple-search → search_notes
+  'append_to_file': appendToFileTests,
+  'create_or_update_file': createOrUpdateFileTests,
+  'delete_file': deleteFileTests,
+  'list_directory': listDirectoryTests,
   'list_vault_files': listVaultFilesTests
 };
 

@@ -45,7 +45,7 @@ export OBSIDIAN_HTTPS_CERT="/path/to/cert.pem"    # HTTPS使用時
 
 #### 基本的なファイル操作
 - `get_server_status` - サーバー状態の取得
-- `get_file` - ファイル内容の取得
+- `get_file_content` - ファイル内容の取得
 - `create_or_update_file` - ファイルの作成・更新
 - `delete_file` - ファイルの削除
 - `list_vault_files` - ファイル一覧の取得
@@ -56,7 +56,7 @@ export OBSIDIAN_HTTPS_CERT="/path/to/cert.pem"    # HTTPS使用時
 - `append_to_active_file` - アクティブファイルへの追記
 
 #### 検索機能
-- `simple_search` - テキストベースの簡易検索
+- `search_notes` - テキストベースの検索
 - `search_notes` - 詳細な検索機能
 
 ## アーキテクチャ
@@ -69,7 +69,7 @@ export OBSIDIAN_HTTPS_CERT="/path/to/cert.pem"    # HTTPS使用時
 src/
 ├── app/              # アプリケーション初期化
 ├── features/         # 機能モジュール
-│   ├── get-server-status/   # サーバー状態取得機能
+│   ├── get_server_status/   # サーバー状態取得機能
 │   └── [その他の機能]/      # 各Obsidian機能の実装
 ├── entities/         # ドメインモデル
 │   └── obsidian/     # Obsidian関連の型定義
@@ -115,7 +115,7 @@ npm run test:watch    # ファイル変更を監視して自動実行
 # 統合テスト（Integration Test）
 npm run test:tools              # 全ツールの統合テスト
 npm run test:tools:mock         # 全ツールのモックテスト
-npm run test:tools get-alerts   # 特定ツールの統合テスト
+npm run test:tools get_server_status   # 特定ツールの統合テスト
 npm run test:tool               # 単一ツールの対話式テスト
 ```
 
@@ -126,15 +126,11 @@ npm run test:tool               # 単一ツールの対話式テスト
 ```
 test/
 ├── tools/                      # 統合テスト
-│   ├── get-alerts/
-│   │   ├── integration.js      # 実際のAPIを使った統合テスト
-│   │   └── mock.js             # モックAPIを使った統合テスト
-│   ├── get-forecast/
-│   ├── health-check/
-│   ├── get-server-status/
+│   ├── check_service_health/
+│   ├── get_server_status/
 │   ├── obsidian/               # Obsidian関連ツール
-│   │   ├── update-active-file/
-│   │   └── append-to-active-file/
+│   │   ├── update_active_file/
+│   │   └── append_to_active_file/
 │   └── shared/                 # 共通テスト機能
 │       ├── test-runner.js      # テスト実行エンジン
 │       └── mock-server.js      # モックAPIサーバー

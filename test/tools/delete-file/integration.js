@@ -8,7 +8,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: 'test-delete-file.md'
         }
@@ -35,7 +35,7 @@ export const testCases = [
     request: {
       method: 'tools/call',
       params: {
-        name: 'delete-file',
+        name: 'delete_file',
         arguments: {
           filename: 'non-existent-file-12345.md'
         }
