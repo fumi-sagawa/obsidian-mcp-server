@@ -18,6 +18,7 @@ import { appendToFileHandler, appendToFileRequestSchema } from '../features/appe
 import { simpleSearchHandler } from '../features/simple-search/index.js';
 import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
 import { createOrUpdateFileHandler, createOrUpdateFileSchema } from '../features/create-or-update-file/index.js';
+import { deleteFileHandler, deleteFileSchema } from '../features/delete-file/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -209,6 +210,14 @@ server.tool(
   wrapHandler(createOrUpdateFileHandler, 'create-or-update-file')
 );
 appLogger.debug("Registered tool: create-or-update-file");
+
+server.tool(
+  "delete-file",
+  "Delete a file from your vault",
+  deleteFileSchema.shape,
+  wrapHandler(deleteFileHandler, 'delete-file')
+);
+appLogger.debug("Registered tool: delete-file");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

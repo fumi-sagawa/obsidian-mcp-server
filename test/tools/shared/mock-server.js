@@ -34,6 +34,23 @@ export class MockApiServer {
           // ファイルの作成・更新をモック
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'DELETE' && req.url.startsWith('/vault/')) {
+          // ファイルの削除をモック
+          const filename = decodeURIComponent(req.url.split('/vault/')[1]);
+          
+          // 存在しないファイルのテスト
+          if (filename === 'non-existent.md') {
+            res.statusCode = 404;
+            res.end(JSON.stringify({ 
+              errorCode: 404,
+              error: 'Not found' 
+            }));
+            return;
+          }
+          
+          // 成功の場合
+          res.statusCode = 204; // No Content
+          res.end();
         } else if (req.method === 'POST' && req.url === '/active/') {
           // アクティブファイルへの追記をモック
           res.statusCode = 204; // No Content
