@@ -35,6 +35,7 @@ import { testCases as appendToFileTests } from './tools/append-to-file/mock.js';
 import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/mock.js';
 import { testCases as deleteFileTests } from './tools/delete-file/mock.js';
 import { testCases as listDirectoryTests } from './tools/list-directory/mock.js';
+import { testCases as listVaultFilesTests } from './tools/list-vault-files/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -58,7 +59,8 @@ const testSuites = {
   'append-to-file': appendToFileTests,
   'create-or-update-file': createOrUpdateFileTests,
   'delete-file': deleteFileTests,
-  'list-directory': listDirectoryTests
+  'list-directory': listDirectoryTests,
+  'list_vault_files': listVaultFilesTests
 };
 
 // メイン実行
