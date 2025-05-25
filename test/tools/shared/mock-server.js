@@ -19,6 +19,60 @@ export class MockApiServer {
           // アクティブファイルの更新をモック
           res.statusCode = 204; // No Content
           res.end();
+        } else if (req.method === 'GET' && req.url === '/vault/') {
+          // ルートディレクトリの一覧（GET /vault/）
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            files: ['note1.md', 'note2.md', 'documents/', 'projects/']
+          }));
+        } else if (req.method === 'GET' && req.url.match(/^\/vault\/.*\/$/)) {
+          // list-directory エンドポイント（GET /vault/{pathToDirectory}/）
+          const pathMatch = req.url.match(/^\/vault\/(.*)\/$/);
+          const pathToDirectory = pathMatch ? decodeURIComponent(pathMatch[1]) : '';
+          
+          // パストラバーサル攻撃のテスト
+          if (pathToDirectory.includes('../')) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ 
+              error: 'Bad request',
+              errorCode: 40001
+            }));
+            return;
+          }
+          
+          // 存在しないディレクトリのテスト
+          if (pathToDirectory === 'non-existent-directory') {
+            res.statusCode = 404;
+            res.end(JSON.stringify({
+              errorCode: 40400,
+              message: 'Directory does not exist'
+            }));
+            return;
+          }
+          
+          // モックレスポンスを返す
+          let mockFiles = [];
+          
+          if (pathToDirectory === '' || pathToDirectory === '/') {
+            // ルートディレクトリ
+            mockFiles = ['note1.md', 'note2.md', 'documents/', 'projects/'];
+          } else if (pathToDirectory === 'notes') {
+            mockFiles = ['daily/', 'weekly/', 'meeting-notes.md', 'ideas.md'];
+          } else if (pathToDirectory === 'projects/web/frontend') {
+            mockFiles = ['components/', 'pages/', 'utils/', 'main.tsx', 'App.tsx'];
+          } else if (pathToDirectory === 'my notes/日本語フォルダ') {
+            mockFiles = ['メモ.md', 'タスク/', '会議録.md'];
+          } else if (pathToDirectory === 'notes/daily') {
+            mockFiles = ['2024-05-24.md', '2024-05-23.md', 'templates/'];
+          } else {
+            // デフォルトケース（空のディレクトリ）
+            mockFiles = [];
+          }
+          
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            files: mockFiles
+          }));
         } else if (req.method === 'GET' && req.url.startsWith('/vault/')) {
           // ファイルの取得をモック
           const filename = decodeURIComponent(req.url.substring('/vault/'.length));
@@ -333,6 +387,54 @@ export class MockApiServer {
               }
             ]));
           }
+        } else if (req.method === 'GET' && req.url.match(/^\/vault\/.*\/$/)) {
+          // list-directory エンドポイント（GET /vault/{pathToDirectory}/）
+          const pathMatch = req.url.match(/^\/vault\/(.*)\/$/);
+          const pathToDirectory = pathMatch ? decodeURIComponent(pathMatch[1]) : '';
+          
+          // パストラバーサル攻撃のテスト
+          if (pathToDirectory.includes('../')) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ 
+              error: 'Bad request',
+              errorCode: 40001
+            }));
+            return;
+          }
+          
+          // 存在しないディレクトリのテスト
+          if (pathToDirectory === 'non-existent-directory') {
+            res.statusCode = 404;
+            res.end(JSON.stringify({
+              errorCode: 40400,
+              message: 'Directory does not exist'
+            }));
+            return;
+          }
+          
+          // モックレスポンスを返す
+          let mockFiles = [];
+          
+          if (pathToDirectory === '' || pathToDirectory === '/') {
+            // ルートディレクトリ
+            mockFiles = ['note1.md', 'note2.md', 'documents/', 'projects/'];
+          } else if (pathToDirectory === 'notes') {
+            mockFiles = ['daily/', 'weekly/', 'meeting-notes.md', 'ideas.md'];
+          } else if (pathToDirectory === 'projects/web/frontend') {
+            mockFiles = ['components/', 'pages/', 'utils/', 'main.tsx', 'App.tsx'];
+          } else if (pathToDirectory === 'my notes/日本語フォルダ') {
+            mockFiles = ['メモ.md', 'タスク/', '会議録.md'];
+          } else if (pathToDirectory === 'notes/daily') {
+            mockFiles = ['2024-05-24.md', '2024-05-23.md', 'templates/'];
+          } else {
+            // デフォルトケース（空のディレクトリ）
+            mockFiles = [];
+          }
+          
+          res.statusCode = 200;
+          res.end(JSON.stringify({
+            files: mockFiles
+          }));
         } else {
           res.statusCode = 404;
           res.end(JSON.stringify({ error: 'Not found' }));

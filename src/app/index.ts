@@ -22,6 +22,7 @@ import { simpleSearchRequestSchema } from '../features/simple-search/schema.js';
 import { createOrUpdateFileHandler, createOrUpdateFileSchema } from '../features/create-or-update-file/index.js';
 import { deleteFileHandler, deleteFileSchema } from '../features/delete-file/index.js';
 import { getFileHandler, GetFileRequestSchema } from '../features/get-file/index.js';
+import { listDirectoryHandler, listDirectorySchema } from '../features/list-directory/index.js';
 import { logger, handleError, getConfig, MetricsMiddleware } from '../shared/index.js';
 
 const config = getConfig();
@@ -245,6 +246,14 @@ server.tool(
   wrapHandler(getFileHandler, 'get-file')
 );
 appLogger.debug("Registered tool: get-file");
+
+server.tool(
+  "list-directory",
+  "List files and directories in a specified directory within your vault",
+  listDirectorySchema.shape,
+  wrapHandler(listDirectoryHandler, 'list-directory')
+);
+appLogger.debug("Registered tool: list-directory");
 
 // Add graceful shutdown
 process.on('SIGINT', async () => {

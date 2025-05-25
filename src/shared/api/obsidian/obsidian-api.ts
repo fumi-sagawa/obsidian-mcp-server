@@ -4,6 +4,7 @@ import { getConfig } from '../../config/index.js';
 import type { GetActiveFileResponse } from '../../../features/get-active-file/types.js';
 import type { GetPeriodicNoteResponse, PeriodType } from '../../../features/get-periodic-note/types.js';
 import type { SearchResult } from '../../../features/simple-search/types.js';
+import type { ListDirectoryResponse } from '../../../features/list-directory/types.js';
 
 /**
  * Obsidian Local REST APIクライアント
@@ -1893,6 +1894,128 @@ export class ObsidianAPIClient {
         status: response.status,
         filename
       });
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new ApiError(
+            'Request timeout',
+            ErrorCode.API_TIMEOUT,
+            408,
+            undefined,
+            { url, timeout: config.apiTimeout }
+          );
+        }
+
+        if (error.message.includes('ECONNREFUSED') || error.message.includes('Network')) {
+          throw new ApiError(
+            'Connection refused',
+            ErrorCode.API_CONNECTION_ERROR,
+            503,
+            undefined,
+            { url, originalError: error.message }
+          );
+        }
+      }
+
+      throw new SystemError(
+        'Unexpected error during API request',
+        error instanceof Error ? error : undefined,
+        { url }
+      );
+    }
+  }
+
+  /**
+   * ディレクトリ内のファイル・ディレクトリ一覧を取得
+   */
+  async listDirectory(pathToDirectory: string): Promise<ListDirectoryResponse> {
+    // 空文字列の場合はルートディレクトリ
+    const encodedPath = pathToDirectory ? encodeURIComponent(pathToDirectory) : '';
+    const url = encodedPath ? 
+      `${this.baseUrl}/vault/${encodedPath}/` : 
+      `${this.baseUrl}/vault/`;
+    
+    this.apiLogger.debug('Listing directory', { 
+      url,
+      pathToDirectory,
+      hasApiKey: !!this.apiKey
+    });
+
+    const controller = new AbortController();
+    const config = getConfig();
+    const timeoutId = setTimeout(() => controller.abort(), config.apiTimeout);
+
+    try {
+      const headers: Record<string, string> = {
+        'Accept': 'application/json',
+      };
+
+      if (this.apiKey) {
+        headers['Authorization'] = `Bearer ${this.apiKey}`;
+      } else {
+        this.apiLogger.warn('No API key configured for Obsidian API');
+      }
+
+      const fetchOptions: RequestInit = {
+        method: 'GET',
+        headers,
+        signal: controller.signal,
+      };
+
+      // HTTPSの場合は証明書検証を無効化（自己署名証明書対応）
+      if (typeof process !== 'undefined' && process.versions && process.versions.node && this.baseUrl.startsWith('https:')) {
+        (fetchOptions as any).agent = new (await import('https')).Agent({
+          rejectUnauthorized: false
+        });
+      }
+
+      const response = await fetch(url, fetchOptions);
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.apiLogger.error('Unauthorized: API key is invalid or missing');
+          throw new ApiError(
+            'Unauthorized: Invalid or missing API key',
+            ErrorCode.API_REQUEST_FAILED,
+            401,
+            undefined,
+            { url }
+          );
+        }
+        if (response.status === 404) {
+          throw new ApiError(
+            'Directory not found',
+            ErrorCode.API_NOT_FOUND,
+            404,
+            undefined,
+            { url, pathToDirectory }
+          );
+        }
+        const errorBody = await response.text().catch(() => null);
+        this.apiLogger.error('API request failed', { 
+          status: response.status, 
+          statusText: response.statusText,
+          errorBody 
+        } as any);
+        throw ApiError.fromResponse(response, errorBody);
+      }
+
+      const data = await response.json() as ListDirectoryResponse;
+      this.apiLogger.trace('Directory listed successfully', {
+        status: response.status,
+        pathToDirectory,
+        itemCount: data.files.length
+      });
+
+      return data;
     } catch (error) {
       clearTimeout(timeoutId);
 

@@ -34,6 +34,7 @@ import { testCases as searchNotesTests } from './tools/search-notes/mock.js';
 import { testCases as appendToFileTests } from './tools/append-to-file/mock.js';
 import { testCases as createOrUpdateFileTests } from './tools/create-or-update-file/mock.js';
 import { testCases as deleteFileTests } from './tools/delete-file/mock.js';
+import { testCases as listDirectoryTests } from './tools/list-directory/mock.js';
 
 // テストスイート定義
 const testSuites = {
@@ -56,7 +57,8 @@ const testSuites = {
   'search_notes': searchNotesTests,
   'append-to-file': appendToFileTests,
   'create-or-update-file': createOrUpdateFileTests,
-  'delete-file': deleteFileTests
+  'delete-file': deleteFileTests,
+  'list-directory': listDirectoryTests
 };
 
 // メイン実行
