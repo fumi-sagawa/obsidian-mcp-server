@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:unit": "vitest run",
     "test:tools": "npm run build && node test/test-all-tools-mock.js",
+    "test:tools:sequential": "npm run build && node test/test-all-tools-mock.js",
     "test:tools:dangerous": "npm run build && node test/test-all-tools.js",
     "test:tool": "npm run build && ./test/test-single.sh mock",
     "health-check": "npm run build && node build/scripts/health-check.js",

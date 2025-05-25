@@ -60,29 +60,28 @@ if [ "$USE_MOCK" = true ]; then
     PORT_FILE=$(mktemp)
     
     # モックサーバーを起動（バックグラウンド）
-    node -e "
-    import { MockApiServer } from './test/tools/shared/mock-server.js';
-    const mockServer = new MockApiServer();
-    mockServer.start().then(() => {
-      require('fs').writeFileSync('$PORT_FILE', String(mockServer.port));
-      process.on('SIGTERM', () => process.exit(0));
-    });
-    " &
+    node test/tools/shared/mock-server-runner.js > "$PORT_FILE.log" 2>&1 &
     MOCK_PID=$!
     
-    # モックサーバーの起動を待つ（ポートファイルが作成されるまで）
+    # ポート番号を取得（ログから抽出）
+    sleep 1
+    
+    # モックサーバーの起動を待つ（ログファイルからポート番号を抽出）
     for i in {1..10}; do
-        if [ -f "$PORT_FILE" ] && [ -s "$PORT_FILE" ]; then
-            MOCK_PORT=$(cat "$PORT_FILE")
-            break
+        if [ -f "$PORT_FILE.log" ] && grep -q "モックサーバーが起動しました" "$PORT_FILE.log"; then
+            MOCK_PORT=$(grep "http://localhost:" "$PORT_FILE.log" | sed -E 's/.*:([0-9]+).*/\1/')
+            if [ -n "$MOCK_PORT" ]; then
+                break
+            fi
         fi
         sleep 0.5
     done
     
     if [ -z "$MOCK_PORT" ]; then
         echo "エラー: モックサーバーの起動に失敗しました"
+        cat "$PORT_FILE.log" 2>/dev/null
         kill $MOCK_PID 2>/dev/null
-        rm -f "$PORT_FILE"
+        rm -f "$PORT_FILE" "$PORT_FILE.log"
         exit 1
     fi
     
@@ -96,7 +95,7 @@ if [ "$USE_MOCK" = true ]; then
     
     # モックサーバーを停止
     kill $MOCK_PID 2>/dev/null
-    rm -f "$PORT_FILE"
+    rm -f "$PORT_FILE" "$PORT_FILE.log"
 else
     # 実際のAPIを使用（危険）
     echo "⚠️  警告: 実際のObsidian APIを使用します。データが変更される可能性があります。"
