@@ -126,7 +126,7 @@ appLogger.debug("Registered tool: append_to_active_file");
 
 server.tool(
   "insert_to_active_file",
-  "Insert text at specific location in active file",
+  "Insert text at specific location in active file (heading/block/frontmatter). For headings, use text only without # marks. For nested headings, use :: to specify hierarchy (e.g., 'Parent Heading::Child Heading')",
   insertIntoActiveFileSchema.shape,
   wrapHandler(insertIntoActiveFileHandler, 'insert_to_active_file')
 );
@@ -143,7 +143,7 @@ appLogger.debug("Registered tool: delete_active_file");
 // ========== ファイル操作系 ==========
 server.tool(
   "get_file_content",
-  "Get content and metadata of specified file",
+  "Get content and metadata of specified file. Use relative path from vault root (e.g., 'folder/note.md' or just 'note.md'). Extension .md is optional.",
   GetFileRequestSchema.shape,
   wrapHandler(getFileHandler, 'get_file_content')
 );
@@ -151,7 +151,7 @@ appLogger.debug("Registered tool: get_file_content");
 
 server.tool(
   "create_or_update_file",
-  "Create new file or replace content of existing file",
+  "Create new file or replace content of existing file. Use relative path from vault root (e.g., 'folder/note.md'). Folders will be created if needed.",
   createOrUpdateFileSchema.shape,
   wrapHandler(createOrUpdateFileHandler, 'create_or_update_file')
 );
@@ -159,7 +159,7 @@ appLogger.debug("Registered tool: create_or_update_file");
 
 server.tool(
   "append_to_file",
-  "Append text to end of specified file",
+  "Append text to end of specified file. Use relative path from vault root (e.g., 'folder/note.md' or just 'note.md').",
   appendToFileRequestSchema.shape,
   wrapHandler(appendToFileHandler, 'append_to_file')
 );
@@ -167,7 +167,7 @@ appLogger.debug("Registered tool: append_to_file");
 
 server.tool(
   "insert_to_file",
-  "Insert text at specific location in file",
+  "Insert text at specific location in file (heading/block/frontmatter). Use relative path from vault root (e.g., 'folder/note.md'). For headings, use text only without # marks. For nested headings, use :: to specify hierarchy (e.g., 'Parent Heading::Child Heading')",
   insertIntoFileSchema.shape,
   wrapHandler(insertIntoFileHandler, 'insert_to_file')
 );
@@ -175,7 +175,7 @@ appLogger.debug("Registered tool: insert_to_file");
 
 server.tool(
   "delete_file",
-  "Delete specified file permanently",
+  "Delete specified file permanently. Use relative path from vault root (e.g., 'folder/note.md'). Cannot delete folders.",
   deleteFileSchema.shape,
   wrapHandler(deleteFileHandler, 'delete_file')
 );
@@ -183,7 +183,7 @@ appLogger.debug("Registered tool: delete_file");
 
 server.tool(
   "open_file",
-  "Open specified file in Obsidian editor",
+  "Open specified file in Obsidian editor. Use relative path from vault root (e.g., 'folder/note.md'). File must exist.",
   openFileSchema.shape,
   wrapHandler(openFileHandler, 'open_file')
 );

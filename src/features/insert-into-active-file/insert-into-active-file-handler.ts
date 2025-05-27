@@ -21,10 +21,8 @@ export async function insertIntoActiveFileHandler(
     contentType = 'text/markdown'
   } = validatedParams;
 
-  // ターゲットが非ASCII文字を含む場合はURLエンコード
-  const encodedTarget = /[^\x00-\x7F]/.test(target) || /[&<>]/.test(target)
-    ? encodeURIComponent(target)
-    : target;
+  // ターゲットは常にURLエンコード（OpenAPI仕様に従う）
+  const encodedTarget = encodeURIComponent(target);
 
   // HTTPヘッダーを構築
   const headers: Record<string, string> = {

@@ -36,7 +36,7 @@ describe('insertIntoFileHandler', () => {
         {
           'Operation': 'append',
           'Target-Type': 'heading',
-          'Target': 'Heading 1::Subheading 1:1',
+          'Target': encodeURIComponent('Heading 1::Subheading 1:1'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'false',
           'Content-Type': 'text/markdown'
@@ -72,7 +72,7 @@ describe('insertIntoFileHandler', () => {
         {
           'Operation': 'prepend',
           'Target-Type': 'heading',
-          'Target': 'My Heading',
+          'Target': encodeURIComponent('My Heading'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'false',
           'Content-Type': 'text/markdown'
@@ -109,7 +109,7 @@ describe('insertIntoFileHandler', () => {
         {
           'Operation': 'replace',
           'Target-Type': 'heading',
-          'Target': 'Old Heading',
+          'Target': encodeURIComponent('Old Heading'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'true',
           'Content-Type': 'text/markdown'
@@ -452,6 +452,28 @@ describe('insertIntoFileHandler', () => {
   });
 
   describe('特殊文字の処理', () => {
+    it('番号付き見出し', async () => {
+      const params: InsertIntoFileParams = {
+        filename: 'document.md',
+        operation: 'append',
+        targetType: 'heading',
+        target: '1. アプリケーション概要',
+        content: '新しいコンテンツ'
+      };
+
+      mockClient.patchFile.mockResolvedValue();
+
+      await insertIntoFileHandler(params);
+
+      expect(mockClient.patchFile).toHaveBeenCalledWith(
+        'document.md',
+        expect.objectContaining({
+          'Target': encodeURIComponent('1. アプリケーション概要')
+        }),
+        '新しいコンテンツ'
+      );
+    });
+
     it('非ASCII文字を含むファイル名とターゲット', async () => {
       const params: InsertIntoFileParams = {
         filename: '日本語のファイル.md',

@@ -34,7 +34,7 @@ describe('insertIntoActiveFileHandler', () => {
         {
           'Operation': 'append',
           'Target-Type': 'heading',
-          'Target': 'Heading 1::Subheading 1:1',
+          'Target': encodeURIComponent('Heading 1::Subheading 1:1'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'false',
           'Content-Type': 'text/markdown'
@@ -68,7 +68,7 @@ describe('insertIntoActiveFileHandler', () => {
         {
           'Operation': 'prepend',
           'Target-Type': 'heading',
-          'Target': 'My Heading',
+          'Target': encodeURIComponent('My Heading'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'false',
           'Content-Type': 'text/markdown'
@@ -103,7 +103,7 @@ describe('insertIntoActiveFileHandler', () => {
         {
           'Operation': 'replace',
           'Target-Type': 'heading',
-          'Target': 'Old Heading',
+          'Target': encodeURIComponent('Old Heading'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'true',
           'Content-Type': 'text/markdown'
@@ -127,6 +127,7 @@ describe('insertIntoActiveFileHandler', () => {
 
       expect(mockClient.patchActiveFile).toHaveBeenCalledWith(
         expect.objectContaining({
+          'Target': encodeURIComponent('Parent/Child/Grandchild'),
           'Target-Delimiter': '/'
         }),
         'Content with custom delimiter'
@@ -151,7 +152,7 @@ describe('insertIntoActiveFileHandler', () => {
         {
           'Operation': 'append',
           'Target-Type': 'block',
-          'Target': '2d9b4a',
+          'Target': encodeURIComponent('2d9b4a'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'false',
           'Content-Type': 'text/markdown'
@@ -208,7 +209,7 @@ describe('insertIntoActiveFileHandler', () => {
         {
           'Operation': 'replace',
           'Target-Type': 'frontmatter',
-          'Target': 'title',
+          'Target': encodeURIComponent('title'),
           'Target-Delimiter': '::',
           'Trim-Target-Whitespace': 'false',
           'Content-Type': 'text/markdown'
@@ -329,6 +330,26 @@ describe('insertIntoActiveFileHandler', () => {
   });
 
   describe('特殊文字の処理', () => {
+    it('番号付き見出し', async () => {
+      const params: InsertIntoActiveFileParams = {
+        operation: 'append',
+        targetType: 'heading',
+        target: '1. アプリケーション概要',
+        content: '新しいコンテンツ'
+      };
+
+      mockClient.patchActiveFile.mockResolvedValue();
+
+      await insertIntoActiveFileHandler(params);
+
+      expect(mockClient.patchActiveFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Target': encodeURIComponent('1. アプリケーション概要')
+        }),
+        '新しいコンテンツ'
+      );
+    });
+
     it('非ASCII文字を含むターゲット', async () => {
       const params: InsertIntoActiveFileParams = {
         operation: 'append',
